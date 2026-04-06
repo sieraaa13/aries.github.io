@@ -8,142 +8,175 @@
     * { box-sizing: border-box; }
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: linear-gradient(135deg, #eef7ff, #ffffff);
       min-height: 100vh;
+      overflow: hidden; /* Mencegah scroll double pada halaman utama */
     }
+    
+    /* HALAMAN UTAMA */
     .home {
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 30px 20px;
+      justify-content: center;
+      height: 100vh;
+      padding: 20px;
+      overflow-y: auto;
     }
     h1 {
       color: #1f3b5b;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
       text-align: center;
+      font-size: 1.8rem;
     }
     .chopper {
-      width: 220px;
-      max-width: 80vw;
+      width: 180px;
       height: auto;
       margin-bottom: 30px;
-      border-radius: 16px;
+      border-radius: 20px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
     }
     .folders {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
       gap: 20px;
-      width: min(900px, 100%);
+      width: min(800px, 100%);
     }
     .folder {
       background: #ffd54f;
-      border-radius: 18px;
-      padding: 24px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      border-radius: 15px;
+      padding: 25px;
+      text-align: center;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
       cursor: pointer;
-      transition: 0.2s;
+      transition: 0.3s;
     }
-    .folder:hover { transform: translateY(-4px); }
+    .folder:hover { transform: translateY(-5px); background: #ffca28; }
+    .folder h2 { margin: 0; color: #5d4300; font-size: 1.2rem; }
 
+    /* HALAMAN VIEWER */
     .viewer-page {
       display: none;
       height: 100vh;
-      grid-template-columns: 260px 1fr;
+      grid-template-columns: 300px 1fr;
     }
     .sidebar {
       background: #fff8e1;
-      padding: 16px;
+      padding: 20px;
       overflow-y: auto;
-      border-right: 1px solid #ddd;
-    }
-    .sidebar h2 {
-      margin-top: 0;
-      font-size: 20px;
-      color: #5d4300;
-    }
-    .sidebar a {
-      display: block;
-      margin: 8px 0;
-      padding: 8px 10px;
-      border-radius: 8px;
-      text-decoration: none;
-      color: #1f3b5b;
-      background: rgba(255,255,255,0.6);
-      font-size: 14px;
-      word-break: break-word;
-    }
-    .sidebar a:hover {
-      background: rgba(255,255,255,0.9);
-    }
-    .pdf-viewer {
-      width: 100%;
-      height: 100vh;
-      border: none;
-      background: white;
+      border-right: 2px solid #ffd54f;
+      display: flex;
+      flex-direction: column;
     }
     .back-btn {
-      display: inline-block;
-      margin-bottom: 16px;
-      padding: 8px 14px;
+      padding: 10px;
       background: #1f3b5b;
       color: white;
       border-radius: 8px;
+      text-align: center;
+      cursor: pointer;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+    .sidebar h2 {
+      font-size: 1.1rem;
+      color: #5d4300;
+      border-bottom: 2px solid #ffd54f;
+      padding-bottom: 10px;
+      margin-top: 0;
+    }
+    .file-list {
+      flex-grow: 1;
+    }
+    .file-item {
+      padding: 12px;
+      background: white;
+      margin-bottom: 8px;
+      border-radius: 8px;
       cursor: pointer;
       font-size: 14px;
+      border: 1px solid #eee;
+      transition: 0.2s;
+    }
+    .file-item:hover { background: #fff3cd; }
+    .file-item.active {
+      background: #1f3b5b;
+      color: white;
+      font-weight: bold;
+    }
+    .pdf-container {
+      background: #525659;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .pdf-viewer {
+      width: 100%;
+      height: 100%;
+      border: none;
     }
 
+    /* RESPONSIVE MOBILE */
     @media (max-width: 768px) {
       .viewer-page {
         grid-template-columns: 1fr;
-        grid-template-rows: 90px 1fr;
+        grid-template-rows: auto 1fr;
       }
       .sidebar {
-        padding: 10px;
-        overflow-x: auto;
-        overflow-y: hidden;
-        white-space: nowrap;
+        height: auto;
+        max-height: 250px;
         border-right: none;
-        border-bottom: 1px solid #ddd;
+        border-bottom: 2px solid #ffd54f;
+        padding: 15px;
       }
-      .sidebar h2 { display: none; }
-      .sidebar a {
-        display: inline-block;
-        margin: 4px 8px 4px 0;
-        padding: 6px 10px;
-        font-size: 12px;
-        max-width: 180px;
-        vertical-align: top;
+      .file-list {
+        display: flex;
+        overflow-x: auto;
+        gap: 10px;
+        padding-bottom: 5px;
       }
-      .back-btn { margin-bottom: 8px; }
-      .pdf-viewer { height: calc(100vh - 90px); }
+      .file-item {
+        flex: 0 0 auto;
+        margin-bottom: 0;
+        white-space: nowrap;
+      }
+      .pdf-container {
+        height: calc(100vh - 250px);
+      }
     }
   </style>
 </head>
 <body>
+
   <div id="home" class="home">
     <h1>Portal Belajar Bahasa Jepang</h1>
-    <img class="chopper" src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExdzYzbnNwMDBhdTVlYmJwaWN3cWNpbGt0dXl2bmxub2s1ZWtucDliYyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3nYPJOsVt5RYnpPv3o/giphy.gif" alt="Chopper gif" />
-
+    <img class="chopper" src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdzYzbnNwMDBhdTVlYmJwaWN3cWNpbGt0dXl2bmxub2s1ZWtucDliYyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3nYPJOsVt5RYnpPv3o/giphy.gif" alt="Chopper">
+    
     <div class="folders">
-      <div class="folder" onclick="openLevel('n1')"><h2>Bahasa Jepang N1</h2></div>
-      <div class="folder" onclick="openLevel('n2')"><h2>Bahasa Jepang N2</h2></div>
-      <div class="folder" onclick="openLevel('n3')"><h2>Bahasa Jepang N3</h2></div>
+      <div class="folder" onclick="openLevel('n1')"><h2>JLPT N1</h2></div>
+      <div class="folder" onclick="openLevel('n2')"><h2>JLPT N2</h2></div>
+      <div class="folder" onclick="openLevel('n3')"><h2>JLPT N3</h2></div>
     </div>
   </div>
 
   <div id="viewerPage" class="viewer-page">
     <div class="sidebar">
       <div class="back-btn" onclick="goHome()">← Kembali</div>
-      <h2 id="levelTitle">Daftar File</h2>
-      <div id="fileList"></div>
+      <h2 id="levelTitle">Materi</h2>
+      <div id="fileList" class="file-list"></div>
     </div>
-    <iframe id="pdfViewer" class="pdf-viewer"></iframe>
+    <div class="pdf-container">
+      <iframe id="pdfViewer" class="pdf-viewer"></iframe>
+    </div>
   </div>
 
   <script>
-    const basePath = window.location.pathname.split('/')[1] || '';
+    // SESUAIKAN: Ganti dengan username GitHub kamu yang benar
+    const GH_USER = "mh7714240-jpg";
+    const GH_REPO = "aries.github.io";
 
+    // Daftar file yang ada di folder assets/n1/
     const files = {
       n1: [
         'jlpt-n1-2024-12.pdf',
@@ -159,32 +192,41 @@
     function openLevel(level) {
       document.getElementById('home').style.display = 'none';
       document.getElementById('viewerPage').style.display = 'grid';
-      document.getElementById('levelTitle').textContent = 'Bahasa Jepang ' + level.toUpperCase();
+      document.getElementById('levelTitle').textContent = 'Daftar ' + level.toUpperCase();
 
-      const fileList = document.getElementById('fileList');
-      fileList.innerHTML = '';
+      const listDiv = document.getElementById('fileList');
+      listDiv.innerHTML = '';
 
-      files[level].forEach((file) => {
-        const a = document.createElement('a');
-        a.href = '#';
-        a.textContent = file;
-        a.onclick = (e) => {
-          e.preventDefault();
-          loadPDF(level, file);
-        };
-        fileList.appendChild(a);
-      });
-
-      if (files[level].length > 0) {
-        loadPDF(level, files[level][0]);
-      } else {
-        document.getElementById('pdfViewer').src = '';
+      if (files[level].length === 0) {
+        listDiv.innerHTML = '<p>Belum ada file.</p>';
+        return;
       }
+
+      files[level].forEach((file, index) => {
+        const item = document.createElement('div');
+        item.className = 'file-item';
+        item.textContent = file;
+        item.onclick = function() { loadPDF(level, file, this); };
+        listDiv.appendChild(item);
+
+        // Load file pertama secara otomatis saat folder dibuka
+        if (index === 0) loadPDF(level, file, item);
+      });
     }
 
-    function loadPDF(level, file) {
-      const pdfPath = `/${basePath}/assets/${level}/${file}`;
-      document.getElementById('pdfViewer').src = pdfPath;
+    function loadPDF(level, fileName, element) {
+      // Tandai file yang sedang aktif (warna biru)
+      const allItems = document.querySelectorAll('.file-item');
+      allItems.forEach(i => i.classList.remove('active'));
+      element.classList.add('active');
+
+      // Buat URL Absolut ke file di GitHub
+      const fileUrl = `https://${GH_USER}.github.io/${GH_REPO}/assets/${level}/${fileName}`;
+      
+      // Gunakan Google Docs Viewer agar bisa tampil di HP tanpa tab baru
+      const finalUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(fileUrl)}&embedded=true`;
+      
+      document.getElementById('pdfViewer').src = finalUrl;
     }
 
     function goHome() {
