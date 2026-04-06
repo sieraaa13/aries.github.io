@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Portal Belajar Bahasa Jepang</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #eef7ff, #ffffff);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 40px 20px;
+    }
+
+    h1 {
+      color: #1f3b5b;
+      margin-bottom: 30px;
+    }
+
+    .hero {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .chopper {
+      font-size: 120px;
+      display: inline-block;
+      animation: wave 1.2s ease-in-out infinite;
+      transform-origin: 70% 30%;
+    }
+
+    .caption {
+      margin-top: 10px;
+      font-size: 20px;
+      color: #444;
+    }
+
+    @keyframes wave {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(10deg); }
+      50% { transform: rotate(0deg); }
+      75% { transform: rotate(-10deg); }
+    }
+
+    .folders {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      width: min(900px, 100%);
+    }
+
+    .folder {
+      background: #ffd54f;
+      border-radius: 18px;
+      padding: 24px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      position: relative;
+    }
+
+    .folder::before {
+      content: "";
+      position: absolute;
+      top: -10px;
+      left: 18px;
+      width: 80px;
+      height: 18px;
+      background: #ffca28;
+      border-radius: 8px 8px 0 0;
+    }
+
+    .folder:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+    }
+
+    .folder h2 {
+      margin: 10px 0 0;
+      font-size: 22px;
+      color: #5d4300;
+    }
+  </style>
+</head>
+<body>
+  <h1>Portal Belajar Bahasa Jepang</h1>
+
+  <div class="hero">
+    <div class="chopper">🦌👋</div>
+    <div class="caption">Chopper sedang melambaikan tangan ke depan</div>
+  </div>
+
+  <div class="folders">
+    <div class="folder" onclick="openFolder('Bahasa Jepang N1')">
+      <h2>Bahasa Jepang N1</h2>
+    </div>
+    <div class="folder" onclick="openFolder('Bahasa Jepang N2')">
+      <h2>Bahasa Jepang N2</h2>
+    </div>
+    <div class="folder" onclick="openFolder('Bahasa Jepang N3')">
+      <h2>Bahasa Jepang N3</h2>
+    </div>
+  </div>
+
+  <script>
+    function openFolder(name) {
+      alert('Membuka folder: ' + name);
+    }
+  </script>
+</body>
+</html>
