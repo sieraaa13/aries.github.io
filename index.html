@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Portal Belajar Bahasa Jepang</title>
+  <title>Portal Belajar & Tes JLPT</title>
   <style>
     * { box-sizing: border-box; }
     body {
@@ -11,148 +11,68 @@
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       background: linear-gradient(135deg, #eef7ff, #ffffff);
       min-height: 100vh;
-      overflow: hidden; /* Mencegah scroll double pada halaman utama */
     }
     
     /* HALAMAN UTAMA */
     .home {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      padding: 20px;
-      overflow-y: auto;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      height: 100vh; padding: 20px;
     }
-    h1 {
-      color: #1f3b5b;
-      margin-bottom: 20px;
-      text-align: center;
-      font-size: 1.8rem;
-    }
-    .chopper {
-      width: 180px;
-      height: auto;
-      margin-bottom: 30px;
-      border-radius: 20px;
-      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
-    }
-    .folders {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 20px;
-      width: min(800px, 100%);
-    }
-    .folder {
-      background: #ffd54f;
-      border-radius: 15px;
-      padding: 25px;
-      text-align: center;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-      cursor: pointer;
-      transition: 0.3s;
-    }
+    .chopper { width: 150px; border-radius: 20px; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+    .folders { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; width: min(800px, 100%); }
+    .folder { background: #ffd54f; border-radius: 15px; padding: 25px; text-align: center; cursor: pointer; transition: 0.3s; }
     .folder:hover { transform: translateY(-5px); background: #ffca28; }
-    .folder h2 { margin: 0; color: #5d4300; font-size: 1.2rem; }
 
-    /* HALAMAN VIEWER */
-    .viewer-page {
-      display: none;
-      height: 100vh;
-      grid-template-columns: 300px 1fr;
-    }
-    .sidebar {
-      background: #fff8e1;
-      padding: 20px;
-      overflow-y: auto;
-      border-right: 2px solid #ffd54f;
-      display: flex;
-      flex-direction: column;
-    }
-    .back-btn {
-      padding: 10px;
-      background: #1f3b5b;
-      color: white;
-      border-radius: 8px;
-      text-align: center;
-      cursor: pointer;
-      font-weight: bold;
-      margin-bottom: 20px;
-    }
-    .sidebar h2 {
-      font-size: 1.1rem;
-      color: #5d4300;
-      border-bottom: 2px solid #ffd54f;
-      padding-bottom: 10px;
-      margin-top: 0;
-    }
-    .file-list {
-      flex-grow: 1;
-    }
-    .file-item {
-      padding: 12px;
-      background: white;
-      margin-bottom: 8px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 14px;
-      border: 1px solid #eee;
-      transition: 0.2s;
+    /* LAYOUT VIEWER */
+    .viewer-page { display: none; height: 100vh; grid-template-columns: 300px 1fr; }
+    .sidebar { background: #fff8e1; padding: 20px; border-right: 2px solid #ffd54f; overflow-y: auto; }
+    .back-btn { padding: 10px; background: #1f3b5b; color: white; border-radius: 8px; text-align: center; cursor: pointer; margin-bottom: 20px; font-weight: bold; }
+    
+    /* FILE LIST ITEMS */
+    .file-item { 
+      padding: 12px; background: white; margin-bottom: 8px; border-radius: 8px; 
+      cursor: pointer; font-size: 14px; border: 1px solid #eee; display: flex; align-items: center; gap: 10px;
     }
     .file-item:hover { background: #fff3cd; }
-    .file-item.active {
-      background: #1f3b5b;
-      color: white;
-      font-weight: bold;
-    }
-    .pdf-container {
-      background: #525659;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .pdf-viewer {
-      width: 100%;
-      height: 100%;
-      border: none;
-    }
+    .file-item.active { background: #1f3b5b; color: white; }
+    .icon-type { font-size: 18px; }
 
-    /* RESPONSIVE MOBILE */
+    /* CONTENT AREA */
+    .content-area { background: #f4f4f4; overflow-y: auto; display: flex; justify-content: center; padding: 20px; }
+    .pdf-viewer { width: 100%; height: 100%; border: none; background: white; }
+
+    /* KUIS INTERAKTIF */
+    .quiz-container { background: white; width: min(700px, 100%); padding: 30px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+    .question { margin-bottom: 25px; padding-bottom: 15px; border-bottom: 1px solid #eee; }
+    .question p { font-weight: bold; font-size: 1.1rem; color: #1f3b5b; }
+    .options { display: flex; flex-direction: column; gap: 10px; margin-top: 10px; }
+    .option-label { 
+      padding: 10px; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 10px;
+    }
+    .option-label:hover { background: #f0f7ff; }
+    input[type="radio"] { cursor: pointer; }
+    
+    .btn-selesai { 
+      background: #28a745; color: white; border: none; padding: 12px 25px; border-radius: 5px; 
+      cursor: pointer; font-weight: bold; margin-top: 20px; font-size: 1rem;
+    }
+    .feedback { font-weight: bold; margin-left: 10px; }
+    .correct { color: #28a745; }
+    .wrong { color: #dc3545; }
+
     @media (max-width: 768px) {
-      .viewer-page {
-        grid-template-columns: 1fr;
-        grid-template-rows: auto 1fr;
-      }
-      .sidebar {
-        height: auto;
-        max-height: 250px;
-        border-right: none;
-        border-bottom: 2px solid #ffd54f;
-        padding: 15px;
-      }
-      .file-list {
-        display: flex;
-        overflow-x: auto;
-        gap: 10px;
-        padding-bottom: 5px;
-      }
-      .file-item {
-        flex: 0 0 auto;
-        margin-bottom: 0;
-        white-space: nowrap;
-      }
-      .pdf-container {
-        height: calc(100vh - 250px);
-      }
+      .viewer-page { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+      .sidebar { max-height: 200px; }
+      .file-list { display: flex; overflow-x: auto; gap: 10px; }
+      .file-item { flex: 0 0 auto; white-space: nowrap; }
     }
   </style>
 </head>
 <body>
 
   <div id="home" class="home">
-    <h1>Portal Belajar Bahasa Jepang</h1>
-    <img class="chopper" src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExdzYzbnNwMDBhdTVlYmJwaWN3cWNpbGt0dXl2bmxub2s1ZWtucDliYyZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/3nYPJOsVt5RYnpPv3o/giphy.gif" alt="Chopper">
-    
+    <img class="chopper" src="https://media.giphy.com/media/3nYPJOsVt5RYnpPv3o/giphy.gif" alt="Chopper">
+    <h1>Portal Belajar Danbo</h1>
     <div class="folders">
       <div class="folder" onclick="openLevel('n1')"><h2>JLPT N1</h2></div>
       <div class="folder" onclick="openLevel('n2')"><h2>JLPT N2</h2></div>
@@ -166,73 +86,107 @@
       <h2 id="levelTitle">Materi</h2>
       <div id="fileList" class="file-list"></div>
     </div>
-    <div class="pdf-container">
-      <iframe id="pdfViewer" class="pdf-viewer"></iframe>
-    </div>
+    <div class="content-area" id="contentArea">
+      </div>
   </div>
 
   <script>
-    // SESUAIKAN: Ganti dengan username GitHub kamu yang benar
     const GH_USER = "mh7714240-jpg";
     const GH_REPO = "aries.github.io";
 
-    // Daftar file yang ada di folder assets/n1/
-    const files = {
+    // Struktur Data: Bisa berupa PDF atau QUIZ
+    const contentData = {
       n1: [
-        'jlpt-n1-2024-12.pdf',
-        'jlpt-n1-2024-07.pdf',
-        'jlpt-n1-2023-12.pdf',
-        'jlpt-n1-2023-07.pdf',
-        'jlpt-n1-2022-12.pdf'
+        { type: 'quiz', id: 'tes2010', title: 'Tes 2010 (Simulasi)', icon: '📝' },
+        { type: 'pdf', file: 'jlpt-n1-2024-12.pdf', title: 'JLPT N1 2024-12', icon: '📄' },
+        { type: 'pdf', file: 'jlpt-n1-2024-07.pdf', title: 'JLPT N1 2024-07', icon: '📄' }
       ],
       n2: [],
       n3: []
     };
 
+    const quizData = {
+      'tes2010': [
+        { q: "1. Bahasa jepang : Ayah", options: ["otousan", "okasan", "imouto", "ani"], correct: 0 },
+        { q: "2. Bahasa jepangnya : Uang", options: ["kami", "kagi", "kane", "kabe"], correct: 2 }
+      ]
+    };
+
     function openLevel(level) {
       document.getElementById('home').style.display = 'none';
       document.getElementById('viewerPage').style.display = 'grid';
-      document.getElementById('levelTitle').textContent = 'Daftar ' + level.toUpperCase();
+      document.getElementById('levelTitle').textContent = 'Materi ' + level.toUpperCase();
 
       const listDiv = document.getElementById('fileList');
       listDiv.innerHTML = '';
 
-      if (files[level].length === 0) {
-        listDiv.innerHTML = '<p>Belum ada file.</p>';
-        return;
-      }
-
-      files[level].forEach((file, index) => {
-        const item = document.createElement('div');
-        item.className = 'file-item';
-        item.textContent = file;
-        item.onclick = function() { loadPDF(level, file, this); };
-        listDiv.appendChild(item);
-
-        // Load file pertama secara otomatis saat folder dibuka
-        if (index === 0) loadPDF(level, file, item);
+      contentData[level].forEach((item, index) => {
+        const div = document.createElement('div');
+        div.className = 'file-item';
+        div.innerHTML = `<span class="icon-type">${item.icon}</span> <span>${item.title}</span>`;
+        div.onclick = function() {
+          if(item.type === 'pdf') loadPDF(level, item.file, this);
+          else loadQuiz(item.id, this);
+        };
+        listDiv.appendChild(div);
+        if (index === 0) div.click(); // Auto buka item pertama
       });
     }
 
     function loadPDF(level, fileName, element) {
-      // Tandai file yang sedang aktif (warna biru)
-      const allItems = document.querySelectorAll('.file-item');
-      allItems.forEach(i => i.classList.remove('active'));
-      element.classList.add('active');
-
-      // Buat URL Absolut ke file di GitHub
+      setActive(element);
       const fileUrl = `https://${GH_USER}.github.io/${GH_REPO}/assets/${level}/${fileName}`;
-      
-      // Gunakan Google Docs Viewer agar bisa tampil di HP tanpa tab baru
       const finalUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(fileUrl)}&embedded=true`;
+      document.getElementById('contentArea').innerHTML = `<iframe class="pdf-viewer" src="${finalUrl}"></iframe>`;
+    }
+
+    function loadQuiz(quizId, element) {
+      setActive(element);
+      const questions = quizData[quizId];
+      let html = `<div class="quiz-container"><h2>${element.innerText}</h2><form id="quizForm">`;
       
-      document.getElementById('pdfViewer').src = finalUrl;
+      questions.forEach((data, i) => {
+        html += `
+          <div class="question" id="q-container-${i}">
+            <p>${data.q} <span id="feedback-${i}" class="feedback"></span></p>
+            <div class="options">
+              ${data.options.map((opt, optIdx) => `
+                <label class="option-label">
+                  <input type="radio" name="q${i}" value="${optIdx}"> ${String.fromCharCode(97 + optIdx)}. ${opt}
+                </label>
+              `).join('')}
+            </div>
+          </div>`;
+      });
+
+      html += `<button type="button" class="btn-selesai" onclick="checkAnswers('${quizId}')">Selesai</button></form></div>`;
+      document.getElementById('contentArea').innerHTML = html;
+    }
+
+    function checkAnswers(quizId) {
+      const questions = quizData[quizId];
+      questions.forEach((data, i) => {
+        const selected = document.querySelector(`input[name="q${i}"]:checked`);
+        const feedback = document.getElementById(`feedback-${i}`);
+        
+        if (selected && parseInt(selected.value) === data.correct) {
+          feedback.innerHTML = "✅ Benar!";
+          feedback.className = "feedback correct";
+        } else {
+          feedback.innerHTML = "❌ Salah!";
+          feedback.className = "feedback wrong";
+        }
+      });
+    }
+
+    function setActive(el) {
+      document.querySelectorAll('.file-item').forEach(i => i.classList.remove('active'));
+      el.classList.add('active');
     }
 
     function goHome() {
       document.getElementById('viewerPage').style.display = 'none';
       document.getElementById('home').style.display = 'flex';
-      document.getElementById('pdfViewer').src = '';
     }
   </script>
 </body>
