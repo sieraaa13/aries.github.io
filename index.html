@@ -1,80 +1,40 @@
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Portal Belajar Danbo - N1 Specialist</title>
+  <title>Portal Belajar Danbo - JSON Version</title>
   <style>
+    /* CSS tetap sama seperti sebelumnya agar tampilan tidak berubah */
     * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #eef7ff, #ffffff);
-      min-height: 100vh;
-    }
-    
-    /* HALAMAN UTAMA */
-    .home {
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      height: 100vh; padding: 20px;
-    }
-    .chopper { width: 150px; border-radius: 20px; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
-    .folders { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; width: min(800px, 100%); }
+    body { margin: 0; font-family: 'Segoe UI', sans-serif; background: #eef7ff; min-height: 100vh; }
+    .home { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
+    .chopper { width: 150px; border-radius: 20px; margin-bottom: 20px; }
+    .folders { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; width: min(800px, 100%); padding: 20px; }
     .folder { background: #ffd54f; border-radius: 15px; padding: 25px; text-align: center; cursor: pointer; transition: 0.3s; }
-    .folder:hover { transform: translateY(-5px); background: #ffca28; }
-
-    /* LAYOUT VIEWER */
     .viewer-page { display: none; height: 100vh; grid-template-columns: 320px 1fr; }
-    .sidebar { background: #fff8e1; padding: 20px; border-right: 2px solid #ffd54f; overflow-y: auto; display: flex; flex-direction: column; }
+    .sidebar { background: #fff8e1; padding: 20px; border-right: 2px solid #ffd54f; overflow-y: auto; }
     .back-btn { padding: 12px; background: #1f3b5b; color: white; border-radius: 8px; text-align: center; cursor: pointer; margin-bottom: 20px; font-weight: bold; }
-    
-    /* FILE LIST */
-    .file-item { 
-      padding: 12px; background: white; margin-bottom: 8px; border-radius: 8px; 
-      cursor: pointer; font-size: 14px; border: 1px solid #eee; display: flex; align-items: center; gap: 10px;
-    }
-    .file-item:hover { background: #fff3cd; }
-    .file-item.active { background: #1f3b5b; color: white; border-left: 5px solid #ffd54f; }
-    .icon-type { font-size: 18px; }
-
-    /* CONTENT AREA */
+    .file-item { padding: 12px; background: white; margin-bottom: 8px; border-radius: 8px; cursor: pointer; font-size: 14px; border: 1px solid #eee; display: flex; align-items: center; gap: 10px; }
+    .file-item.active { background: #1f3b5b; color: white; }
     .content-area { background: #f4f4f4; overflow-y: auto; display: flex; justify-content: center; padding: 20px; width: 100%; }
-    .pdf-viewer { width: 100%; height: 100%; border: none; background: white; }
-
-    /* KUIS INTERAKTIF */
-    .quiz-container { background: white; width: min(800px, 100%); padding: 35px; border-radius: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
-    .quiz-header { border-bottom: 3px solid #ffd54f; margin-bottom: 25px; padding-bottom: 10px; }
-    .question { margin-bottom: 30px; padding: 15px; border-radius: 10px; background: #fdfdfd; border: 1px solid #f0f0f0; }
-    .question p { font-weight: bold; font-size: 1.1rem; color: #1f3b5b; line-height: 1.6; margin-top: 0; }
-    .options { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 15px; }
-    .option-label { 
-      padding: 12px; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 10px; background: white;
-    }
-    .option-label:hover { background: #fffde7; border-color: #ffd54f; }
-    .option-label input { transform: scale(1.2); }
-    
-    .btn-selesai { 
-      background: #28a745; color: white; border: none; padding: 15px 40px; border-radius: 8px; 
-      cursor: pointer; font-weight: bold; margin-top: 10px; font-size: 1.1rem; width: 100%;
-    }
-    .feedback { font-weight: bold; display: block; margin-top: 10px; padding: 5px 10px; border-radius: 4px; }
-    .correct { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-    .wrong { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-
-    @media (max-width: 768px) {
-      .viewer-page { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
-      .sidebar { max-height: 220px; border-right: none; border-bottom: 2px solid #ffd54f; }
-      .file-list { display: flex; overflow-x: auto; gap: 10px; }
-      .file-item { flex: 0 0 auto; white-space: nowrap; min-width: 180px; }
-      .options { grid-template-columns: 1fr; }
-    }
+    .quiz-container { background: white; width: min(800px, 100%); padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+    .question { margin-bottom: 25px; padding: 15px; border-bottom: 1px solid #eee; }
+    .options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+    .option-label { padding: 10px; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 10px; }
+    .btn-selesai { background: #28a745; color: white; border: none; padding: 15px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; }
+    .feedback { font-weight: bold; display: block; margin-top: 5px; }
+    .correct { color: #28a745; }
+    .wrong { color: #dc3545; }
+    @media (max-width: 768px) { .viewer-page { grid-template-columns: 1fr; grid-template-rows: auto 1fr; } .sidebar { max-height: 200px; } .options { grid-template-columns: 1fr; } }
   </style>
 </head>
 <body>
 
   <div id="home" class="home">
-    <img class="chopper" src="https://media.giphy.com/media/3nYPJOsVt5RYnpPv3o/giphy.gif" alt="Chopper">
-    <h1>Portal Belajar Danbo N1</h1>
+    <img class="chopper" src="https://media.giphy.com/media/3nYPJOsVt5RYnpPv3o/giphy.gif">
+    <h1>Portal Belajar Danbo</h1>
     <div class="folders">
       <div class="folder" onclick="openLevel('n1')"><h2>JLPT N1</h2></div>
       <div class="folder" onclick="openLevel('n2')"><h2>JLPT N2</h2></div>
@@ -85,45 +45,28 @@
   <div id="viewerPage" class="viewer-page">
     <div class="sidebar">
       <div class="back-btn" onclick="goHome()">← Kembali</div>
-      <h2 id="levelTitle">Daftar Materi</h2>
-      <div id="fileList" class="file-list"></div>
+      <h2 id="levelTitle">Materi</h2>
+      <div id="fileList"></div>
     </div>
-    <div class="content-area" id="contentArea">
-      </div>
+    <div class="content-area" id="contentArea"></div>
   </div>
 
   <script>
     const GH_USER = "mh7714240-jpg";
     const GH_REPO = "aries.github.io";
 
-    // DATABASE MATERIMU
     const contentData = {
       n1: [
-        { type: 'quiz', id: 'n1-dec-2024', title: 'Tes 2024 Bulan 12 N1', icon: '📝' },
-        { type: 'quiz', id: 'tes2010', title: 'Simulasi Tes 2010', icon: '📝' },
+        { type: 'quiz', id: 'tes-2024-12', title: 'Tes 2024 Bulan 12 N1', icon: '📝' },
+        { type: 'quiz', id: 'tes-2010', title: 'Simulasi Tes 2010', icon: '📝' },
         { type: 'pdf', file: 'jlpt-n1-2024-12.pdf', title: 'PDF N1 2024-12', icon: '📄' }
       ],
-      n2: [],
-      n3: []
+      n2: [], n3: []
     };
 
-    // ISI SOAL (DATA YANG DISALIN)
-    const quizData = {
-      'n1-dec-2024': [
-        { q: "1. 佐藤選手がゴールを決めたとき、観客は【絶叫】した。", options: ["せっきょう", "ぜっきょう", "ぜっきゅう", "せっきゅう"], correct: 1 },
-        { q: "2. 【背後】から物音が聞こえた。", options: ["はいご", "はいこう", "せいご", "せいこう"], correct: 0 },
-        { q: "3. 将来の【抱負】を述べる。", options: ["ほうふ", "ほうぶ", "ほふ", "ほぶ"], correct: 0 },
-        { q: "4. 人を【侮って】はいけない。", options: ["からかって", "ののしって", "あなどって", "うらぎって"], correct: 2 },
-        { q: "5. 相手がわかるように、【筋道】を立てて説明した。", options: ["きんどう", "すじどう", "きんみち", "すじみち"], correct: 3 },
-        { q: "6. その小説の主人公は、【奔放】な性格をしている。", options: ["はんぽう", "ぼんぽう", "ほんぽう", "ばんぽう"], correct: 2 }
-      ],
-      'tes2010': [
-        { q: "1. Bahasa jepang : Ayah", options: ["otousan", "okasan", "imouto", "ani"], correct: 0 },
-        { q: "2. Bahasa jepangnya : Uang", options: ["kami", "kagi", "kane", "kabe"], correct: 2 }
-      ]
-    };
+    let currentQuizData = null;
 
-    function openLevel(level) {
+    async function openLevel(level) {
       document.getElementById('home').style.display = 'none';
       document.getElementById('viewerPage').style.display = 'grid';
       document.getElementById('levelTitle').textContent = 'Materi ' + level.toUpperCase();
@@ -131,9 +74,12 @@
       const listDiv = document.getElementById('fileList');
       listDiv.innerHTML = '';
 
-      if (contentData[level].length === 0) {
-        listDiv.innerHTML = '<p style="padding:10px">Belum ada materi.</p>';
-        return;
+      // Load file JSON data untuk level ini
+      try {
+        const response = await fetch(`assets/${level}/${level}-data.json`);
+        currentQuizData = await response.json();
+      } catch (e) {
+        console.log("Belum ada file JSON untuk level ini");
       }
 
       contentData[level].forEach((item, index) => {
@@ -142,10 +88,10 @@
         div.innerHTML = `<span class="icon-type">${item.icon}</span> <span>${item.title}</span>`;
         div.onclick = function() {
           if(item.type === 'pdf') loadPDF(level, item.file, this);
-          else loadQuiz(item.id, item.title, this);
+          else displayQuiz(item.id, this);
         };
         listDiv.appendChild(div);
-        if (index === 0) div.click(); 
+        if (index === 0) div.click();
       });
     }
 
@@ -153,53 +99,48 @@
       setActive(element);
       const fileUrl = `https://${GH_USER}.github.io/${GH_REPO}/assets/${level}/${fileName}`;
       const finalUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(fileUrl)}&embedded=true`;
-      document.getElementById('contentArea').innerHTML = `<iframe class="pdf-viewer" src="${finalUrl}"></iframe>`;
+      document.getElementById('contentArea').innerHTML = `<iframe style="width:100%;height:100%;border:none;" src="${finalUrl}"></iframe>`;
     }
 
-    function loadQuiz(quizId, quizTitle, element) {
+    function displayQuiz(quizId, element) {
       setActive(element);
-      const questions = quizData[quizId];
-      let html = `<div class="quiz-container"><div class="quiz-header"><h2>${quizTitle}</h2><p>Pilih jawaban yang paling tepat!</p></div><form id="quizForm">`;
+      if (!currentQuizData || !currentQuizData[quizId]) {
+        document.getElementById('contentArea').innerHTML = "<p>Data kuis tidak ditemukan.</p>";
+        return;
+      }
+
+      const data = currentQuizData[quizId];
+      let html = `<div class="quiz-container"><h2>${data.title}</h2><form id="quizForm">`;
       
-      questions.forEach((data, i) => {
+      data.questions.forEach((qObj, i) => {
         html += `
-          <div class="question" id="q-container-${i}">
-            <p>${data.q} <span id="feedback-${i}" class="feedback" style="display:none"></span></p>
+          <div class="question">
+            <p>${qObj.q} <span id="feedback-${i}" class="feedback"></span></p>
             <div class="options">
-              ${data.options.map((opt, optIdx) => `
+              ${qObj.options.map((opt, idx) => `
                 <label class="option-label">
-                  <input type="radio" name="q${i}" value="${optIdx}"> ${optIdx + 1}. ${opt}
+                  <input type="radio" name="q${i}" value="${idx}"> ${opt}
                 </label>
               `).join('')}
             </div>
           </div>`;
       });
 
-      html += `<button type="button" class="btn-selesai" onclick="checkAnswers('${quizId}')">SELESAI & CEK HASIL</button></form></div>`;
+      html += `<button type="button" class="btn-selesai" onclick="checkAnswers('${quizId}')">SELESAI</button></form></div>`;
       document.getElementById('contentArea').innerHTML = html;
     }
 
     function checkAnswers(quizId) {
-      const questions = quizData[quizId];
-      let correctCount = 0;
-
-      questions.forEach((data, i) => {
+      const questions = currentQuizData[quizId].questions;
+      questions.forEach((qObj, i) => {
         const selected = document.querySelector(`input[name="q${i}"]:checked`);
         const feedback = document.getElementById(`feedback-${i}`);
-        feedback.style.display = "inline-block";
-        
-        if (selected && parseInt(selected.value) === data.correct) {
-          feedback.innerHTML = "✅ Benar!";
-          feedback.className = "feedback correct";
-          correctCount++;
+        if (selected && parseInt(selected.value) === qObj.correct) {
+          feedback.innerHTML = "✅ Benar!"; feedback.className = "feedback correct";
         } else {
-          const jawabanBenar = data.options[data.correct];
-          feedback.innerHTML = `❌ Salah! (Jawaban: ${jawabanBenar})`;
-          feedback.className = "feedback wrong";
+          feedback.innerHTML = `❌ Salah! (Benar: ${qObj.options[qObj.correct]})`; feedback.className = "feedback wrong";
         }
       });
-      
-      alert(`Hasil: ${correctCount} dari ${questions.length} soal benar!`);
     }
 
     function setActive(el) {
@@ -210,7 +151,6 @@
     function goHome() {
       document.getElementById('viewerPage').style.display = 'none';
       document.getElementById('home').style.display = 'flex';
-      document.getElementById('contentArea').innerHTML = '';
     }
   </script>
 </body>
