@@ -10,12 +10,12 @@
     .home { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
     .folders { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; width: 90%; max-width: 900px; }
     .folder { background: #ffd54f; padding: 40px 20px; border-radius: 15px; text-align: center; cursor: pointer; font-weight: bold; transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); font-size: 1.2rem; }
-    .folder:hover { transform: translateY(-5px); background: #ffca28; box-shadow: 0 6px 12px rgba(0,0,0,0.15); }
+    .folder:hover { transform: translateY(-5px); background: #ffca28; }
     .viewer-page { display: none; height: 100vh; grid-template-columns: 300px 1fr; }
     .sidebar { background: #fff8e1; padding: 20px; border-right: 2px solid #ffd54f; overflow-y: auto; }
     .back-btn { padding: 12px; background: #1f3b5b; color: white; border-radius: 8px; text-align: center; cursor: pointer; margin-bottom: 20px; font-weight: bold; }
     .file-item { padding: 15px; background: white; margin-bottom: 10px; border-radius: 10px; cursor: pointer; border: 1px solid #ddd; font-size: 14px; }
-    .file-item.active { background: #1f3b5b; color: white; border-color: #1f3b5b; }
+    .file-item.active { background: #1f3b5b; color: white; }
     .content-area { background: #f4f4f4; padding: 20px; overflow-y: auto; display: flex; justify-content: center; width: 100%; }
     .quiz-container { background: white; width: 100%; max-width: 800px; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
     .question { margin-bottom: 35px; padding: 20px; border-bottom: 1px dashed #ccc; }
@@ -23,12 +23,12 @@
     .reading-label { background: #1f3b5b; color: white; padding: 8px 15px; font-size: 13px; font-weight: bold; }
     .quiz-image { width: 100%; height: auto; display: block; }
     .options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
-    .option-label { padding: 10px; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 10px; font-size: 0.95rem; }
+    .option-label { padding: 10px; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 10px; }
     .btn-selesai { background: #28a745; color: white; border: none; padding: 15px; border-radius: 10px; width: 100%; cursor: pointer; font-weight: bold; font-size: 1.1rem; margin-top: 20px; }
     .feedback { display: block; margin-top: 8px; font-weight: bold; }
     .correct { color: #28a745; }
     .wrong { color: #dc3545; }
-    @media (max-width: 768px) { .viewer-page { grid-template-columns: 1fr; } .sidebar { max-height: 250px; } .options { grid-template-columns: 1fr; } }
+    @media (max-width: 768px) { .viewer-page { grid-template-columns: 1fr; } .sidebar { max-height: 250px; } }
   </style>
 </head>
 <body>
@@ -51,26 +51,10 @@
   </div>
 
   <script>
-    // KONFIGURASI PATH FOLDER
     const CONFIG = {
-      n1: {
-        jsonUrl: "assets/n1/n1-data.json", 
-        imgBase: "assets/n1/2024/12",
-        quizKey: "tes-2024-12",
-        title: "Tes N1 Des 2024"
-      },
-      n2: {
-        jsonUrl: "assets/n2/n2-data.json", 
-        imgBase: "assets/n2/2024/12",
-        quizKey: "tes-2024-12",
-        title: "Tes N2 Des 2024"
-      },
-      n3: {
-        jsonUrl: "assets/n3/n3-data.json", 
-        imgBase: "assets/n3/2024/12",
-        quizKey: "tes-2024-12",
-        title: "Tes N3 Des 2024"
-      }
+      n1: { jsonUrl: "assets/n1/n1-data.json", imgBase: "assets/n1/2024/12" },
+      n2: { jsonUrl: "assets/n2/n2-data.json", imgBase: "assets/n2/2024/12" },
+      n3: { jsonUrl: "assets/n3/n3-data.json", imgBase: "assets/n3/2024/12" }
     };
 
     let fullData = null;
@@ -82,92 +66,63 @@
       
       try {
         const response = await fetch(cfg.jsonUrl);
-        if (!response.ok) throw new Error("File JSON tidak ditemukan di: " + cfg.jsonUrl);
+        if (!response.ok) throw new Error("File JSON belum ada di " + cfg.jsonUrl);
         
         fullData = await response.json();
-        
         document.getElementById('home').style.display = 'none';
         document.getElementById('viewerPage').style.display = 'grid';
-        
         renderSidebar();
       } catch (e) {
-        alert("Gagal memuat materi " + level.toUpperCase() + ".\n" + e.message);
+        alert("Peringatan: " + e.message);
       }
     }
 
     function renderSidebar() {
       const list = document.getElementById('fileList');
-      const cfg = CONFIG[currentLvl];
-      // Sidebar hanya akan menampilkan kuis jika datanya ada di JSON
       list.innerHTML = "";
       for (let key in fullData) {
-        list.innerHTML += `
-          <div class="file-item" id="item-${key}" onclick="loadQuiz('${key}')">
-            📝 ${fullData[key].title}
-          </div>`;
+        list.innerHTML += `<div class="file-item" id="item-${key}" onclick="loadQuiz('${key}')">📝 ${fullData[key].title}</div>`;
       }
-      // Load kuis pertama secara otomatis
       const firstKey = Object.keys(fullData)[0];
       if (firstKey) loadQuiz(firstKey);
     }
 
     function loadQuiz(key) {
-      // Update tampilan sidebar aktif
       document.querySelectorAll('.file-item').forEach(el => el.classList.remove('active'));
-      const activeItem = document.getElementById(`item-${key}`);
-      if (activeItem) activeItem.classList.add('active');
+      document.getElementById(`item-${key}`)?.classList.add('active');
 
       const area = document.getElementById('contentArea');
-      const quizData = fullData[key];
+      const quiz = fullData[key];
       const cfg = CONFIG[currentLvl];
       
-      let html = `<div class="quiz-container"><h2>${quizData.title}</h2><form id="fQuiz">`;
-      
-      quizData.questions.forEach((q, i) => {
+      let html = `<div class="quiz-container"><h2>${quiz.title}</h2><form id="fQuiz">`;
+      quiz.questions.forEach((q, i) => {
         html += `<div class="question">`;
-        
         if (q.image) {
-          const fullImgPath = `${cfg.imgBase}/${q.image}`;
-          html += `
-            <div class="reading-context">
-              <div class="reading-label">GAMBAR SOAL NOMOR ${i + 1}</div>
-              <img src="${fullImgPath}" class="quiz-image" onerror="this.style.display='none'">
-            </div>`;
+          html += `<div class="reading-context"><div class="reading-label">GAMBAR SOAL ${i+1}</div><img src="${cfg.imgBase}/${q.image}" class="quiz-image" onerror="this.style.display='none'"></div>`;
         }
-
-        html += `<p><b>${q.q}</b> <span id="res-${i}" class="feedback"></span></p>
-                 <div class="options">`;
-        
+        html += `<p><b>${q.q}</b> <span id="res-${i}" class="feedback"></span></p><div class="options">`;
         q.options.forEach((opt, idx) => {
-          html += `
-            <label class="option-label">
-              <input type="radio" name="q${i}" value="${idx}"> ${opt}
-            </label>`;
+          html += `<label class="option-label"><input type="radio" name="q${i}" value="${idx}"> ${opt}</label>`;
         });
-        
         html += `</div></div>`;
       });
-      
       html += `<button type="button" class="btn-selesai" onclick="checkAll('${key}')">CEK JAWABAN</button></form></div>`;
       area.innerHTML = html;
       area.scrollTop = 0;
     }
 
     function checkAll(key) {
-      const questions = fullData[key].questions;
-      questions.forEach((q, i) => {
-        const selected = document.querySelector(`input[name="q${i}"]:checked`);
+      fullData[key].questions.forEach((q, i) => {
+        const sel = document.querySelector(`input[name="q${i}"]:checked`);
         const fb = document.getElementById(`res-${i}`);
-        
-        if (selected) {
-          if (parseInt(selected.value) === q.correct) {
+        if (sel) {
+          if (parseInt(sel.value) === q.correct) {
             fb.innerHTML = "✅ Benar!"; fb.className = "feedback correct";
           } else {
-            fb.innerHTML = `❌ Salah! Jawaban: ${q.options[q.correct]}`; fb.className = "feedback wrong";
+            fb.innerHTML = `❌ Salah! Kunci: ${q.options[q.correct]}`; fb.className = "feedback wrong";
           }
-        } else {
-          fb.innerHTML = "⚠️ Belum dijawab!"; fb.className = "feedback wrong";
-        }
+        } else { fb.innerHTML = "⚠️ Belum dijawab"; fb.className = "feedback wrong"; }
       });
     }
 
