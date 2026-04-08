@@ -5,31 +5,29 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Portal Belajar Danbo - N1</title>
   <style>
-    /* CSS tetap sama dengan milikmu, saya rapikan sedikit */
     * { box-sizing: border-box; }
-    body { margin: 0; font-family: 'Segoe UI', Tahoma, sans-serif; background: #eef7ff; color: #333; }
+    body { margin: 0; font-family: 'Segoe UI', sans-serif; background: #eef7ff; }
     .home { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
-    .folders { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; width: 80%; max-width: 800px; }
-    .folder { background: #ffd54f; padding: 30px; border-radius: 15px; text-align: center; cursor: pointer; font-weight: bold; transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-    .folder:hover { transform: translateY(-5px); background: #ffca28; }
+    .folders { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 20px; width: 80%; }
+    .folder { background: #ffd54f; padding: 25px; border-radius: 15px; text-align: center; cursor: pointer; font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
     .viewer-page { display: none; height: 100vh; grid-template-columns: 300px 1fr; }
     .sidebar { background: #fff8e1; padding: 20px; border-right: 2px solid #ffd54f; overflow-y: auto; }
-    .back-btn { padding: 12px; background: #1f3b5b; color: white; border-radius: 8px; text-align: center; cursor: pointer; margin-bottom: 20px; font-weight: bold; }
-    .file-item { padding: 15px; background: white; margin-bottom: 10px; border-radius: 10px; cursor: pointer; border: 1px solid #ddd; display: flex; align-items: center; gap: 10px; }
-    .file-item.active { background: #1f3b5b; color: white; border-color: #1f3b5b; }
-    .content-area { background: #f4f4f4; padding: 20px; overflow-y: auto; display: flex; justify-content: center; width: 100%; }
-    .quiz-container { background: white; width: 100%; max-width: 800px; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
-    .question { margin-bottom: 35px; padding: 20px; border-bottom: 1px dashed #ccc; }
-    .reading-context { margin-bottom: 20px; border: 2px solid #1f3b5b; border-radius: 8px; background: #fff; }
-    .reading-label { background: #1f3b5b; color: white; padding: 8px 15px; font-size: 13px; font-weight: bold; }
+    .back-btn { padding: 12px; background: #1f3b5b; color: white; border-radius: 8px; text-align: center; cursor: pointer; margin-bottom: 20px; }
+    .file-item { padding: 15px; background: white; margin-bottom: 10px; border-radius: 10px; cursor: pointer; border: 1px solid #ddd; }
+    .file-item.active { background: #1f3b5b; color: white; }
+    .content-area { background: #f4f4f4; padding: 20px; overflow-y: auto; width: 100%; display: flex; justify-content: center; }
+    .quiz-container { background: white; width: 100%; max-width: 800px; padding: 30px; border-radius: 15px; }
+    .question { margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid #eee; }
+    .reading-context { margin: 15px 0; border: 2px solid #1f3b5b; border-radius: 8px; }
+    .reading-label { background: #1f3b5b; color: white; padding: 5px 10px; font-size: 12px; }
     .quiz-image { width: 100%; height: auto; display: block; }
-    .options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; }
-    .option-label { padding: 10px; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 10px; font-size: 0.95rem; }
-    .btn-selesai { background: #28a745; color: white; border: none; padding: 15px; border-radius: 10px; width: 100%; cursor: pointer; font-weight: bold; font-size: 1.1rem; margin-top: 20px; }
-    .feedback { display: block; margin-top: 8px; font-weight: bold; }
+    .options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+    .option-label { padding: 10px; border: 1px solid #ddd; border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+    .btn-selesai { background: #28a745; color: white; border: none; padding: 15px; border-radius: 10px; width: 100%; cursor: pointer; font-weight: bold; margin-top: 20px; }
+    .feedback { font-weight: bold; display: block; margin-top: 5px; }
     .correct { color: #28a745; }
     .wrong { color: #dc3545; }
-    @media (max-width: 768px) { .viewer-page { grid-template-columns: 1fr; } .options { grid-template-columns: 1fr; } }
+    @media (max-width: 768px) { .viewer-page { grid-template-columns: 1fr; } .sidebar { max-height: 200px; } }
   </style>
 </head>
 <body>
@@ -39,7 +37,6 @@
     <div class="folders">
       <div class="folder" onclick="openLevel('n1')">JLPT N1</div>
       <div class="folder" onclick="openLevel('n2')">JLPT N2</div>
-      <div class="folder" onclick="openLevel('n3')">JLPT N3</div>
     </div>
   </div>
 
@@ -52,108 +49,92 @@
   </div>
 
   <script>
-    // Konfigurasi letak data kamu
-    const config = {
-      n1: { folder: "2024/12", title: "Tes N1 Des 2024", id: "tes-2024-12" }
+    // SESUAIKAN DENGAN STRUKTUR GITHUB KAMU
+    const setup = {
+      n1: { 
+        path: "assets/n1/2024/12", // Jalur folder di GitHub
+        jsonName: "n1-data.json",   // Nama file JSON
+        quizId: "tes-2024-12" 
+      }
     };
 
-    let fullDataJSON = null;
-    let currentLevel = '';
+    let currentData = null;
+    let currentLvl = '';
 
     async function openLevel(level) {
-      currentLevel = level;
-      document.getElementById('home').style.display = 'none';
-      document.getElementById('viewerPage').style.display = 'grid';
-      
-      const path = config[level] ? `${level}/${config[level].folder}` : level;
-      
+      currentLvl = level;
+      const config = setup[level];
+      if (!config) { alert("Data belum tersedia"); return; }
+
       try {
-        // Mengambil JSON dari folder spesifik (misal: assets/n1/2024/12/n1-data.json)
-        const response = await fetch(`assets/${path}/${level}-data.json`);
-        if (!response.ok) throw new Error();
-        fullDataJSON = await response.json();
-        renderSidebar(level);
-      } catch (e) {
-        document.getElementById('fileList').innerHTML = '<p style="color:red">Gagal memuat JSON. Cek folder assets/.</p>';
+        // Memanggil: assets/n1/2024/12/n1-data.json
+        const response = await fetch(`${config.path}/${config.jsonName}`);
+        if (!response.ok) throw new Error("File tidak ditemukan");
+        
+        currentData = await response.json();
+        
+        document.getElementById('home').style.display = 'none';
+        document.getElementById('viewerPage').style.display = 'grid';
+        
+        renderSidebar(config.quizId);
+      } catch (err) {
+        console.error(err);
+        document.getElementById('fileList').innerHTML = `<p style="color:red">Gagal memuat JSON.<br>Pastikan file ada di:<br><b>${config.path}/${config.jsonName}</b></p>`;
+        document.getElementById('home').style.display = 'none';
+        document.getElementById('viewerPage').style.display = 'grid';
       }
     }
 
-    function renderSidebar(level) {
-      const listDiv = document.getElementById('fileList');
-      listDiv.innerHTML = '';
-      
-      // Mengambil menu dari data yang tersedia di config
-      if(config[level]) {
-        const item = config[level];
-        const div = document.createElement('div');
-        div.className = 'file-item';
-        div.innerHTML = `📝 ${item.title}`;
-        div.onclick = () => displayQuiz(item.id, div);
-        listDiv.appendChild(div);
-        div.click(); // Auto-load quiz pertama
-      }
+    function renderSidebar(quizId) {
+      const list = document.getElementById('fileList');
+      list.innerHTML = `<div class="file-item active" onclick="loadQuiz('${quizId}')">📝 Tes Desember 2024</div>`;
+      loadQuiz(quizId);
     }
 
-    function displayQuiz(quizId, element) {
-      setActive(element);
+    function loadQuiz(quizId) {
       const area = document.getElementById('contentArea');
-      const data = fullDataJSON[quizId];
-      const folderPath = `assets/${currentLevel}/${config[currentLevel].folder}`;
+      const data = currentData[quizId];
+      const config = setup[currentLvl];
       
-      let html = `<div class="quiz-container"><h2>${data.title}</h2><form id="quizForm">`;
+      let html = `<div class="quiz-container"><h2>${data.title}</h2><form id="qForm">`;
       
       data.questions.forEach((q, i) => {
-        html += `<div class="question">`;
+        html += `<div class="question"><p><b>${q.q}</b> <span id="f-${i}" class="feedback"></span></p>`;
         
-        // PERBAIKAN: Logika Gambar
         if (q.image) {
-          // Path gambar menjadi: assets/n1/2024/12/nama_file.png
-          const imgSrc = `${folderPath}/${q.image}`;
+          // Menghasilkan: assets/n1/2024/12/45.png
           html += `
             <div class="reading-context">
-              <div class="reading-label">BACAAN / KONTEKS UNTUK NOMOR ${i + 1}</div>
-              <img src="${imgSrc}" class="quiz-image" onerror="this.parentElement.innerHTML='<p style=padding:10px;color:red>Gambar tidak ditemukan: ${q.image}</p>'">
+              <div class="reading-label">GAMBAR/BACAAN</div>
+              <img src="${config.path}/${q.image}" class="quiz-image">
             </div>`;
         }
 
-        html += `<p><b>${q.q}</b> <span id="f-${i}" class="feedback"></span></p>
-                 <div class="options">`;
-        
+        html += `<div class="options">`;
         q.options.forEach((opt, idx) => {
           html += `
             <label class="option-label">
               <input type="radio" name="q${i}" value="${idx}"> ${opt}
             </label>`;
         });
-        
         html += `</div></div>`;
       });
-      
-      html += `<button type="button" class="btn-selesai" onclick="checkAnswers('${quizId}')">CEK JAWABAN</button></form></div>`;
+
+      html += `<button type="button" class="btn-selesai" onclick="check('${quizId}')">CEK JAWABAN</button></form></div>`;
       area.innerHTML = html;
-      area.scrollTop = 0;
     }
 
-    function checkAnswers(quizId) {
-      const questions = fullDataJSON[quizId].questions;
-      questions.forEach((q, i) => {
-        const selected = document.querySelector(`input[name="q${i}"]:checked`);
+    function check(id) {
+      const qs = currentData[id].questions;
+      qs.forEach((q, i) => {
+        const sel = document.querySelector(`input[name="q${i}"]:checked`);
         const fb = document.getElementById(`f-${i}`);
-        if(selected) {
-          if(parseInt(selected.value) === q.correct) {
-            fb.innerHTML = "✅ Benar!"; fb.className = "feedback correct";
-          } else {
-            fb.innerHTML = `❌ Salah! Jawaban: ${q.options[q.correct]}`; fb.className = "feedback wrong";
-          }
+        if (sel && parseInt(sel.value) === q.correct) {
+          fb.innerHTML = "✅ Benar"; fb.className = "feedback correct";
         } else {
-          fb.innerHTML = "⚠️ Belum dijawab!"; fb.className = "feedback wrong";
+          fb.innerHTML = `❌ Salah (Jawaban: ${q.options[q.correct]})`; fb.className = "feedback wrong";
         }
       });
-    }
-
-    function setActive(el) {
-      document.querySelectorAll('.file-item').forEach(i => i.classList.remove('active'));
-      el.classList.add('active');
     }
 
     function goHome() {
