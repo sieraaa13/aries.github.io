@@ -3,18 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Portal Belajar Danbo - N1</title>
+  <title>Portal Belajar Danbo</title>
   <style>
     * { box-sizing: border-box; }
     body { margin: 0; font-family: 'Segoe UI', Tahoma, sans-serif; background: #eef7ff; color: #333; }
     .home { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; }
-    .folders { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; width: 80%; max-width: 800px; }
-    .folder { background: #ffd54f; padding: 30px; border-radius: 15px; text-align: center; cursor: pointer; font-weight: bold; transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-    .folder:hover { transform: translateY(-5px); background: #ffca28; }
+    .folders { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; width: 90%; max-width: 900px; }
+    .folder { background: #ffd54f; padding: 40px 20px; border-radius: 15px; text-align: center; cursor: pointer; font-weight: bold; transition: 0.3s; box-shadow: 0 4px 6px rgba(0,0,0,0.1); font-size: 1.2rem; }
+    .folder:hover { transform: translateY(-5px); background: #ffca28; box-shadow: 0 6px 12px rgba(0,0,0,0.15); }
     .viewer-page { display: none; height: 100vh; grid-template-columns: 300px 1fr; }
     .sidebar { background: #fff8e1; padding: 20px; border-right: 2px solid #ffd54f; overflow-y: auto; }
     .back-btn { padding: 12px; background: #1f3b5b; color: white; border-radius: 8px; text-align: center; cursor: pointer; margin-bottom: 20px; font-weight: bold; }
-    .file-item { padding: 15px; background: white; margin-bottom: 10px; border-radius: 10px; cursor: pointer; border: 1px solid #ddd; }
+    .file-item { padding: 15px; background: white; margin-bottom: 10px; border-radius: 10px; cursor: pointer; border: 1px solid #ddd; font-size: 14px; }
     .file-item.active { background: #1f3b5b; color: white; border-color: #1f3b5b; }
     .content-area { background: #f4f4f4; padding: 20px; overflow-y: auto; display: flex; justify-content: center; width: 100%; }
     .quiz-container { background: white; width: 100%; max-width: 800px; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
@@ -37,6 +37,8 @@
     <h1>Portal Belajar Danbo</h1>
     <div class="folders">
       <div class="folder" onclick="openLevel('n1')">JLPT N1</div>
+      <div class="folder" onclick="openLevel('n2')">JLPT N2</div>
+      <div class="folder" onclick="openLevel('n3')">JLPT N3</div>
     </div>
   </div>
 
@@ -49,15 +51,25 @@
   </div>
 
   <script>
-    // KONFIGURASI SESUAI GAMBAR GITHUB KAMU
+    // KONFIGURASI PATH FOLDER
     const CONFIG = {
       n1: {
-        // Karena index.html di luar, kita masuk ke assets/n1/
         jsonUrl: "assets/n1/n1-data.json", 
-        // Gambar berada di assets/n1/2024/12/
         imgBase: "assets/n1/2024/12",
         quizKey: "tes-2024-12",
         title: "Tes N1 Des 2024"
+      },
+      n2: {
+        jsonUrl: "assets/n2/n2-data.json", 
+        imgBase: "assets/n2/2024/12",
+        quizKey: "tes-2024-12",
+        title: "Tes N2 Des 2024"
+      },
+      n3: {
+        jsonUrl: "assets/n3/n3-data.json", 
+        imgBase: "assets/n3/2024/12",
+        quizKey: "tes-2024-12",
+        title: "Tes N3 Des 2024"
       }
     };
 
@@ -70,7 +82,7 @@
       
       try {
         const response = await fetch(cfg.jsonUrl);
-        if (!response.ok) throw new Error("Gagal mengambil file JSON");
+        if (!response.ok) throw new Error("File JSON tidak ditemukan di: " + cfg.jsonUrl);
         
         fullData = await response.json();
         
@@ -79,21 +91,32 @@
         
         renderSidebar();
       } catch (e) {
-        alert("Error: " + e.message + "\nPastikan file ada di: " + cfg.jsonUrl);
+        alert("Gagal memuat materi " + level.toUpperCase() + ".\n" + e.message);
       }
     }
 
     function renderSidebar() {
       const list = document.getElementById('fileList');
       const cfg = CONFIG[currentLvl];
-      list.innerHTML = `
-        <div class="file-item active" onclick="loadQuiz('${cfg.quizKey}')">
-          📝 ${cfg.title}
-        </div>`;
-      loadQuiz(cfg.quizKey);
+      // Sidebar hanya akan menampilkan kuis jika datanya ada di JSON
+      list.innerHTML = "";
+      for (let key in fullData) {
+        list.innerHTML += `
+          <div class="file-item" id="item-${key}" onclick="loadQuiz('${key}')">
+            📝 ${fullData[key].title}
+          </div>`;
+      }
+      // Load kuis pertama secara otomatis
+      const firstKey = Object.keys(fullData)[0];
+      if (firstKey) loadQuiz(firstKey);
     }
 
     function loadQuiz(key) {
+      // Update tampilan sidebar aktif
+      document.querySelectorAll('.file-item').forEach(el => el.classList.remove('active'));
+      const activeItem = document.getElementById(`item-${key}`);
+      if (activeItem) activeItem.classList.add('active');
+
       const area = document.getElementById('contentArea');
       const quizData = fullData[key];
       const cfg = CONFIG[currentLvl];
@@ -103,14 +126,12 @@
       quizData.questions.forEach((q, i) => {
         html += `<div class="question">`;
         
-        // Cek Gambar
         if (q.image) {
-          // Path: assets/n1/2024/12/nama_file.png
           const fullImgPath = `${cfg.imgBase}/${q.image}`;
           html += `
             <div class="reading-context">
               <div class="reading-label">GAMBAR SOAL NOMOR ${i + 1}</div>
-              <img src="${fullImgPath}" class="quiz-image" onerror="this.style.display='none'; console.log('Gambar tak ditemukan:', '${fullImgPath}')">
+              <img src="${fullImgPath}" class="quiz-image" onerror="this.style.display='none'">
             </div>`;
         }
 
@@ -127,13 +148,13 @@
         html += `</div></div>`;
       });
       
-      html += `<button type="button" class="btn-selesai" onclick="checkAll()">CEK JAWABAN</button></form></div>`;
+      html += `<button type="button" class="btn-selesai" onclick="checkAll('${key}')">CEK JAWABAN</button></form></div>`;
       area.innerHTML = html;
       area.scrollTop = 0;
     }
 
-    function checkAll() {
-      const questions = fullData[CONFIG[currentLvl].quizKey].questions;
+    function checkAll(key) {
+      const questions = fullData[key].questions;
       questions.forEach((q, i) => {
         const selected = document.querySelector(`input[name="q${i}"]:checked`);
         const fb = document.getElementById(`res-${i}`);
@@ -145,7 +166,7 @@
             fb.innerHTML = `❌ Salah! Jawaban: ${q.options[q.correct]}`; fb.className = "feedback wrong";
           }
         } else {
-          fb.innerHTML = "⚠️ Isi dulu!"; fb.className = "feedback wrong";
+          fb.innerHTML = "⚠️ Belum dijawab!"; fb.className = "feedback wrong";
         }
       });
     }
