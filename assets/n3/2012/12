@@ -1,9 +1,6 @@
 {
-  "jlpt_n3_dec_2012": {
-    "metadata": {
-      "title": "JLPT N3 - Desember 2012 (Full Vocabulary, Grammar, & Reading)",
-      "total_questions": 39
-    },
+  ""test_2012_12": {
+    "title": "Tes JLPT N3 - Desember 2012"
     "questions": [
       { "id": 1, "section": "Vocabulary", "q": "1. このひもは【短すぎて】使いにくい。", "options": ["よわすぎて", "みじかすぎて", "ほそすぎて", "かたすぎて"], "correct": 1 },
       { "id": 2, "section": "Vocabulary", "q": "2. あの人は【他人】の意見を全然聞かない。", "options": ["ちにん", "たじん", "たにん", "ちじん"], "correct": 2 },
