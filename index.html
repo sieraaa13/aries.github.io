@@ -5,31 +5,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>JLPT System - Danbo AI</title>
     <style>
-        /* Gaya dasar tetap sama */
         :root { --primary: #2c3e50; --accent: #3498db; --bg: #f0f2f5; --success: #27ae60; --error: #e74c3c; }
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
         
+        /* Navigasi Folder */
         #folder-screen, #file-screen { padding: 50px; text-align: center; overflow-y: auto; }
         .folder-grid { display: flex; justify-content: center; gap: 20px; margin-top: 30px; }
         .folder-card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); cursor: pointer; width: 120px; transition: 0.2s; }
-        .file-list { max-width: 500px; margin: 20px auto; background: white; border-radius: 10px; text-align: left; }
+        .folder-card:hover { transform: translateY(-5px); border: 2px solid var(--accent); }
+        .file-list { max-width: 500px; margin: 20px auto; background: white; border-radius: 10px; text-align: left; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
         .file-item { padding: 15px; border-bottom: 1px solid #eee; cursor: pointer; color: var(--accent); font-weight: bold; }
 
+        /* Area Ujian */
         #exam-screen { display: none; flex-direction: column; height: 100vh; }
         #exam-content { flex: 1; padding: 20px; overflow-y: auto; transition: height 0.4s ease; padding-bottom: 150px; }
         body.chat-open #exam-content { height: 60vh; flex: none; }
 
         .question-card { background: white; padding: 20px; margin-bottom: 25px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .options-list { margin-top: 15px; display: flex; flex-direction: column; gap: 10px; }
-        .option-item { padding: 12px 15px; border: 2px solid #ddd; border-radius: 8px; cursor: pointer; background: #fff; }
+        .option-item { padding: 12px 15px; border: 2px solid #ddd; border-radius: 8px; cursor: pointer; background: #fff; transition: 0.2s; }
+        .option-item.selected { background: #e3f2fd; border-color: var(--accent); }
         .option-item.correct { background: var(--success) !important; color: white !important; border-color: var(--success) !important; }
         .option-item.wrong { background: var(--error) !important; color: white !important; border-color: var(--error) !important; }
-        .option-item.selected { background: #e3f2fd; border-color: var(--accent); }
 
+        .btn-finish { background: var(--success); color: white; padding: 15px 40px; border: none; border-radius: 30px; font-size: 18px; cursor: pointer; margin: 20px 0; }
         #result-box { display: none; margin: 30px 0; padding: 20px; background: white; border-radius: 10px; border: 2px solid var(--success); text-align: center; }
-        .btn-finish { background: var(--success); color: white; padding: 15px 40px; border: none; border-radius: 30px; font-size: 18px; cursor: pointer; }
 
-        /* Sidebar Chat Baru dengan Input */
+        /* Sidebar Chat Interaktif */
         #chat-icon { position: fixed; bottom: 20px; right: 20px; width: 60px; height: 60px; background: white; border-radius: 50%; box-shadow: 0 4px 12px rgba(0,0,0,0.2); cursor: pointer; display: none; z-index: 1000; border: 2px solid var(--accent); }
         #chat-icon img { width: 100%; border-radius: 50%; }
         
@@ -40,8 +42,8 @@
         #danbo-msg { padding: 15px; overflow-y: auto; flex: 1; background: #f9f9f9; font-size: 14px; }
         
         .chat-input-area { display: flex; padding: 10px; background: white; border-top: 1px solid #ddd; }
-        #user-input { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 20px; outline: none; }
-        #send-btn { background: var(--accent); color: white; border: none; padding: 0 20px; margin-left: 10px; border-radius: 20px; cursor: pointer; }
+        #user-input { flex: 1; padding: 12px; border: 1px solid #ccc; border-radius: 25px; outline: none; }
+        #send-btn { background: var(--accent); color: white; border: none; padding: 0 20px; margin-left: 10px; border-radius: 20px; cursor: pointer; font-weight: bold; }
         
         .hidden { display: none !important; }
     </style>
@@ -75,7 +77,6 @@
                 <button id="submit-btn" class="btn-finish" onclick="showResults()">Selesai & Cek Skor</button>
                 <div id="result-box">
                     <h2 id="final-score"></h2>
-                    <p id="final-eval"></p>
                     <button onclick="location.reload()">Tutup</button>
                 </div>
             </div>
@@ -90,23 +91,24 @@
             <span style="cursor:pointer; font-size:20px;" onclick="closeDanbo()">✖</span>
         </div>
         <div id="danbo-msg">
-            <p><strong>Danbo:</strong> Halo! Ada yang bingung dari soal tadi? Tanya aku apa saja ya!</p>
+            <p><strong>Danbo:</strong> Semangat belajarnya! Ada yang ingin ditanyakan?</p>
         </div>
         <div class="chat-input-area">
-            <input type="text" id="user-input" placeholder="Tanyakan tentang soal..." onkeypress="if(event.key === 'Enter') sendMessage()">
+            <input type="text" id="user-input" placeholder="Tanyakan soal..." onkeypress="if(event.key === 'Enter') sendMessage()">
             <button id="send-btn" onclick="sendMessage()">Kirim</button>
         </div>
     </div>
 
     <script>
-        // Masukkan URL Render kamu di sini
-        const BACKEND_URL = "https://danbo-backend.onrender.com/danbo-chat"; 
+        // GANTI INI DENGAN URL RENDER KAMU
+        const BACKEND_URL = "https://web-backend-l5p7.onrender.com"; 
 
         let currentAnswers = [];
         let correctAnswers = [];
         let totalSoal = 0;
         let isFinished = false;
 
+        // Struktur folder sesuai GitHub
         const mockFiles = { 
             'n1': ['n1-2024-12'], 
             'n2': [], 
@@ -141,10 +143,12 @@
             area.innerHTML = "<p>Memuat soal...</p>";
 
             try {
+                // Fetch sesuai struktur assets/n3/2012/12.json
                 const response = await fetch(`assets/${level}/${fileName}.json`);
-                if (!response.ok) throw new Error("Gagal memuat file JSON.");
+                if (!response.ok) throw new Error("Gagal memuat soal.");
+                
                 const data = await response.json();
-                const key = Object.keys(data)[0];
+                const key = Object.keys(data)[0]; // Mengambil key dinamis seperti "test_2012_12"
                 const questions = data[key].questions;
 
                 document.getElementById('exam-title-display').innerText = data[key].title;
@@ -165,7 +169,7 @@
                 });
                 updateStatus();
             } catch (err) {
-                area.innerHTML = `<p style='color:red;'>${err.message}</p>`;
+                area.innerHTML = `<p style='color:red;'>Gagal memuat soal: assets/${level}/${fileName}.json</p>`;
             }
         }
 
@@ -191,20 +195,20 @@
                 if(ans === correctIdx) score++;
                 else if (ans !== null) document.getElementById(`q${i}-o${ans}`).classList.add('wrong');
             });
+
             document.getElementById('submit-btn').style.display = 'none';
             document.getElementById('result-box').style.display = 'block';
-            document.getElementById('final-score').innerText = `Skor: ${score} / ${totalSoal}`;
+            document.getElementById('final-score').innerText = `Skor Akhir: ${score} / ${totalSoal}`;
+            
             openDanbo();
-            addDanboMessage(`Selesai! Skor kamu **${score}/${totalSoal}**. Ada yang ingin ditanyakan soal jawabannya?`);
+            addDanboMessage(`<strong>Danbo:</strong> Selesai! Skor kamu **${score}/${totalSoal}**. Tetap semangat ya! Ada yang ingin ditanyakan tentang soalnya?`);
         }
 
-        // FUNGSI CHAT INTERAKTIF
         async function sendMessage() {
             const inputEl = document.getElementById('user-input');
             const message = inputEl.value.trim();
             if (!message) return;
 
-            // Tampilkan pesan user
             addDanboMessage(`<strong>Kamu:</strong> ${message}`);
             inputEl.value = '';
 
@@ -215,19 +219,21 @@
                     body: JSON.stringify({ 
                         score: currentAnswers.filter(a => a !== null).length, 
                         total: totalSoal,
-                        userQuery: message // Kirim pertanyaan user ke backend
+                        userQuery: message // Data ini diterima oleh server.js kamu
                     })
                 });
                 const data = await response.json();
                 addDanboMessage(`<strong>Danbo:</strong> ${data.reply}`);
             } catch (e) {
-                addDanboMessage(`<strong>Danbo:</strong> Aduh, server lagi sibuk. Coba lagi ya!`);
+                addDanboMessage(`<strong>Danbo:</strong> Maaf, koneksi ke server terputus. Coba lagi!`);
             }
         }
 
         function addDanboMessage(text) {
             const msgBox = document.getElementById('danbo-msg');
-            msgBox.innerHTML += `<p>${text}</p>`;
+            const p = document.createElement('p');
+            p.innerHTML = text;
+            msgBox.appendChild(p);
             msgBox.scrollTop = msgBox.scrollHeight;
         }
 
