@@ -3,140 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JLPT Learning System - Danbo AI</title>
+    <title>JLPT System - Danbo AI</title>
     <style>
-        :root {
-            --primary: #2c3e50;
-            --accent: #3498db;
-            --bg: #f0f2f5;
-        }
+        :root { --primary: #2c3e50; --accent: #3498db; --bg: #f0f2f5; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        
+        /* Navigation Screens */
+        #folder-screen, #file-screen { padding: 50px; text-align: center; overflow-y: auto; }
+        .folder-grid { display: flex; justify-content: center; gap: 20px; margin-top: 30px; }
+        .folder-card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); cursor: pointer; width: 120px; }
+        .file-list { max-width: 500px; margin: 20px auto; background: white; border-radius: 10px; text-align: left; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        .file-item { padding: 15px; border-bottom: 1px solid #eee; cursor: pointer; color: var(--accent); font-weight: bold; }
 
-        body {
-            font-family: 'Segoe UI', sans-serif;
-            margin: 0;
-            background-color: var(--bg);
-            display: flex;
-            flex-direction: column;
-            height: 100vh;
-            overflow: hidden;
-        }
+        /* Exam Layout (Top 2/3) */
+        #exam-screen { display: none; flex-direction: column; height: 100vh; }
+        #exam-content { flex: 1; padding: 30px; overflow-y: auto; transition: height 0.4s ease; }
+        body.chat-open #exam-content { flex: none; height: 66.66vh; }
+        .question-card { background: white; padding: 20px; margin-bottom: 15px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
 
-        /* --- FOLDER & FILE SCREEN --- */
-        #folder-screen, #file-screen {
-            padding: 50px;
-            text-align: center;
-            overflow-y: auto;
-        }
-
-        .folder-grid {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin-top: 30px;
-        }
-
-        .folder-card {
-            background: white;
-            padding: 25px;
-            border-radius: 12px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            cursor: pointer;
-            width: 120px;
-        }
-
-        .file-list {
-            max-width: 500px;
-            margin: 20px auto;
-            background: white;
-            border-radius: 10px;
-            text-align: left;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        }
-
-        .file-item {
-            padding: 15px;
-            border-bottom: 1px solid #eee;
-            cursor: pointer;
-            color: var(--accent);
-            font-weight: bold;
-        }
-
-        /* --- EXAM AREA (2/3 ATAS) --- */
-        #exam-screen {
-            display: none;
-            flex-direction: column;
-            height: 100vh;
-        }
-
-        #exam-content {
-            flex: 1;
-            padding: 30px;
-            overflow-y: auto;
-            transition: height 0.4s ease;
-        }
-
-        body.chat-open #exam-content {
-            flex: none;
-            height: 66.66vh; /* Area soal jadi 2/3 */
-        }
-
-        .question-card {
-            background: white;
-            padding: 20px;
-            margin-bottom: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-            line-height: 1.6;
-        }
-
-        /* --- DANBO WIDGET --- */
-        #chat-icon {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            width: 65px;
-            height: 65px;
-            background: white;
-            border-radius: 50%;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-            cursor: pointer;
-            display: none;
-            z-index: 1000;
-            border: 2px solid var(--accent);
-        }
-
+        /* Floating Danbo Icon */
+        #chat-icon { position: fixed; bottom: 20px; right: 20px; width: 65px; height: 65px; background: white; border-radius: 50%; box-shadow: 0 4px 12px rgba(0,0,0,0.2); cursor: pointer; display: none; z-index: 1000; border: 2px solid var(--accent); }
         #chat-icon img { width: 100%; border-radius: 50%; }
 
-        /* --- SIDEBAR CHAT (1/3 BAWAH) --- */
-        #chat-sidebar {
-            position: fixed;
-            bottom: -33.33vh;
-            left: 0;
-            width: 100%;
-            height: 33.33vh;
-            background: white;
-            box-shadow: 0 -5px 15px rgba(0,0,0,0.1);
-            display: flex;
-            flex-direction: column;
-            transition: bottom 0.4s ease;
-            z-index: 1001;
-        }
-
+        /* Chat Sidebar (Bottom 1/3) */
+        #chat-sidebar { position: fixed; bottom: -33.33vh; left: 0; width: 100%; height: 33.33vh; background: white; box-shadow: 0 -5px 15px rgba(0,0,0,0.1); display: flex; flex-direction: column; transition: bottom 0.4s ease; z-index: 1001; }
         #chat-sidebar.active { bottom: 0; }
-
-        .chat-header {
-            background: var(--primary);
-            color: white;
-            padding: 10px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
+        .chat-header { background: var(--primary); color: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; }
         .sleep-btn { width: 35px; height: 35px; cursor: pointer; }
-
         .chat-body { flex: 1; padding: 15px; background: #f9f9f9; overflow-y: auto; }
-
         .hidden { display: none !important; }
     </style>
 </head>
@@ -159,7 +53,7 @@
 
     <div id="exam-screen">
         <div id="exam-content">
-            <button onclick="openFolder(currentFolder)">⬅ Tutup Ujian</button>
+            <button onclick="openFolder(currentFolderLevel)">⬅ Tutup Ujian</button>
             <h2 id="exam-title-display"></h2>
             <hr>
             <div id="questions-area"></div>
@@ -176,7 +70,7 @@
             <img src="image_815c9c.png" class="sleep-btn" onclick="closeDanbo()" alt="Sleep">
         </div>
         <div class="chat-body">
-            <p><strong>Danbo:</strong> Halo! Aku siap membantumu mengerjakan soal di atas. Ada yang sulit?</p>
+            <p><strong>Danbo:</strong> Halo! Aku siap membantumu. Ada kendala dengan soal di atas?</p>
         </div>
         <div style="padding:10px; display:flex; gap:5px; background:white;">
             <input type="text" placeholder="Tanya sesuatu..." style="flex:1; padding:8px; border-radius:5px; border:1px solid #ccc;">
@@ -185,10 +79,10 @@
     </div>
 
     <script>
-        let currentFolder = '';
+        let currentFolderLevel = '';
 
         const mockFiles = {
-            'n1': ['n1-data.json'],
+            'n1': ['n1-2024-12.json'],
             'n2': ['n2-latihan.json'],
             'n3': ['n3-latihan.json']
         };
@@ -199,7 +93,7 @@
         }
 
         function openFolder(level) {
-            currentFolder = level;
+            currentFolderLevel = level;
             document.getElementById('folder-screen').classList.add('hidden');
             document.getElementById('file-screen').classList.remove('hidden');
             document.getElementById('exam-screen').style.display = 'none';
@@ -217,44 +111,46 @@
             });
         }
 
-        // FUNGSI UTAMA UNTUK MENAMPILKAN SOAL DARI JSON
         async function startExam(level, fileName) {
             document.getElementById('file-screen').classList.add('hidden');
             document.getElementById('exam-screen').style.display = 'flex';
             document.getElementById('chat-icon').style.display = 'flex';
-            document.getElementById('exam-title-display').innerText = fileName;
-
+            
             const area = document.getElementById('questions-area');
-            area.innerHTML = "<p>Sedang memuat soal dari GitHub...</p>";
+            area.innerHTML = "<p>Memuat soal...</p>";
 
             try {
-                // Menyesuaikan path dengan struktur folder assets kamu
                 const response = await fetch(`assets/${level}/${fileName}`);
-                
                 if (!response.ok) throw new Error("File tidak ditemukan");
                 
                 const data = await response.json();
-                area.innerHTML = ''; // Hapus tulisan loading
+                
+                // KUNCI PERBAIKAN: Karena JSON kamu dibungkus "tes-2024-12"
+                // Kita ambil kunci pertama dari object tersebut (tes-2024-12)
+                const examKey = Object.keys(data)[0]; 
+                const examData = data[examKey];
+                const questions = examData.questions;
 
-                // Render soal (mengasumsikan JSON memiliki array 'questions')
-                data.questions.forEach((item, index) => {
+                // Update Judul dari JSON
+                document.getElementById('exam-title-display').innerText = examData.title;
+                
+                area.innerHTML = ''; 
+                questions.forEach((item, index) => {
                     const card = document.createElement('div');
                     card.className = 'question-card';
                     card.innerHTML = `
-                        <b>Soal ${index + 1}:</b><br>
-                        ${item.q}<br><br>
-                        <small><i>Klik Danbo di bawah jika butuh penjelasan.</i></small>
+                        <b>${item.q}</b><br><br>
+                        ${item.options.map((opt, i) => `${i+1}. ${opt}`).join('<br>')}
                     `;
                     area.appendChild(card);
                 });
 
             } catch (error) {
                 console.error(error);
-                area.innerHTML = `<p style="color:red;">Gagal memuat soal. Pastikan file ada di: <b>assets/${level}/${fileName}</b></p>`;
+                area.innerHTML = `<p style="color:red;">Error: ${error.message}. Pastikan file ada di assets/${level}/${fileName}</p>`;
             }
         }
 
-        // FUNGSI DANBO
         function openDanbo() {
             document.getElementById('chat-sidebar').classList.add('active');
             document.getElementById('chat-icon').classList.add('hidden');
