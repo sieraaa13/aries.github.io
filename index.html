@@ -7,23 +7,31 @@
     <style>
         :root { --primary: #2c3e50; --accent: #3498db; --bg: #f0f2f5; --success: #27ae60; --error: #e74c3c; }
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        
+        /* Navigasi */
         #folder-screen, #file-screen { padding: 50px; text-align: center; overflow-y: auto; }
         .folder-grid { display: flex; justify-content: center; gap: 20px; margin-top: 30px; }
         .folder-card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); cursor: pointer; width: 120px; transition: 0.2s; }
         .folder-card:hover { transform: translateY(-5px); border: 2px solid var(--accent); }
         .file-list { max-width: 500px; margin: 20px auto; background: white; border-radius: 10px; text-align: left; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
         .file-item { padding: 15px; border-bottom: 1px solid #eee; cursor: pointer; color: var(--accent); font-weight: bold; }
+
+        /* Area Ujian */
         #exam-screen { display: none; flex-direction: column; height: 100vh; }
         #exam-content { flex: 1; padding: 20px; overflow-y: auto; transition: height 0.4s ease; padding-bottom: 150px; }
         body.chat-open #exam-content { height: 60vh; flex: none; }
+
         .question-card { background: white; padding: 20px; margin-bottom: 25px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .options-list { margin-top: 15px; display: flex; flex-direction: column; gap: 10px; }
         .option-item { padding: 12px 15px; border: 2px solid #ddd; border-radius: 8px; cursor: pointer; background: #fff; transition: 0.2s; }
         .option-item.selected { background: #e3f2fd; border-color: var(--accent); }
         .option-item.correct { background: var(--success) !important; color: white !important; border-color: var(--success) !important; }
         .option-item.wrong { background: var(--error) !important; color: white !important; border-color: var(--error) !important; }
+
         .btn-finish { background: var(--success); color: white; padding: 15px 40px; border: none; border-radius: 30px; font-size: 18px; cursor: pointer; margin: 20px 0; }
         #result-box { display: none; margin: 30px 0; padding: 20px; background: white; border-radius: 10px; border: 2px solid var(--success); text-align: center; }
+
+        /* Sidebar Chat */
         #chat-icon { position: fixed; bottom: 20px; right: 20px; width: 60px; height: 60px; background: white; border-radius: 50%; box-shadow: 0 4px 12px rgba(0,0,0,0.2); cursor: pointer; display: none; z-index: 1000; border: 2px solid var(--accent); }
         #chat-icon img { width: 100%; border-radius: 50%; }
         #chat-sidebar { position: fixed; bottom: -40vh; left: 0; width: 100%; height: 40vh; background: white; box-shadow: 0 -5px 15px rgba(0,0,0,0.1); display: flex; flex-direction: column; transition: bottom 0.4s ease; z-index: 1001; }
@@ -93,7 +101,8 @@
         let currentAnswers = [];
         let correctAnswers = [];
         let totalSoal = 0;
-        let isFinished = false; // Variabel kontrol status ujian
+        let isFinished = false;
+        let chatHistory = []; // RIWAYAT CHAT
 
         const mockFiles = { 'n1': ['n1-2024-12'], 'n2': [], 'n3': ['2012/12'] };
 
@@ -126,7 +135,6 @@
 
             try {
                 const response = await fetch(`assets/${level}/${fileName}.json`);
-                if (!response.ok) throw new Error("Gagal");
                 const data = await response.json();
                 const key = Object.keys(data)[0]; 
                 const questions = data[key].questions;
@@ -149,7 +157,7 @@
                 });
                 updateStatus();
             } catch (err) {
-                area.innerHTML = `<p style='color:red;'>File assets tidak ditemukan.</p>`;
+                area.innerHTML = `<p style='color:red;'>Gagal memuat file.</p>`;
             }
         }
 
@@ -167,7 +175,7 @@
         }
 
         function showResults() {
-            isFinished = true; // Status berubah menjadi SELESAI
+            isFinished = true;
             let score = 0;
             currentAnswers.forEach((ans, i) => {
                 const correctIdx = correctAnswers[i];
@@ -179,7 +187,7 @@
             document.getElementById('result-box').style.display = 'block';
             document.getElementById('final-score').innerText = `Skor Akhir: ${score} / ${totalSoal}`;
             openDanbo();
-            addDanboMessage(`<strong>Danbo:</strong> Selesai! Skor kamu **${score}/${totalSoal}**. Sekarang aku bisa jelaskan semua soalnya!`);
+            addDanboMessage(`<strong>Danbo:</strong> Selesai! Skor kamu **${score}/${totalSoal}**. Sekarang kamu bebas tanya pembahasan soalnya!`);
         }
 
         async function sendMessage() {
@@ -187,7 +195,6 @@
             const message = inputEl.value.trim();
             if (!message) return;
 
-            // KIRIM STATUS: "DURING_EXAM" jika belum klik selesai, "POST_EXAM" jika sudah.
             const statusMode = isFinished ? "POST_EXAM" : "DURING_EXAM";
 
             let activeQuestionContext = "";
@@ -204,17 +211,23 @@
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ 
-                        score: currentAnswers.filter(a => a !== null).length, 
-                        total: totalSoal,
                         userQuery: message,
+                        history: chatHistory, // Kirim Riwayat
                         context: activeQuestionContext,
                         status: statusMode 
                     })
                 });
+                
                 const data = await response.json();
                 addDanboMessage(`<strong>Danbo:</strong> ${data.reply}`);
+
+                // Simpan ke Memory
+                chatHistory.push({ role: "user", content: message });
+                chatHistory.push({ role: "assistant", content: data.reply });
+                if (chatHistory.length > 10) chatHistory.shift(); 
+
             } catch (e) {
-                addDanboMessage(`<strong>Danbo:</strong> Koneksi terputus.`);
+                addDanboMessage(`<strong>Danbo:</strong> Gagal terhubung ke server.`);
             }
         }
 
