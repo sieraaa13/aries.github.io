@@ -7,59 +7,30 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { --primary: #2c3e50; --accent: #3498db; --bg: #f0f2f5; --success: #27ae60; --error: #e74c3c; --white: #ffffff; }
-        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background: var(--bg); color: var(--primary); height: 100vh; display: flex; flex-direction: column; overflow: hidden; }
-        
-        /* Screens */
-        .screen { display: none; padding: 20px; overflow-y: auto; flex: 1; text-align: center; }
+        body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); color: var(--primary); }
+        .screen { display: none; padding: 20px; text-align: center; }
         .active-screen { display: block; }
-
-        /* Login & Menu */
-        .login-box { background: var(--white); padding: 40px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); display: inline-block; margin-top: 50px; }
-        input { padding: 12px; font-size: 16px; border-radius: 8px; border: 2px solid #ddd; width: 280px; margin-bottom: 15px; outline: none; }
-        button { cursor: pointer; transition: 0.3s; }
-        .btn-main { background: var(--accent); color: white; border: none; padding: 12px 30px; border-radius: 8px; font-weight: bold; }
-        
         .folder-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 20px; max-width: 800px; margin: 30px auto; }
-        .folder-card { background: var(--white); padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); border: 2px solid transparent; }
-        .folder-card:hover { border-color: var(--accent); transform: translateY(-5px); }
-
-        /* Exam UI */
-        #exam-screen { padding: 0; background: var(--bg); }
-        .exam-container { max-width: 800px; margin: 0 auto; padding: 20px; }
-        .question-card { background: var(--white); padding: 25px; margin-bottom: 20px; border-radius: 12px; text-align: left; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
-        
-        /* Gambar Soal */
-        .q-image { display: block; max-width: 100%; height: auto; margin: 0 auto 15px; border: 1px solid #ccc; border-radius: 5px; }
-        
+        .folder-card { background: var(--white); padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); cursor: pointer; }
+        .question-card { background: var(--white); padding: 25px; margin-bottom: 20px; border-radius: 12px; text-align: left; box-shadow: 0 2px 8px rgba(0,0,0,0.06); max-width: 800px; margin-left: auto; margin-right: auto; }
+        .q-image { display: block; max-width: 100%; height: auto; margin: 0 auto 15px; border: 1px solid #ccc; }
         .option-item { padding: 12px 15px; border: 2px solid #eee; border-radius: 8px; margin-top: 10px; cursor: pointer; }
-        .option-item:hover { background: #f9f9f9; }
         .option-item.selected { border-color: var(--accent); background: #ebf5ff; }
-        .option-item.correct { background: var(--success) !important; color: white; border-color: var(--success); }
-        .option-item.wrong { background: var(--error) !important; color: white; border-color: var(--error); }
-
-        /* Sidebar Danbo */
-        #chat-icon { position: fixed; bottom: 20px; right: 20px; width: 60px; height: 60px; background: white; border-radius: 50%; border: 3px solid var(--accent); cursor: pointer; z-index: 100; }
-        #chat-sidebar { position: fixed; right: -350px; top: 0; width: 320px; height: 100%; background: white; box-shadow: -5px 0 15px rgba(0,0,0,0.1); transition: 0.3s; z-index: 1001; display: flex; flex-direction: column; }
-        #chat-sidebar.open { right: 0; }
-        .chat-header { background: var(--primary); color: white; padding: 15px; font-weight: bold; display: flex; justify-content: space-between; }
-        #danbo-msg { padding: 15px; flex: 1; overflow-y: auto; font-size: 14px; line-height: 1.5; }
+        .btn-main { background: var(--accent); color: white; border: none; padding: 12px 30px; border-radius: 8px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
     <div id="screen-login" class="screen active-screen">
-        <div class="login-box">
-            <img src="assets/icon robot.jpeg" width="80" style="border-radius: 50%;">
-            <h2>Halo! Aku Danbo</h2>
-            <p>Siapa nama kamu?</p>
-            <input type="text" id="user-name" placeholder="Ketik nama di sini..." autofocus>
-            <br>
+        <div style="margin-top: 100px;">
+            <h2>Selamat Datang</h2>
+            <input type="text" id="user-name" placeholder="Masukkan Nama Kamu..." style="padding:10px; width:250px; border-radius:8px; border:1px solid #ccc;">
             <button class="btn-main" onclick="app.login()">Masuk</button>
         </div>
     </div>
 
     <div id="screen-levels" class="screen">
-        <h2 id="welcome-text">Pilih Level JLPT</h2>
+        <h2 id="welcome-text">Pusat Materi JLPT</h2>
         <div class="folder-grid">
             <div class="folder-card" onclick="app.selectLevel('n3')">📁<br><br><b>Level N3</b></div>
         </div>
@@ -67,40 +38,17 @@
 
     <div id="screen-years" class="screen">
         <button onclick="app.nav('screen-levels')">⬅ Kembali</button>
-        <h2 id="level-display"></h2>
+        <h2>Pilih Tahun</h2>
         <div class="folder-grid" id="year-container"></div>
     </div>
 
-    <div id="screen-files" class="screen">
-        <button onclick="app.nav('screen-years')">⬅ Kembali</button>
-        <h2>Pilih Periode Ujian</h2>
-        <div class="folder-grid">
-            <div class="folder-card" onclick="app.loadExam('07')">📄<br><br><b>Juli (07)</b></div>
-            <div class="folder-card" onclick="app.loadExam('12')">📄<br><br><b>Desember (12)</b></div>
-        </div>
-    </div>
-
     <div id="screen-exam" class="screen">
-        <div class="exam-container">
-            <div style="display:flex; justify-content:space-between; margin-bottom: 20px;">
-                <button onclick="location.reload()">Keluar</button>
-                <b id="progress-indicator"></b>
-            </div>
-            <div id="questions-list"></div>
-            <button id="btn-submit" class="btn-main" style="background:var(--success); width:100%; margin:30px 0;" onclick="app.finishExam()">Selesai & Analisis</button>
-            
-            <div id="result-box" style="display:none; margin-top:30px;">
-                <h2 id="score-text"></h2>
-                <div style="max-width:400px; margin: 0 auto;"><canvas id="resultChart"></canvas></div>
-                <button class="btn-main" style="margin-top:20px;" onclick="location.reload()">Kembali ke Menu</button>
-            </div>
+        <div style="max-width:800px; margin:auto; display:flex; justify-content:space-between;">
+            <button onclick="location.reload()">Keluar</button>
+            <b id="progress"></b>
         </div>
-    </div>
-
-    <div id="chat-icon" onclick="app.toggleChat(true)"><img src="assets/icon robot.jpeg" width="100%" style="border-radius: 50%;"></div>
-    <div id="chat-sidebar">
-        <div class="chat-header"><span>Danbo AI Assistant</span><span onclick="app.toggleChat(false)" style="cursor:pointer">✕</span></div>
-        <div id="danbo-msg">Halo! Aku Danbo. Silakan login untuk mulai belajar bersama.</div>
+        <div id="questions-list" style="margin-top:20px;"></div>
+        <button id="btn-submit" class="btn-main" style="background:var(--success); margin:40px;" onclick="app.finish()">Selesai & Analisis</button>
     </div>
 
     <script>
@@ -108,9 +56,8 @@
             user: 'Kamu',
             level: '',
             year: '',
-            data: [],
+            questions: [],
             answers: [],
-            isFinished: false,
 
             nav: (id) => {
                 document.querySelectorAll('.screen').forEach(s => s.classList.remove('active-screen'));
@@ -118,35 +65,25 @@
             },
 
             login: () => {
-                const name = document.getElementById('user-name').value;
-                if(name) app.user = name;
-                document.getElementById('welcome-text').innerText = `Halo, ${app.user}! Pilih level:`;
-                app.toggleChat(true);
-                app.updateDanbo(`Selamat datang, ${app.user}! Mari kita mulai latihan hari ini. Pilih level JLPT yang ingin kamu pelajari.`);
+                const n = document.getElementById('user-name').value;
+                if(n) app.user = n;
+                document.getElementById('welcome-text').innerText = `Halo, ${app.user}! Selamat belajar.`;
                 app.nav('screen-levels');
             },
 
             selectLevel: (lvl) => {
                 app.level = lvl;
-                document.getElementById('level-display').innerText = `Arsip ${lvl.toUpperCase()}`;
-                const years = ['2011','2012','2013','2014','2015','2016','2017','2018','2019','2020','2021','2022','2023'];
-                const container = document.getElementById('year-container');
-                container.innerHTML = years.map(y => `<div class="folder-card" onclick="app.selectYear('${y}')">📁<br><br><b>${y}</b></div>`).join('');
+                const years = ['2011','2012','2013','2014','2015']; // Sesuaikan dengan folder kamu
+                document.getElementById('year-container').innerHTML = years.map(y => `
+                    <div class="folder-card" onclick="app.loadExam('${y}', '07')">📄<br><br><b>${y} (Juli)</b></div>
+                `).join('');
                 app.nav('screen-years');
             },
 
-            selectYear: (y) => {
-                app.year = y;
-                app.nav('screen-files');
-            },
-
             getImage: (qText) => {
-                // Ekstrak angka di awal pertanyaan (misal "19. " -> 19)
-                const numMatch = qText.match(/^(\d+)\./);
-                if(!numMatch) return null;
-                const n = parseInt(numMatch[1]);
-                
-                // Logika mapping gambar sesuai screenshot repository
+                const match = qText.match(/^(\d+)\./);
+                if(!match) return null;
+                const n = parseInt(match[1]);
                 if(n >= 19 && n <= 23) return "19-23.png";
                 if(n >= 24 && n <= 27) return `${n}.png`;
                 if(n >= 28 && n <= 30) return "28-30.png";
@@ -156,121 +93,66 @@
                 return null;
             },
 
-            loadExam: async (month) => {
+            loadExam: async (yr, mo) => {
+                app.year = yr;
                 app.nav('screen-exam');
                 const container = document.getElementById('questions-list');
-                container.innerHTML = "Sedang mengambil soal...";
-                
+                container.innerHTML = "Memuat soal...";
+
                 try {
-                    const path = `assets/${app.level}/${app.year}/${month}.json`;
-                    const res = await fetch(path);
+                    // BERDASARKAN GITHUB KAMU: JSON ada di assets/n3/2011/07.json
+                    const url = `assets/${app.level}/${yr}/${mo}.json`;
+                    const res = await fetch(url);
                     const json = await res.json();
-                    app.data = json[Object.keys(json)[0]].questions;
-                    app.answers = new Array(app.data.length).fill(null);
+                    
+                    // Ambil array questions
+                    const key = Object.keys(json)[0];
+                    app.questions = json[key].questions;
+                    app.answers = new Array(app.questions.length).fill(null);
                     
                     container.innerHTML = "";
-                    let isSecondHalf = false;
+                    let isDokkai = false;
 
-                    app.data.forEach((q, i) => {
-                        // Jika nomor soal kembali ke "1." di tengah array, berarti masuk bagian Bunpou/Dokkai
-                        if(i > 0 && q.q.startsWith("1.")) isSecondHalf = true;
+                    app.questions.forEach((q, i) => {
+                        // Jika nomor soal mulai dari 1 lagi di tengah, itu Dokkai
+                        if(i > 0 && q.q.startsWith("1.")) isDokkai = true;
 
                         let imgHtml = "";
-                        if(isSecondHalf) {
-                            const imgName = app.getImage(q.q);
-                            if(imgName) {
-                                imgHtml = `<img src="assets/${app.level}/${app.year}/${month}/${imgName}" class="q-image">`;
-                            }
+                        const imgName = app.getImage(q.q);
+                        
+                        // Gambar ada di subfolder: assets/n3/2011/07/19-23.png
+                        if(imgName) {
+                            imgHtml = `<img src="assets/${app.level}/${yr}/${mo}/${imgName}" class="q-image" onerror="this.style.display='none'">`;
                         }
-
-                        const options = q.options.map((opt, idx) => `
-                            <div class="option-item" id="q${i}-o${idx}" onclick="app.pick(${i}, ${idx})">${idx+1}. ${opt}</div>
-                        `).join('');
 
                         container.innerHTML += `
                             <div class="question-card">
                                 ${imgHtml}
                                 <p><b>${q.q}</b></p>
-                                <div class="options-container">${options}</div>
+                                ${q.options.map((o, idx) => `
+                                    <div class="option-item" id="q${i}-o${idx}" onclick="app.pick(${i},${idx})">${idx+1}. ${o}</div>
+                                `).join('')}
                             </div>
                         `;
                     });
-                    app.updateProgress();
                 } catch (e) {
-                    container.innerHTML = "Gagal memuat soal. Pastikan file JSON ada di folder assets.";
+                    container.innerHTML = `Gagal memuat. Cek file di: assets/${app.level}/${yr}/${mo}.json`;
                 }
             },
 
             pick: (qi, oi) => {
-                if(app.isFinished) return;
                 app.answers[qi] = oi;
                 document.querySelectorAll(`[id^="q${qi}-o"]`).forEach(el => el.classList.remove('selected'));
                 document.getElementById(`q${qi}-o${oi}`).classList.add('selected');
-                app.updateProgress();
             },
 
-            updateProgress: () => {
-                const filled = app.answers.filter(a => a !== null).length;
-                document.getElementById('progress-indicator').innerText = `Progres: ${filled}/${app.data.length}`;
-            },
-
-            finishExam: () => {
-                app.isFinished = true;
-                let correct = 0;
-                const stats = { KANJI: 0, GOI: 0, BUNPOU: 0, DOKKAI: 0, totalK: 0, totalG: 0, totalB: 0, totalD: 0 };
-
-                app.data.forEach((q, i) => {
-                    const cat = q.category.split('_')[0];
-                    const catKey = `total${cat[0]}`;
-                    stats[`total${cat[0]}`]++;
-                    
-                    const correctIdx = q.correct;
-                    document.getElementById(`q${i}-o${correctIdx}`).classList.add('correct');
-                    
-                    if(app.answers[i] === correctIdx) {
-                        correct++;
-                        stats[cat]++;
-                    } else if(app.answers[i] !== null) {
-                        document.getElementById(`q${i}-o${app.answers[i]}`).classList.add('wrong');
-                    }
+            finish: () => {
+                let score = 0;
+                app.questions.forEach((q, i) => {
+                    if(app.answers[i] === q.correct) score++;
                 });
-
-                document.getElementById('btn-submit').style.display = 'none';
-                document.getElementById('result-box').style.display = 'block';
-                document.getElementById('score-text').innerText = `Skor Kamu: ${correct} / ${app.data.length}`;
-                
-                app.updateDanbo(`Ujian selesai! Kamu berhasil menjawab ${correct} soal dengan benar. Jangan lupa cek grafik radar di bawah untuk melihat bagian mana yang perlu kamu tingkatkan lagi ya!`);
-                app.showChart(stats);
-            },
-
-            showChart: (s) => {
-                const ctx = document.getElementById('resultChart').getContext('2d');
-                new Chart(ctx, {
-                    type: 'radar',
-                    data: {
-                        labels: ['Kanji', 'Goi', 'Grammar', 'Reading'],
-                        datasets: [{
-                            label: 'Persentase Penguasaan',
-                            data: [
-                                (s.KANJI/s.totalK)*100 || 0,
-                                (s.GOI/s.totalG)*100 || 0,
-                                (s.BUNPOU/s.totalB)*100 || 0,
-                                (s.DOKKAI/s.totalD)*100 || 0
-                            ],
-                            backgroundColor: 'rgba(52, 152, 219, 0.2)',
-                            borderColor: '#3498db'
-                        }]
-                    },
-                    options: { scales: { r: { min: 0, max: 100 } } }
-                });
-            },
-
-            toggleChat: (open) => {
-                document.getElementById('chat-sidebar').classList.toggle('open', open);
-            },
-
-            updateDanbo: (txt) => {
-                document.getElementById('danbo-msg').innerHTML = txt;
+                alert(`Ujian Selesai, ${app.user}!\nSkor kamu: ${score}/${app.questions.length}`);
+                location.reload();
             }
         };
     </script>
