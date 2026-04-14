@@ -16,12 +16,12 @@
         
         .file-list { max-width: 600px; margin: 20px auto; background: var(--white); border-radius: 12px; text-align: left; box-shadow: 0 2px 10px rgba(0,0,0,0.05); overflow: hidden; }
         .file-item { padding: 18px 25px; border-bottom: 1px solid #eee; cursor: pointer; color: var(--accent); font-weight: 600; display: flex; align-items: center; }
-        .file-item:hover { background: #f8fbff; padding-left: 35px; }
 
         #exam-screen { display: none; flex-direction: column; height: 100vh; background: var(--bg); }
         #exam-content { flex: 1; padding: 20px; overflow-y: auto; }
 
         .question-card { background: var(--white); padding: 25px; margin-bottom: 25px; border-radius: 12px; box-shadow: 0 3px 10px rgba(0,0,0,0.08); }
+        .q-image { display: block; max-width: 100%; height: auto; margin: 0 auto 15px; border: 1px solid #ddd; border-radius: 8px; }
         .option-item { padding: 14px 18px; border: 2px solid #eaeeef; border-radius: 10px; cursor: pointer; margin-top: 10px; transition: 0.2s; }
         .option-item.selected { background: #e3f2fd; border-color: var(--accent); }
         .option-item.correct { background: var(--success) !important; color: white; }
@@ -34,6 +34,7 @@
         #chat-icon img { width: 100%; height: 100%; border-radius: 50%; }
         #chat-sidebar { position: fixed; bottom: -60vh; left: 0; width: 100%; height: 50vh; background: white; z-index: 1001; transition: 0.4s; border-radius: 25px 25px 0 0; box-shadow: 0 -5px 20px rgba(0,0,0,0.1); display: flex; flex-direction: column; }
         #chat-sidebar.active { bottom: 0; }
+        #danbo-chat-box { flex:1; padding:20px; overflow-y:auto; background:#f9f9f9; line-height: 1.6; }
         
         .hidden { display: none !important; }
     </style>
@@ -43,20 +44,18 @@
     <div id="folder-screen">
         <h1>Pusat Materi JLPT</h1>
         <div class="folder-grid">
-            <div class="folder-card" onclick="selectLevel('n1')">📁<br><br><b>Level N1</b></div>
-            <div class="folder-card" onclick="selectLevel('n2')">📁<br><br><b>Level N2</b></div>
             <div class="folder-card" onclick="selectLevel('n3')">📁<br><br><b>Level N3</b></div>
         </div>
     </div>
 
     <div id="year-screen" class="hidden">
-        <button class="btn-back" onclick="navTo('folder-screen')">⬅ Kembali ke Level</button>
+        <button class="btn-back" onclick="navTo('folder-screen')">⬅ Kembali</button>
         <h2 id="level-title"></h2>
         <div class="folder-grid" id="year-list"></div>
     </div>
 
     <div id="file-screen" class="hidden">
-        <button class="btn-back" onclick="navTo('year-screen')">⬅ Kembali ke Tahun</button>
+        <button class="btn-back" onclick="navTo('year-screen')">⬅ Kembali</button>
         <h2 id="year-title"></h2>
         <div class="file-list" id="file-list-container"></div>
     </div>
@@ -64,17 +63,17 @@
     <div id="exam-screen">
         <div id="exam-content">
             <div style="display:flex; justify-content:space-between; align-items:center;">
-                <button onclick="location.reload()" style="padding:10px; border-radius:8px; border:none; cursor:pointer;">Keluar</button>
+                <button onclick="location.reload()" style="padding:10px; border:none; cursor:pointer;">Keluar</button>
                 <b id="progress-text"></b>
             </div>
-            <h2 id="exam-header" style="text-align:center; margin:20px 0;"></h2>
+            <h2 id="exam-header" style="text-align:center;"></h2>
             <div id="questions-container"></div>
             <center>
                 <button id="submit-btn" class="btn-finish" onclick="processResults()">Selesai & Lihat Analisis</button>
                 <div id="result-area" class="hidden">
                     <h2 id="score-display"></h2>
-                    <div style="max-width:400px; margin:auto;"><canvas id="scoreChart"></canvas></div>
-                    <button class="btn-finish" onclick="location.reload()" style="background:var(--primary)">Tutup Latihan</button>
+                    <div style="max-width:400px;"><canvas id="scoreChart"></canvas></div>
+                    <button class="btn-finish" onclick="location.reload()">Tutup Latihan</button>
                 </div>
             </center>
         </div>
@@ -85,66 +84,92 @@
         <div style="background:var(--primary); color:white; padding:15px; display:flex; justify-content:space-between; border-radius:25px 25px 0 0;">
             <b>Danbo AI Assistant</b><span onclick="toggleDanbo(false)" style="cursor:pointer;">✕</span>
         </div>
-        <div id="danbo-chat-box" style="flex:1; padding:20px; overflow-y:auto; background:#f9f9f9;"></div>
+        <div id="danbo-chat-box"></div>
     </div>
 
     <script>
-        let state = { level: '', year: '', questions: [], answers: [], isDone: false };
-        const allYears = ['2011', '2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023'];
+        let state = { level: '', year: '', bulan: '', questions: [], answers: [], isDone: false };
 
-        function navTo(screenId) {
+        function navTo(id) {
             ['folder-screen', 'year-screen', 'file-screen', 'exam-screen'].forEach(s => document.getElementById(s).classList.add('hidden'));
-            document.getElementById(screenId).classList.remove('hidden');
-            if(screenId === 'exam-screen') document.getElementById(screenId).style.display = 'flex';
+            document.getElementById(id).classList.remove('hidden');
+            if(id === 'exam-screen') document.getElementById(id).style.display = 'flex';
         }
 
         function selectLevel(lvl) {
             state.level = lvl;
-            document.getElementById('level-title').innerText = "Arsip Soal " + lvl.toUpperCase();
+            const years = ['2011', '2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023'];
             const list = document.getElementById('year-list');
-            list.innerHTML = '';
-            
-            allYears.forEach(y => {
-                list.innerHTML += `<div class="folder-card" onclick="selectYear('${y}')">📁<br><br><b>${y}</b></div>`;
-            });
+            list.innerHTML = years.map(y => `<div class="folder-card" onclick="selectYear('${y}')">📁<br><br><b>${y}</b></div>`).join('');
             navTo('year-screen');
         }
 
         function selectYear(yr) {
             state.year = yr;
-            document.getElementById('year-title').innerText = `Folder Tahun ${yr}`;
             const container = document.getElementById('file-list-container');
             container.innerHTML = `
-                <div class="file-item" onclick="startQuiz('${yr}', '07.json')">📄 07.json (Periode Juli)</div>
-                <div class="file-item" onclick="startQuiz('${yr}', '12.json')">📄 12.json (Periode Desember)</div>
+                <div class="file-item" onclick="startQuiz('${yr}', '07')">📄 Periode Juli (07.json)</div>
+                <div class="file-item" onclick="startQuiz('${yr}', '12')">📄 Periode Desember (12.json)</div>
             `;
             navTo('file-screen');
         }
 
-        async function startQuiz(yr, fileName) {
+        function getImagePath(qText) {
+            // Ambil nomor dari teks "1. ", "19. ", dll.
+            const match = qText.match(/^(\d+)\./);
+            if (!match) return null;
+            const num = parseInt(match[1]);
+
+            // Hanya tampilkan gambar untuk bagian Dokkai (19-39)
+            if (num >= 19 && num <= 23) return "19-23.png";
+            if (num == 24) return "24.png";
+            if (num == 25) return "25.png";
+            if (num == 26) return "26.png";
+            if (num == 27) return "27.png";
+            if (num >= 28 && num <= 30) return "28-30.png";
+            if (num >= 31 && num <= 33) return "31-33.png";
+            if (num >= 34 && num <= 37) return "34-37.png";
+            if (num >= 38 && num <= 39) return "38-39.png";
+            return null;
+        }
+
+        async function startQuiz(yr, bulan) {
+            state.bulan = bulan;
             navTo('exam-screen');
-            document.getElementById('chat-icon').style.display = 'block';
             const area = document.getElementById('questions-container');
-            area.innerHTML = "<p style='text-align:center;'>Sedang memuat soal...</p>";
+            area.innerHTML = "Memuat soal...";
 
             try {
-                const res = await fetch(`assets/${state.level}/${yr}/${fileName}`);
+                const res = await fetch(`assets/${state.level}/${yr}/${bulan}.json`);
                 const data = await res.json();
-                const quiz = data[Object.keys(data)[0]];
-                state.questions = quiz.questions;
+                state.questions = data[Object.keys(data)[0]].questions;
                 state.answers = new Array(state.questions.length).fill(null);
                 
-                document.getElementById('exam-header').innerText = quiz.title || `JLPT ${state.level.toUpperCase()} - ${yr}`;
                 area.innerHTML = '';
-                
+                let isSecondSection = false;
+
                 state.questions.forEach((q, i) => {
-                    let opts = q.options.map((o, idx) => `<div class="option-item" id="q${i}-o${idx}" onclick="hitOption(${i},${idx})">${idx+1}. ${o}</div>`).join('');
-                    area.innerHTML += `<div class="question-card"><p><b>${i+1}.</b> ${q.q}</p>${opts}</div>`;
+                    // Deteksi jika kita masuk ke bagian kedua (Bunpou dimulai dari nomor 1 lagi)
+                    if (i > 0 && q.q.startsWith("1.")) isSecondSection = true;
+
+                    let imgHtml = '';
+                    if (isSecondSection) {
+                        const imgFile = getImagePath(q.q);
+                        if(imgFile) {
+                            const imgPath = `assets/${state.level}/${yr}/${bulan}/${imgFile}`;
+                            imgHtml = `<img src="${imgPath}" class="q-image">`;
+                        }
+                    }
+
+                    let opts = q.options.map((o, idx) => `
+                        <div class="option-item" id="q${i}-o${idx}" onclick="hitOption(${i},${idx})">${idx+1}. ${o}</div>
+                    `).join('');
+                    
+                    area.innerHTML += `<div class="question-card">${imgHtml}<p>${q.q}</p>${opts}</div>`;
                 });
+                document.getElementById('chat-icon').style.display = 'block';
                 refreshProgress();
-            } catch (err) {
-                area.innerHTML = `<p style='color:red;'>Gagal memuat file: assets/${state.level}/${yr}/${fileName}</p>`;
-            }
+            } catch (e) { area.innerHTML = "Error memuat file JSON atau Gambar."; }
         }
 
         function hitOption(qIdx, oIdx) {
@@ -165,16 +190,15 @@
             let correctCount = 0;
             const detail = { 
                 KANJI: {c:0, t:0}, GOI: {c:0, t:0}, BUNPOU: {c:0, t:0}, 
-                KUMITATE: {c:0, t:0}, TANBUN: {c:0, t:0}, CHOUBUN: {c:0, t:0} 
+                DOKKAI: {c:0, t:0} 
             };
 
             state.questions.forEach((q, i) => {
-                let cat = (q.category || "GOI").toUpperCase().replace("BUNPOU_KUMITATE", "KUMITATE");
+                let cat = (q.category || "GOI").split('_')[0]; // KANJI, GOI, BUNPOU, DOKKAI
                 if(!detail[cat]) detail[cat] = {c:0, t:0};
-                
                 detail[cat].t++;
+
                 document.getElementById(`q${i}-o${q.correct}`).classList.add('correct');
-                
                 if(state.answers[i] === q.correct) {
                     correctCount++;
                     detail[cat].c++;
@@ -183,30 +207,23 @@
                 }
             });
 
-            document.getElementById('submit-btn').classList.add('hidden');
-            document.getElementById('result-area').classList.remove('hidden');
-            document.getElementById('score-display').innerText = `Skor Akhir: ${correctCount} / ${state.questions.length}`;
-            
-            // GENERATE RINCIAN TEKS UNTUK DANBO
-            let rincianHtml = `<b>Rincian Penilaian:</b><br><ul>`;
-            for (const key in detail) {
-                if(detail[key].t > 0) {
-                    let label = key.charAt(0) + key.slice(1).toLowerCase();
-                    if(key === "BUNPOU") label = "Bunpou (Grammar)";
-                    if(key === "KUMITATE") label = "Bunpou (Kumitate)";
-                    if(key === "TANBUN" || key === "CHOUBUN") label = "Reading (Dokkai)";
-                    rincianHtml += `<li>${label}: ${detail[key].c}/${detail[key].t}</li>`;
+            let rincianText = "<b>Rincian Penilaian Kamu:</b><br>";
+            for (let k in detail) {
+                if(detail[k].t > 0) {
+                    rincianText += `• ${k}: ${detail[k].c}/${detail[k].t} Benar<br>`;
                 }
             }
-            rincianHtml += `</ul>`;
 
+            document.getElementById('submit-btn').classList.add('hidden');
+            document.getElementById('result-area').classList.remove('hidden');
+            document.getElementById('score-display').innerText = `Skor: ${correctCount} / ${state.questions.length}`;
+            
             toggleDanbo(true);
             document.getElementById('danbo-chat-box').innerHTML = `
-                <p><strong>Danbo:</strong> Ujian Selesai! Skor kamu <b>${correctCount}/${state.questions.length}</b>.</p>
-                ${rincianHtml}
-                <p>Terus semangat belajarnya, Muhammad Haris Munandar!</p>
+                <p><strong>Danbo:</strong> Ujian selesai! Skor kamu adalah <b>${correctCount}/${state.questions.length}</b>.</p>
+                <p>${rincianText}</p>
+                <p>Tetap semangat belajarnya ya! Jangan menyerah untuk mencapai target JLPT kamu.</p>
             `;
-            
             renderChart(detail);
         }
 
@@ -214,15 +231,14 @@
             new Chart(document.getElementById('scoreChart'), {
                 type: 'radar',
                 data: {
-                    labels: ['Kanji', 'Goi', 'Bunpou', 'Dokkai', 'Choukai'],
+                    labels: ['Kanji', 'Goi', 'Bunpou', 'Dokkai'],
                     datasets: [{
                         label: '% Penguasaan',
                         data: [
                             d.KANJI.t ? (d.KANJI.c/d.KANJI.t)*100 : 0,
                             d.GOI.t ? (d.GOI.c/d.GOI.t)*100 : 0,
-                            (d.BUNPOU.t + d.KUMITATE.t) ? ((d.BUNPOU.c + d.KUMITATE.c)/(d.BUNPOU.t + d.KUMITATE.t))*100 : 0,
-                            (d.TANBUN.t + d.CHOUBUN.t) ? ((d.TANBUN.c + d.CHOUBUN.c)/(d.TANBUN.t + d.CHOUBUN.t))*100 : 0,
-                            0
+                            d.BUNPOU.t ? (d.BUNPOU.c/d.BUNPOU.t)*100 : 0,
+                            d.DOKKAI.t ? (d.DOKKAI.c/d.DOKKAI.t)*100 : 0
                         ],
                         backgroundColor: 'rgba(52, 152, 219, 0.2)', borderColor: '#3498db', borderWidth: 2
                     }]
