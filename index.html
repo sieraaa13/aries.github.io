@@ -31,7 +31,7 @@
 
         .btn-finish { background: var(--success); color: white; padding: 15px 40px; border: none; border-radius: 30px; font-size: 18px; cursor: pointer; margin: 20px 0; }
         #result-box { display: none; margin: 30px 0; padding: 20px; background: white; border-radius: 10px; border: 2px solid var(--success); text-align: center; }
-        .chart-container { max-width: 400px; margin: 20px auto; }
+        .chart-container { max-width: 450px; margin: 20px auto; }
 
         #chat-icon { position: fixed; bottom: 20px; right: 20px; width: 70px; height: 70px; background: white; border-radius: 50%; box-shadow: 0 4px 12px rgba(0,0,0,0.2); cursor: pointer; display: none; z-index: 1000; border: 2px solid var(--accent); overflow: hidden; }
         #chat-icon img { width: 100%; height: 100%; object-fit: cover; }
@@ -149,14 +149,16 @@
                 totalSoal = currentQuestions.length;
                 currentAnswers = new Array(totalSoal).fill(null);
                 
-                const imgPathBase = `assets/${level}/${fileName.split('/')[0]}/`;
+                // Struktur folder foto: assets/n3/2011/07/
+                const pathParts = fileName.split('/');
+                const imgPathBase = `assets/${level}/${pathParts[0]}/${pathParts[1]}/`;
+                
                 area.innerHTML = '';
                 let isSecondPart = false; 
 
                 currentQuestions.forEach((item, qIdx) => {
                     const matchNumber = item.q.match(/^(\d+)\./);
                     const jsonNum = matchNumber ? parseInt(matchNumber[1]) : qIdx + 1;
-
                     if (qIdx > 0 && jsonNum === 1) isSecondPart = true;
 
                     const card = document.createElement('div');
@@ -172,7 +174,7 @@
                             return Number(name) === jsonNum;
                         });
                         if (matchedImg) {
-                            imgHTML = `<img src="${imgPathBase}${matchedImg}.png" class="question-image" alt="Ilustrasi Soal ${jsonNum}">`;
+                            imgHTML = `<img src="${imgPathBase}${matchedImg}.png" class="question-image">`;
                         }
                     }
 
@@ -206,68 +208,80 @@
         function showResults() {
             isFinished = true;
             let score = 0;
-            const stats = { "KANJI": {c:0, t:0}, "GOI": {c:0, t:0}, "BUNPOU": {c:0, t:0}, "DOKKAI": {c:0, t:0} };
+            
+            // Statistik Rinci untuk Deskripsi
+            const detailedStats = {
+                "KANJI": {c:0, t:0},
+                "GOI": {c:0, t:0},
+                "BUNPOU": {c:0, t:0}, "KUMITATE": {c:0, t:0},
+                "TANBUN": {c:0, t:0}, "CHOUBUN": {c:0, t:0},
+                "NICHIJYOU": {c:0, t:0}, "JYOUHOU": {c:0, t:0}
+            };
 
             currentQuestions.forEach((q, i) => {
                 let cat = (q.category || "GOI").toUpperCase();
-                if (cat.includes("KANJI")) cat = "KANJI";
-                else if (cat.includes("VOCAB") || cat.includes("GOI")) cat = "GOI";
-                else if (cat.includes("BUNPOU")) cat = "BUNPOU";
-                else if (cat.includes("DOKKAI")) cat = "DOKKAI";
-
-                if(stats[cat]) stats[cat].t++;
+                if (detailedStats[cat]) detailedStats[cat].t++;
+                
                 document.getElementById(`q${i}-o${q.correct}`).classList.add('correct');
 
                 if (currentAnswers[i] === q.correct) {
                     score++;
-                    if(stats[cat]) stats[cat].c++;
+                    if (detailedStats[cat]) detailedStats[cat].c++;
                 } else if (currentAnswers[i] !== null) {
                     document.getElementById(`q${i}-o${currentAnswers[i]}`).classList.add('wrong');
                 }
             });
 
+            // Mapping ke 5 Kategori Segi Lima untuk Radar Chart
+            const chartData = {
+                "Kanji": detailedStats.KANJI.t ? (detailedStats.KANJI.c / detailedStats.KANJI.t) * 100 : 0,
+                "Goi": detailedStats.GOI.t ? (detailedStats.GOI.c / detailedStats.GOI.t) * 100 : 0,
+                "Bunpou": (detailedStats.BUNPOU.t + detailedStats.KUMITATE.t) > 0 ? ((detailedStats.BUNPOU.c + detailedStats.KUMITATE.c) / (detailedStats.BUNPOU.t + detailedStats.KUMITATE.t)) * 100 : 0,
+                "Dokkai": (detailedStats.TANBUN.t + detailedStats.CHOUBUN.t) > 0 ? ((detailedStats.TANBUN.c + detailedStats.CHOUBUN.c) / (detailedStats.TANBUN.t + detailedStats.CHOUBUN.t)) * 100 : 0,
+                "Choukai": (detailedStats.NICHIJYOU.t + detailedStats.JYOUHOU.t) > 0 ? ((detailedStats.NICHIJYOU.c + detailedStats.JYOUHOU.c) / (detailedStats.NICHIJYOU.t + detailedStats.JYOUHOU.t)) * 100 : 0
+            };
+
             document.getElementById('submit-btn').style.display = 'none';
             document.getElementById('result-box').style.display = 'block';
             document.getElementById('final-score').innerText = `Skor Akhir: ${score} / ${totalSoal}`;
             
-            drawChart(stats);
+            drawChart(chartData);
             openDanbo();
             
-            let lowScoreCategory = Object.keys(stats).reduce((a, b) => {
-                let rateA = stats[a].t ? stats[a].c / stats[a].t : 1;
-                let rateB = stats[b].t ? stats[b].c / stats[b].t : 1;
-                return rateA < rateB ? a : b;
-            });
-
-            let danboGreeting = `<strong>Danbo:</strong> Ujian selesai! Skor kamu <b>${score}/${totalSoal}</b>. `;
-            if (score / totalSoal > 0.8) {
-                danboGreeting += "Wah, luar biasa! Kamu hebat sekali. Tetap semangat belajarnya ya! ✨";
-            } else {
-                danboGreeting += `Kerja bagus! Bagian <b>${lowScoreCategory}</b> sepertinya agak sulit tadi. Jangan menyerah, Danbo siap bantu jelaskan bagian yang kamu belum paham!`;
-            }
-            addDanboMessage(danboGreeting);
-
-            chatHistory.push({ 
-                role: "system", 
-                content: `User baru saja selesai mengerjakan soal. Skor: ${score}/${totalSoal}. Bagian terlemah: ${lowScoreCategory}. Berikan respon sebagai Danbo yang suportif dan tawarkan diskusi.` 
-            });
+            // Prompt untuk Danbo AI agar memberikan deskripsi rincian ke-2
+            const detailMsg = `Sistem: Skor akhir ${score}/${totalSoal}. Rincian performa: Kanji (${detailedStats.KANJI.c}/${detailedStats.KANJI.t}), Goi (${detailedStats.GOI.c}/${detailedStats.GOI.t}), Bunpou & Kumitate (${detailedStats.BUNPOU.c + detailedStats.KUMITATE.c}/${detailedStats.BUNPOU.t + detailedStats.KUMITATE.t}), Dokkai Tanbun & Choubun (${detailedStats.TANBUN.c + detailedStats.CHOUBUN.c}/${detailedStats.TANBUN.t + detailedStats.CHOUBUN.t}), Choukai Nichijyou & Jyouhou (${detailedStats.NICHIJYOU.c + detailedStats.JYOUHOU.c}/${detailedStats.NICHIJYOU.t + detailedStats.JYOUHOU.t}).`;
+            
+            chatHistory.push({ role: "system", content: detailMsg });
+            addDanboMessage(`<strong>Danbo:</strong> Ujian selesai! Skor kamu <b>${score}/${totalSoal}</b>. Radar chart di atas menunjukkan penguasaanmu dalam 5 area utama. Bagian mana yang ingin kita bahas dulu?`);
         }
 
-        function drawChart(s) {
+        function drawChart(dataMap) {
             const ctx = document.getElementById('scoreChart').getContext('2d');
-            const data = [
-                s.KANJI.t ? (s.KANJI.c/s.KANJI.t)*100 : 0, 
-                s.GOI.t ? (s.GOI.c/s.GOI.t)*100 : 0, 
-                s.BUNPOU.t ? (s.BUNPOU.c/s.BUNPOU.t)*100 : 0, 
-                s.DOKKAI.t ? (s.DOKKAI.c/s.DOKKAI.t)*100 : 0
-            ];
             new Chart(ctx, {
                 type: 'radar',
                 data: {
-                    labels: ['Kanji', 'Vocabulary', 'Grammar', 'Reading'],
-                    datasets: [{ label: '% Penguasaan', data: data, backgroundColor: 'rgba(52, 152, 219, 0.2)', borderColor: '#3498db' }]
+                    labels: ['Kanji', 'Goi', 'Bunpou', 'Dokkai', 'Choukai'],
+                    datasets: [{
+                        label: '% Masteri',
+                        data: [dataMap.Kanji, dataMap.Goi, dataMap.Bunpou, dataMap.Dokkai, dataMap.Choukai],
+                        backgroundColor: 'rgba(52, 152, 219, 0.2)',
+                        borderColor: '#3498db',
+                        borderWidth: 2,
+                        pointBackgroundColor: '#3498db'
+                    }]
                 },
-                options: { scales: { r: { min: 0, max: 100 } } }
+                options: {
+                    scales: {
+                        r: {
+                            min: 0, max: 100,
+                            ticks: { stepSize: 20, display: false },
+                            grid: { color: '#ccc' },
+                            angleLines: { color: '#ccc' },
+                            pointLabels: { font: { size: 14, weight: 'bold' } }
+                        }
+                    },
+                    plugins: { legend: { display: false } }
+                }
             });
         }
 
