@@ -135,7 +135,7 @@
                 app.nav('screen-files');
             },
 
-            getImage: (qText) => {
+            getImageName: (qText) => {
                 const numMatch = qText.match(/^(\d+)\./);
                 if(!numMatch) return null;
                 const n = parseInt(numMatch[1]);
@@ -161,19 +161,26 @@
                     const res = await fetch(path);
                     const json = await res.json();
                     
-                    // Ambil key pertama (misal test_2014_07)
                     const testKey = Object.keys(json)[0];
                     app.data = json[testKey].questions;
                     app.answers = new Array(app.data.length).fill(null);
                     app.isFinished = false;
                     
                     container.innerHTML = "";
+                    let isSecondHalf = false; // Flag untuk mendeteksi 'Dokkai'
+
                     app.data.forEach((q, i) => {
+                        // DETEKSI TRANSISI BAGIAN: 
+                        // Jika kategori mengandung 'DOKKAI' atau nomor soal kembali ke '1.' di tengah array.
+                        // Berdasarkan JSON kamu, soal 18 Bunpou, lalu soal 19 Dokkai Cloze.
+                        // Kita bisa deteksi saat kategori berubah jadi DOKKAI_CLOZE.
+                        if(q.category.includes('DOKKAI')) isSecondHalf = true;
+
                         let imgHtml = "";
-                        const imgName = app.getImage(q.q);
+                        const imgName = app.getImageName(q.q);
                         
-                        // Gambar muncul untuk nomor 19 ke atas
-                        if (imgName) {
+                        // Gambar HANYA muncul jika sudah masuk bagian kedua (Dokkai)
+                        if (isSecondHalf && imgName) {
                             const imgPath = `assets/${app.level}/${app.year}/${month}/${imgName}`;
                             imgHtml = `<img src="${imgPath}" class="q-image" onerror="this.style.display='none'">`;
                         }
@@ -193,7 +200,7 @@
                     app.updateProgress();
                     app.updateDanbo(`Semangat, ${app.userName}! Ada ${app.data.length} soal untuk periode ini. Kerjakan dengan teliti ya.`);
                 } catch (e) {
-                    container.innerHTML = "Gagal memuat soal. Pastikan path <b>" + `assets/${app.level}/${app.year}/${month}.json` + "</b> benar.";
+                    container.innerHTML = "Gagal memuat soal. Pastikan file JSON ada di folder assets.";
                 }
             },
 
@@ -214,7 +221,6 @@
                 app.isFinished = true;
                 let correctCount = 0;
                 
-                // Kategorisasi Segi-5
                 const s = { 
                     KANJI: 0, tKANJI: 0, 
                     GOI: 0, tGOI: 0, 
@@ -224,7 +230,9 @@
                 };
 
                 app.data.forEach((q, i) => {
-                    const cat = q.category.split('_')[0]; // Ambil KANJI, GOI, BUNPOU, atau DOKKAI
+                    const catRaw = q.category.split('_')[0];
+                    const cat = (catRaw === 'DOKKAI' || catRaw === 'DOKKAI_CLOZE' || catRaw === 'DOKKAI_INFO_RETRIEVAL') ? 'DOKKAI' : catRaw;
+
                     const tKey = `t${cat}`;
                     if(s.hasOwnProperty(tKey)) s[tKey]++;
 
@@ -243,7 +251,6 @@
                 document.getElementById('result-box').style.display = 'block';
                 document.getElementById('score-text').innerText = `Skor ${app.userName}: ${correctCount} / ${app.data.length}`;
                 
-                // Detail teks di bawah chart
                 document.getElementById('result-details').innerHTML = `
                     <b>Rincian Penilaian:</b><br>
                     - Kanji: ${s.KANJI}/${s.tKANJI}<br>
@@ -264,7 +271,6 @@
                     data: {
                         labels: ['Kanji', 'Goi', 'Bunpou', 'Dokkai', 'Choukai'],
                         datasets: [{
-                            label: 'Persentase Penguasaan (%)',
                             data: [
                                 (s.KANJI/s.tKANJI)*100 || 0,
                                 (s.GOI/s.tGOI)*100 || 0,
