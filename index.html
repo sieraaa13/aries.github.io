@@ -21,7 +21,7 @@
         #exam-content { flex: 1; padding: 20px; overflow-y: auto; }
 
         .question-card { background: var(--white); padding: 25px; margin-bottom: 25px; border-radius: 12px; box-shadow: 0 3px 10px rgba(0,0,0,0.08); }
-        .q-image { max-width: 100%; height: auto; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .q-image { display: block; max-width: 100%; height: auto; margin: 0 auto 15px; border: 1px solid #ddd; border-radius: 8px; }
         .option-item { padding: 14px 18px; border: 2px solid #eaeeef; border-radius: 10px; cursor: pointer; margin-top: 10px; transition: 0.2s; }
         .option-item.selected { background: #e3f2fd; border-color: var(--accent); }
         .option-item.correct { background: var(--success) !important; color: white; }
@@ -34,7 +34,7 @@
         #chat-icon img { width: 100%; height: 100%; border-radius: 50%; }
         #chat-sidebar { position: fixed; bottom: -60vh; left: 0; width: 100%; height: 50vh; background: white; z-index: 1001; transition: 0.4s; border-radius: 25px 25px 0 0; box-shadow: 0 -5px 20px rgba(0,0,0,0.1); display: flex; flex-direction: column; }
         #chat-sidebar.active { bottom: 0; }
-        #danbo-chat-box { flex:1; padding:20px; overflow-y:auto; background:#f9f9f9; font-size: 14px; }
+        #danbo-chat-box { flex:1; padding:20px; overflow-y:auto; background:#f9f9f9; line-height: 1.6; }
         
         .hidden { display: none !important; }
     </style>
@@ -114,8 +114,13 @@
             navTo('file-screen');
         }
 
-        // Fungsi untuk menentukan nama file gambar berdasarkan nomor soal (19-39)
-        function getImagePath(num) {
+        function getImagePath(qText) {
+            // Ambil nomor dari teks "1. ", "19. ", dll.
+            const match = qText.match(/^(\d+)\./);
+            if (!match) return null;
+            const num = parseInt(match[1]);
+
+            // Hanya tampilkan gambar untuk bagian Dokkai (19-39)
             if (num >= 19 && num <= 23) return "19-23.png";
             if (num == 24) return "24.png";
             if (num == 25) return "25.png";
@@ -141,26 +146,30 @@
                 state.answers = new Array(state.questions.length).fill(null);
                 
                 area.innerHTML = '';
+                let isSecondSection = false;
+
                 state.questions.forEach((q, i) => {
-                    const qNum = i + 1;
+                    // Deteksi jika kita masuk ke bagian kedua (Bunpou dimulai dari nomor 1 lagi)
+                    if (i > 0 && q.q.startsWith("1.")) isSecondSection = true;
+
                     let imgHtml = '';
-                    
-                    // Logika tampilkan gambar jika di rentang 19-39
-                    const imgFile = getImagePath(qNum);
-                    if(imgFile) {
-                        const imgPath = `assets/${state.level}/${yr}/${bulan}/${imgFile}`;
-                        imgHtml = `<img src="${imgPath}" class="q-image" onerror="this.style.display='none'">`;
+                    if (isSecondSection) {
+                        const imgFile = getImagePath(q.q);
+                        if(imgFile) {
+                            const imgPath = `assets/${state.level}/${yr}/${bulan}/${imgFile}`;
+                            imgHtml = `<img src="${imgPath}" class="q-image">`;
+                        }
                     }
 
                     let opts = q.options.map((o, idx) => `
                         <div class="option-item" id="q${i}-o${idx}" onclick="hitOption(${i},${idx})">${idx+1}. ${o}</div>
                     `).join('');
                     
-                    area.innerHTML += `<div class="question-card">${imgHtml}<p><b>${qNum}.</b> ${q.q}</p>${opts}</div>`;
+                    area.innerHTML += `<div class="question-card">${imgHtml}<p>${q.q}</p>${opts}</div>`;
                 });
                 document.getElementById('chat-icon').style.display = 'block';
                 refreshProgress();
-            } catch (e) { area.innerHTML = "Error memuat file JSON."; }
+            } catch (e) { area.innerHTML = "Error memuat file JSON atau Gambar."; }
         }
 
         function hitOption(qIdx, oIdx) {
@@ -179,18 +188,13 @@
         function processResults() {
             state.isDone = true;
             let correctCount = 0;
-            // Objek detail untuk rincian penilaian
             const detail = { 
                 KANJI: {c:0, t:0}, GOI: {c:0, t:0}, BUNPOU: {c:0, t:0}, 
-                KUMITATE: {c:0, t:0}, DOKKAI: {c:0, t:0}, CHOUKAI: {c:0, t:0} 
+                DOKKAI: {c:0, t:0} 
             };
 
             state.questions.forEach((q, i) => {
-                let cat = (q.category || "GOI").toUpperCase();
-                if(cat.includes("BUNPOU")) cat = "BUNPOU";
-                if(cat.includes("KUMITATE")) cat = "KUMITATE";
-                if(cat.includes("TANBUN") || cat.includes("CHOUBUN") || cat.includes("DOKKAI")) cat = "DOKKAI";
-
+                let cat = (q.category || "GOI").split('_')[0]; // KANJI, GOI, BUNPOU, DOKKAI
                 if(!detail[cat]) detail[cat] = {c:0, t:0};
                 detail[cat].t++;
 
@@ -203,11 +207,10 @@
                 }
             });
 
-            // Tampilkan rincian di chat box
-            let rincianText = "<b>Rincian Penilaian:</b><br>";
+            let rincianText = "<b>Rincian Penilaian Kamu:</b><br>";
             for (let k in detail) {
                 if(detail[k].t > 0) {
-                    rincianText += `• ${k}: ${detail[k].c}/${detail[k].t}<br>`;
+                    rincianText += `• ${k}: ${detail[k].c}/${detail[k].t} Benar<br>`;
                 }
             }
 
@@ -217,9 +220,9 @@
             
             toggleDanbo(true);
             document.getElementById('danbo-chat-box').innerHTML = `
-                <p><strong>Danbo:</strong> Ujian Selesai! Skor kamu <b>${correctCount}/${state.questions.length}</b>.</p>
+                <p><strong>Danbo:</strong> Ujian selesai! Skor kamu adalah <b>${correctCount}/${state.questions.length}</b>.</p>
                 <p>${rincianText}</p>
-                <p>Terus semangat belajarnya, Muhammad Haris Munandar!</p>
+                <p>Tetap semangat belajarnya ya! Jangan menyerah untuk mencapai target JLPT kamu.</p>
             `;
             renderChart(detail);
         }
@@ -228,15 +231,14 @@
             new Chart(document.getElementById('scoreChart'), {
                 type: 'radar',
                 data: {
-                    labels: ['Kanji', 'Goi', 'Bunpou', 'Dokkai', 'Choukai'],
+                    labels: ['Kanji', 'Goi', 'Bunpou', 'Dokkai'],
                     datasets: [{
                         label: '% Penguasaan',
                         data: [
                             d.KANJI.t ? (d.KANJI.c/d.KANJI.t)*100 : 0,
                             d.GOI.t ? (d.GOI.c/d.GOI.t)*100 : 0,
-                            (d.BUNPOU.t + d.KUMITATE.t) ? ((d.BUNPOU.c + d.KUMITATE.c)/(d.BUNPOU.t + d.KUMITATE.t))*100 : 0,
-                            d.DOKKAI.t ? (d.DOKKAI.c/d.DOKKAI.t)*100 : 0,
-                            d.CHOUKAI.t ? (d.CHOUKAI.c/d.CHOUKAI.t)*100 : 0
+                            d.BUNPOU.t ? (d.BUNPOU.c/d.BUNPOU.t)*100 : 0,
+                            d.DOKKAI.t ? (d.DOKKAI.c/d.DOKKAI.t)*100 : 0
                         ],
                         backgroundColor: 'rgba(52, 152, 219, 0.2)', borderColor: '#3498db', borderWidth: 2
                     }]
