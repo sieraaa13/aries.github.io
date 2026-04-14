@@ -10,7 +10,7 @@
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background: var(--bg); display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
         
         /* UI Screens */
-        #folder-screen, #file-screen { padding: 40px; text-align: center; overflow-y: auto; }
+        #folder-screen, #file-screen, #year-screen { padding: 40px; text-align: center; overflow-y: auto; }
         .folder-grid { display: flex; justify-content: center; gap: 20px; margin-top: 30px; flex-wrap: wrap; }
         .folder-card { background: var(--white); padding: 25px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); cursor: pointer; width: 130px; transition: 0.3s; border: 2px solid transparent; }
         .folder-card:hover { transform: translateY(-5px); border-color: var(--accent); }
@@ -22,34 +22,27 @@
         #exam-content { flex: 1; padding: 20px; overflow-y: auto; padding-bottom: 100px; }
         body.chat-open #exam-content { height: 55vh; flex: none; }
 
-        /* Question Cards */
         .question-card { background: var(--white); padding: 25px; margin-bottom: 25px; border-radius: 12px; box-shadow: 0 3px 10px rgba(0,0,0,0.08); }
         .options-list { margin-top: 15px; display: flex; flex-direction: column; gap: 12px; }
         .option-item { padding: 14px 18px; border: 2px solid #eaeeef; border-radius: 10px; cursor: pointer; transition: 0.2s; background: #fafafa; }
         .option-item.selected { background: #e3f2fd; border-color: var(--accent); color: #1565c0; }
-        .option-item.correct { background: var(--success) !important; color: white !important; border-color: var(--success) !important; }
-        .option-item.wrong { background: var(--error) !important; color: white !important; border-color: var(--error) !important; }
+        .option-item.correct { background: var(--success) !important; color: white !important; }
+        .option-item.wrong { background: var(--error) !important; color: white !important; }
 
-        /* Results & Chart */
-        .btn-finish { background: var(--success); color: white; padding: 16px 50px; border: none; border-radius: 35px; font-size: 18px; font-weight: bold; cursor: pointer; margin: 30px 0; transition: 0.3s; box-shadow: 0 4px 10px rgba(39, 174, 96, 0.3); }
-        .btn-finish:hover { transform: scale(1.05); background: #219150; }
+        .btn-finish { background: var(--success); color: white; padding: 16px 50px; border: none; border-radius: 35px; font-size: 18px; font-weight: bold; cursor: pointer; margin: 30px 0; transition: 0.3s; }
         #result-box { display: none; margin: 30px auto; max-width: 600px; padding: 25px; background: var(--white); border-radius: 15px; border: 3px solid var(--success); text-align: center; }
-        .chart-container { max-width: 450px; margin: 20px auto; padding: 10px; border-radius: 15px; background: #fff; }
+        .chart-container { max-width: 450px; margin: 20px auto; }
 
-        /* Danbo Chat System */
-        #chat-icon { position: fixed; bottom: 25px; right: 25px; width: 75px; height: 75px; background: white; border-radius: 50%; box-shadow: 0 5px 20px rgba(0,0,0,0.2); cursor: pointer; display: none; z-index: 1000; border: 3px solid var(--accent); overflow: hidden; animation: bounce 2s infinite; }
-        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+        /* Chat System */
+        #chat-icon { position: fixed; bottom: 25px; right: 25px; width: 75px; height: 75px; background: white; border-radius: 50%; box-shadow: 0 5px 20px rgba(0,0,0,0.2); cursor: pointer; display: none; z-index: 1000; border: 3px solid var(--accent); overflow: hidden; }
         #chat-icon img { width: 100%; height: 100%; object-fit: cover; }
-        
-        #chat-sidebar { position: fixed; bottom: -50vh; left: 0; width: 100%; height: 48vh; background: var(--white); box-shadow: 0 -10px 25px rgba(0,0,0,0.15); display: flex; flex-direction: column; transition: bottom 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 1001; border-radius: 25px 25px 0 0; }
+        #chat-sidebar { position: fixed; bottom: -50vh; left: 0; width: 100%; height: 48vh; background: var(--white); box-shadow: 0 -10px 25px rgba(0,0,0,0.15); display: flex; flex-direction: column; transition: bottom 0.5s ease; z-index: 1001; border-radius: 25px 25px 0 0; }
         #chat-sidebar.active { bottom: 0; }
         .chat-header { background: var(--primary); color: white; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; border-radius: 25px 25px 0 0; }
-        #danbo-msg { padding: 20px; overflow-y: auto; flex: 1; background: #fdfdfd; font-size: 15px; line-height: 1.7; color: #333; }
+        #danbo-msg { padding: 20px; overflow-y: auto; flex: 1; background: #fdfdfd; font-size: 15px; line-height: 1.7; }
         .chat-input-area { display: flex; padding: 15px; background: var(--white); border-top: 1px solid #eee; }
-        #user-input { flex: 1; padding: 14px 20px; border: 1.5px solid #ddd; border-radius: 30px; outline: none; transition: 0.3s; }
-        #user-input:focus { border-color: var(--accent); box-shadow: 0 0 8px rgba(52, 152, 219, 0.2); }
+        #user-input { flex: 1; padding: 14px 20px; border: 1.5px solid #ddd; border-radius: 30px; outline: none; }
         #send-btn { background: var(--accent); color: white; border: none; padding: 0 25px; margin-left: 12px; border-radius: 25px; cursor: pointer; font-weight: bold; }
-        
         .hidden { display: none !important; }
     </style>
 </head>
@@ -58,13 +51,21 @@
     <div id="folder-screen">
         <h1 style="color: var(--primary);">Pusat Materi JLPT</h1>
         <div class="folder-grid">
-            <div class="folder-card" onclick="openFolder('n3')">📁<br><br><b>Level N3</b></div>
+            <div class="folder-card" onclick="openLevel('n1')">📁<br><br><b>Level N1</b></div>
+            <div class="folder-card" onclick="openLevel('n2')">📁<br><br><b>Level N2</b></div>
+            <div class="folder-card" onclick="openLevel('n3')">📁<br><br><b>Level N3</b></div>
         </div>
     </div>
 
+    <div id="year-screen" class="hidden">
+        <button onclick="showFolders()" style="cursor:pointer; padding: 8px 15px; border-radius: 8px;">⬅ Kembali</button>
+        <h2 id="level-title" style="color: var(--accent);"></h2>
+        <div class="folder-grid" id="year-container"></div>
+    </div>
+
     <div id="file-screen" class="hidden">
-        <button onclick="showFolders()" style="cursor:pointer; padding: 8px 15px; border-radius: 8px; border: 1px solid #ccc;">⬅ Kembali</button>
-        <h2 id="folder-title" style="color: var(--accent);"></h2>
+        <button onclick="backToYears()" style="cursor:pointer; padding: 8px 15px; border-radius: 8px;">⬅ Kembali</button>
+        <h2 id="year-title" style="color: var(--accent);"></h2>
         <div class="file-list" id="file-container"></div>
     </div>
 
@@ -92,228 +93,194 @@
     </div>
 
     <div id="chat-sidebar">
-        <div class="chat-header">
-            <span><b>Danbo AI Assistant</b></span>
-            <span style="cursor:pointer; font-size: 20px;" onclick="closeDanbo()">✕</span>
-        </div>
+        <div class="chat-header"><span><b>Danbo AI Assistant</b></span><span style="cursor:pointer;" onclick="closeDanbo()">✕</span></div>
         <div id="danbo-msg"></div>
         <div class="chat-input-area">
-            <input type="text" id="user-input" placeholder="Tanyakan kesulitanmu pada Danbo..." onkeypress="if(event.key === 'Enter') sendMessage()">
+            <input type="text" id="user-input" placeholder="Tanya Danbo..." onkeypress="if(event.key === 'Enter') sendMessage()">
             <button id="send-btn" onclick="sendMessage()">Kirim</button>
         </div>
     </div>
 
     <script>
         const BACKEND_URL = "https://web-backend-l5p7.onrender.com/danbo-chat"; 
+        let currentLevel = "";
+        let currentYear = "";
         let currentQuestions = [];
         let currentAnswers = [];
         let totalSoal = 0;
         let isFinished = false;
         let chatHistory = [];
 
-        const mockFiles = { 'n3': ['2011/07'] };
+        // Data folder sesuai screenshot GitHub kamu
+        const dataMateri = {
+            'n1': [],
+            'n2': [],
+            'n3': ['2011', '2012', '2013', '2014', '2015', '2016', '2017', '2018', '2019', '2020', '2021', '2022', '2023']
+        };
+
+        const fileSoal = {
+            '2011': ['07', '12'],
+            '2012': ['07', '12'],
+            '2013': ['07', '12'],
+            '2019': ['07'],
+            // Tambahkan file lainnya sesuai isi folder assets kamu
+        };
 
         function showFolders() {
             document.getElementById('folder-screen').classList.remove('hidden');
-            document.getElementById('file-screen').classList.add('hidden');
+            document.getElementById('year-screen').classList.add('hidden');
         }
 
-        function openFolder(level) {
+        function openLevel(level) {
+            currentLevel = level;
             document.getElementById('folder-screen').classList.add('hidden');
+            document.getElementById('year-screen').classList.remove('hidden');
+            document.getElementById('level-title').innerText = "Arsip Soal " + level.toUpperCase();
+            
+            const container = document.getElementById('year-container');
+            container.innerHTML = '';
+            
+            if(dataMateri[level].length === 0) {
+                container.innerHTML = "<p>Materi belum tersedia.</p>";
+                return;
+            }
+
+            dataMateri[level].forEach(year => {
+                const card = document.createElement('div');
+                card.className = 'folder-card';
+                card.innerHTML = `📁<br><br><b>${year}</b>`;
+                card.onclick = () => openYear(year);
+                container.appendChild(card);
+            });
+        }
+
+        function backToYears() {
+            document.getElementById('file-screen').classList.add('hidden');
+            document.getElementById('year-screen').classList.remove('hidden');
+        }
+
+        function openYear(year) {
+            currentYear = year;
+            document.getElementById('year-screen').classList.add('hidden');
             document.getElementById('file-screen').classList.remove('hidden');
-            document.getElementById('folder-title').innerText = "Arsip Soal " + level.toUpperCase();
+            document.getElementById('year-title').innerText = `Periode Tahun ${year}`;
+            
             const container = document.getElementById('file-container');
             container.innerHTML = '';
-            mockFiles[level].forEach(file => {
+            
+            const listFile = fileSoal[year] || ['07', '12']; // Default jika data list belum lengkap
+            
+            listFile.forEach(file => {
                 const item = document.createElement('div');
                 item.className = 'file-item';
-                item.innerText = "📄 JLPT N3 - Periode " + file;
-                item.onclick = () => startExam(level, file);
+                item.innerText = `📄 JLPT ${currentLevel.toUpperCase()} - Periode ${year}/${file}`;
+                item.onclick = () => startExam(currentLevel, year, file);
                 container.appendChild(item);
             });
         }
 
-        async function startExam(level, fileName) {
+        async function startExam(level, year, file) {
             document.getElementById('file-screen').classList.add('hidden');
             document.getElementById('exam-screen').style.display = 'flex';
             document.getElementById('chat-icon').style.display = 'flex';
             const area = document.getElementById('questions-area');
-            area.innerHTML = "<div style='text-align:center; padding:50px;'>☕ Menyiapkan lembar soal...</div>";
+            area.innerHTML = "<div style='text-align:center; padding:50px;'>Memuat soal...</div>";
 
             try {
-                const response = await fetch(`assets/${level}/${fileName}.json`);
+                // Path sesuai struktur GitHub: assets/n3/2011/07.json
+                const response = await fetch(`assets/${level}/${year}/${file}.json`);
                 const data = await response.json();
-                const key = Object.keys(data)[0]; 
+                const key = Object.keys(data)[0];
                 currentQuestions = data[key].questions;
-                document.getElementById('exam-title-display').innerText = data[key].title;
                 totalSoal = currentQuestions.length;
                 currentAnswers = new Array(totalSoal).fill(null);
                 
                 area.innerHTML = '';
-                currentQuestions.forEach((item, qIdx) => {
+                currentQuestions.forEach((item, i) => {
                     const card = document.createElement('div');
                     card.className = 'question-card';
                     let opts = '';
-                    item.options.forEach((opt, oIdx) => {
-                        opts += `<div class="option-item" id="q${qIdx}-o${oIdx}" onclick="pickOption(${qIdx}, ${oIdx})">${oIdx + 1}. ${opt}</div>`;
+                    item.options.forEach((opt, o) => {
+                        opts += `<div class="option-item" id="q${i}-o${o}" onclick="pickOption(${i}, ${o})">${o+1}. ${opt}</div>`;
                     });
-                    card.innerHTML = `<p style='font-size:17px; font-weight:500;'>${qIdx + 1}. ${item.q}</p><div class="options-list">${opts}</div>`;
+                    card.innerHTML = `<p><b>${i+1}.</b> ${item.q}</p><div class="options-list">${opts}</div>`;
                     area.appendChild(card);
                 });
                 updateStatus();
-            } catch (err) {
-                area.innerHTML = `<p style='color:red; text-align:center;'>Gagal memuat soal. Pastikan file JSON tersedia di path assets.</p>`;
+            } catch (e) {
+                area.innerHTML = "Gagal memuat soal. Pastikan file JSON ada di folder assets.";
             }
         }
 
-        function pickOption(qIdx, oIdx) {
+        function pickOption(q, o) {
             if (isFinished) return;
-            currentAnswers[qIdx] = oIdx;
-            document.querySelectorAll(`[id^="q${qIdx}-o"]`).forEach(el => el.classList.remove('selected'));
-            document.getElementById(`q${qIdx}-o${oIdx}`).classList.add('selected');
+            currentAnswers[q] = o;
+            document.querySelectorAll(`[id^="q${q}-o"]`).forEach(el => el.classList.remove('selected'));
+            document.getElementById(`q${q}-o${o}`).classList.add('selected');
             updateStatus();
         }
 
         function updateStatus() {
-            const filled = currentAnswers.filter(a => a !== null).length;
-            document.getElementById('progress-indicator').innerText = `Terjawab: ${filled} / ${totalSoal}`;
+            const done = currentAnswers.filter(a => a !== null).length;
+            document.getElementById('progress-indicator').innerText = `Progres: ${done} / ${totalSoal}`;
         }
 
         function showResults() {
             isFinished = true;
-            let benarCount = 0;
-            
-            // Statistik 8 Sub-Kategori Detil
-            const stats = {
-                KANJI: {c:0, t:0}, GOI: {c:0, t:0},
-                BUNPOU: {c:0, t:0}, KUMITATE: {c:0, t:0},
-                TANBUN: {c:0, t:0}, CHOUBUN: {c:0, t:0},
-                NICHIJYOU: {c:0, t:0}, JYOUHOU: {c:0, t:0}
-            };
+            let benar = 0;
+            const stats = { KANJI: {c:0, t:0}, GOI: {c:0, t:0}, BUNPOU: {c:0, t:0}, KUMITATE: {c:0, t:0}, TANBUN: {c:0, t:0}, CHOUBUN: {c:0, t:0}, NICHIJYOU: {c:0, t:0}, JYOUHOU: {c:0, t:0} };
 
             currentQuestions.forEach((q, i) => {
                 let cat = (q.category || "GOI").toUpperCase().replace("BUNPOU_KUMITATE", "KUMITATE");
-                if (!stats[cat]) cat = "GOI"; // Fallback jika kategori tidak dikenal
-
+                if (!stats[cat]) cat = "GOI";
                 stats[cat].t++;
                 document.getElementById(`q${i}-o${q.correct}`).classList.add('correct');
-                
-                if (currentAnswers[i] === q.correct) {
-                    benarCount++;
-                    stats[cat].c++;
-                } else if (currentAnswers[i] !== null) {
-                    document.getElementById(`q${i}-o${currentAnswers[i]}`).classList.add('wrong');
-                }
+                if (currentAnswers[i] === q.correct) { benar++; stats[cat].c++; }
+                else if (currentAnswers[i] !== null) document.getElementById(`q${i}-o${currentAnswers[i]}`).classList.add('wrong');
             });
 
-            // Mapping 5 Pilar Utama Diagram
-            const pilarData = [
-                stats.KANJI.t ? (stats.KANJI.c / stats.KANJI.t) * 100 : 0,
-                stats.GOI.t ? (stats.GOI.c / stats.GOI.t) * 100 : 0,
+            const pilar = [
+                stats.KANJI.t ? (stats.KANJI.c/stats.KANJI.t)*100 : 0,
+                stats.GOI.t ? (stats.GOI.c/stats.GOI.t)*100 : 0,
                 (stats.BUNPOU.t + stats.KUMITATE.t) > 0 ? ((stats.BUNPOU.c + stats.KUMITATE.c)/(stats.BUNPOU.t + stats.KUMITATE.t))*100 : 0,
                 (stats.TANBUN.t + stats.CHOUBUN.t) > 0 ? ((stats.TANBUN.c + stats.CHOUBUN.c)/(stats.TANBUN.t + stats.CHOUBUN.t))*100 : 0,
                 (stats.NICHIJYOU.t + stats.JYOUHOU.t) > 0 ? ((stats.NICHIJYOU.c + stats.JYOUHOU.c)/(stats.NICHIJYOU.t + stats.JYOUHOU.t))*100 : 0
             ];
 
-            document.getElementById('submit-btn').classList.add('hidden');
             document.getElementById('result-box').style.display = 'block';
-            document.getElementById('final-score').innerText = `Skor: ${benarCount} / ${totalSoal}`;
-            
-            drawChart(pilarData);
+            document.getElementById('final-score').innerText = `Skor: ${benar} / ${totalSoal}`;
+            drawChart(pilar);
             openDanbo();
-            
-            // Respon Danbo dengan Rincian 8 Kategori
-            let report = `<strong>Danbo:</strong> Ujian selesai! Kamu menjawab benar <b>${benarCount}/${totalSoal}</b> soal.<br><br>`;
-            report += `<b>Rincian Penilaian Mendetail:</b><br>`;
-            report += `• <b>Kanji:</b> ${stats.KANJI.c} benar dari ${stats.KANJI.t}<br>`;
-            report += `• <b>Goi (Kosakata):</b> ${stats.GOI.c} benar dari ${stats.GOI.t}<br>`;
-            report += `• <b>Bunpou (Tata Bahasa):</b> ${stats.BUNPOU.c} benar dari ${stats.BUNPOU.t}<br>`;
-            report += `• <b>Kumitate (Menyusun Kalimat):</b> ${stats.KUMITATE.c} benar dari ${stats.KUMITATE.t}<br>`;
-            report += `• <b>Dokkai Tanbun (Teks Pendek):</b> ${stats.TANBUN.c} benar dari ${stats.TANBUN.t}<br>`;
-            report += `• <b>Dokkai Choubun (Teks Panjang):</b> ${stats.CHOUBUN.c} benar dari ${stats.CHOUBUN.t}<br>`;
-            report += `• <b>Choukai Nichijyou (Harian):</b> ${stats.NICHIJYOU.c} benar dari ${stats.NICHIJYOU.t}<br>`;
-            report += `• <b>Choukai Jyouhou (Informasi):</b> ${stats.JYOUHOU.c} benar dari ${stats.JYOUHOU.t}<br><br>`;
-            
-            if (benarCount === totalSoal) {
-                report += "<b>Luar biasa sempurna!</b> Muhammad Haris Munandar, kamu siap untuk ujian JLPT sesungguhnya!";
-            } else if (benarCount <= 5) {
-                report += "Jangan menyerah! Benar sedikit itu hal yang wajar di awal belajar. Danbo ada di sini untuk membantu menjelaskan bagian yang sulit.";
-            } else {
-                report += "Kerja bagus! Diagram menunjukkan area yang perlu kita asah lagi. Bagian mana yang mau kita diskusikan?";
-            }
-            
-            addDanboMessage(report);
-            chatHistory.push({ role: "system", content: `Hasil: ${benarCount}/${totalSoal}. Detail Kategori: Kanji ${pilarData[0]}%, Goi ${pilarData[1]}%, Grammar ${pilarData[2]}%, Reading ${pilarData[3]}%, Listening ${pilarData[4]}%. Berikan semangat dan motivasi.` });
+            addDanboMessage(`<strong>Danbo:</strong> Ujian selesai! Skor kamu <b>${benar}/${totalSoal}</b>. Semangat Muhammad Haris Munandar!`);
         }
 
-        function drawChart(dataPoin) {
+        function drawChart(data) {
             const ctx = document.getElementById('scoreChart').getContext('2d');
-            if (window.myRadarChart) { window.myRadarChart.destroy(); }
-
-            window.myRadarChart = new Chart(ctx, {
+            new Chart(ctx, {
                 type: 'radar',
                 data: {
-                    labels: ['Kanji', 'Goi', 'Bunpou', 'Dokkai', 'Choukai'], 
-                    datasets: [{
-                        label: '% Penguasaan',
-                        data: dataPoin, 
-                        backgroundColor: 'rgba(39, 174, 96, 0.2)',
-                        borderColor: '#27ae60',
-                        borderWidth: 3,
-                        pointBackgroundColor: '#27ae60'
-                    }]
+                    labels: ['Kanji', 'Goi', 'Bunpou', 'Dokkai', 'Choukai'],
+                    datasets: [{ label: '% Penguasaan', data: data, backgroundColor: 'rgba(39, 174, 96, 0.2)', borderColor: '#27ae60', borderWidth: 3 }]
                 },
-                options: {
-                    scales: {
-                        r: {
-                            min: 0, max: 100,
-                            ticks: { stepSize: 20, display: false },
-                            pointLabels: { font: { size: 14, weight: 'bold' }, color: '#2c3e50' }
-                        }
-                    },
-                    plugins: { legend: { display: false } }
-                }
+                options: { scales: { r: { min: 0, max: 100, ticks: { display: false } } }, plugins: { legend: { display: false } } }
             });
         }
 
         async function sendMessage() {
             const input = document.getElementById('user-input');
-            const msg = input.value.trim();
-            if (!msg) return;
-            addDanboMessage(`<strong>Kamu:</strong> ${msg}`);
-            input.value = '';
+            const msg = input.value.trim(); if (!msg) return;
+            addDanboMessage(`<strong>Kamu:</strong> ${msg}`); input.value = '';
             try {
-                const res = await fetch(BACKEND_URL, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ userQuery: msg, history: chatHistory })
-                });
+                const res = await fetch(BACKEND_URL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ userQuery: msg, history: chatHistory }) });
                 const data = await res.json();
                 addDanboMessage(`<strong>Danbo:</strong> ${data.reply}`);
                 chatHistory.push({ role: "user", content: msg }, { role: "assistant", content: data.reply });
-            } catch (e) { 
-                addDanboMessage("<strong>Danbo:</strong> Sepertinya server sedang sibuk. Coba lagi sebentar lagi ya."); 
-            }
+            } catch (e) { addDanboMessage("Danbo sedang sibuk."); }
         }
 
-        function addDanboMessage(txt) {
-            const box = document.getElementById('danbo-msg');
-            const p = document.createElement('p');
-            p.innerHTML = txt;
-            box.appendChild(p);
-            box.scrollTop = box.scrollHeight;
-        }
-
-        function openDanbo() { 
-            document.getElementById('chat-sidebar').classList.add('active'); 
-            document.getElementById('chat-icon').classList.add('hidden'); 
-            document.body.classList.add('chat-open'); 
-        }
-        function closeDanbo() { 
-            document.getElementById('chat-sidebar').classList.remove('active'); 
-            document.getElementById('chat-icon').classList.remove('hidden'); 
-            document.body.classList.remove('chat-open'); 
-        }
+        function addDanboMessage(t) { const b = document.getElementById('danbo-msg'); const p = document.createElement('p'); p.innerHTML = t; b.appendChild(p); b.scrollTop = b.scrollHeight; }
+        function openDanbo() { document.getElementById('chat-sidebar').classList.add('active'); document.getElementById('chat-icon').style.display = 'none'; document.body.classList.add('chat-open'); }
+        function closeDanbo() { document.getElementById('chat-sidebar').classList.remove('active'); document.getElementById('chat-icon').style.display = 'flex'; document.body.classList.remove('chat-open'); }
     </script>
 </body>
 </html>
