@@ -20,7 +20,8 @@
         #exam-content { flex: 1; padding: 20px; overflow-y: auto; padding-bottom: 150px; }
         body.chat-open #exam-content { height: 60vh; flex: none; }
 
-        .question-card { background: white; padding: 20px; margin-bottom: 25px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .question-card { background: white; padding: 20px; margin-bottom: 25px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); max-width: 800px; margin-left: auto; margin-right: auto; }
+        .q-image { display: block; max-width: 100%; height: auto; margin: 10px auto; border: 1px solid #ddd; border-radius: 5px; }
         .options-list { margin-top: 15px; display: flex; flex-direction: column; gap: 10px; }
         .option-item { padding: 12px 15px; border: 2px solid #ddd; border-radius: 8px; cursor: pointer; transition: 0.2s; }
         .option-item.selected { background: #e3f2fd; border-color: var(--accent); }
@@ -33,9 +34,9 @@
 
         #chat-icon { position: fixed; bottom: 20px; right: 20px; width: 70px; height: 70px; background: white; border-radius: 50%; box-shadow: 0 4px 12px rgba(0,0,0,0.2); cursor: pointer; display: none; z-index: 1000; border: 2px solid var(--accent); overflow: hidden; }
         #chat-icon img { width: 100%; height: 100%; object-fit: cover; }
-        #chat-sidebar { position: fixed; bottom: -45vh; left: 0; width: 100%; height: 45vh; background: white; box-shadow: 0 -5px 15px rgba(0,0,0,0.1); display: flex; flex-direction: column; transition: bottom 0.4s ease; z-index: 1001; }
+        #chat-sidebar { position: fixed; bottom: -50vh; left: 0; width: 100%; height: 50vh; background: white; box-shadow: 0 -5px 15px rgba(0,0,0,0.1); display: flex; flex-direction: column; transition: bottom 0.4s ease; z-index: 1001; }
         #chat-sidebar.active { bottom: 0; }
-        .chat-header { background: var(--primary); color: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .chat-header { background: var(--primary); color: white; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; }
         #danbo-msg { padding: 15px; overflow-y: auto; flex: 1; background: #f9f9f9; font-size: 14px; line-height: 1.6; }
         .chat-input-area { display: flex; padding: 10px; background: white; border-top: 1px solid #ddd; }
         #user-input { flex: 1; padding: 12px; border: 1px solid #ccc; border-radius: 25px; outline: none; }
@@ -51,19 +52,20 @@
             <div class="folder-card" onclick="openFolder('n3')">📁<br>N3</div>
         </div>
     </div>
+
     <div id="file-screen" class="hidden">
         <button onclick="showFolders()">⬅ Kembali</button>
-        <h2 id="folder-title"></h2>
+        <h2 id="folder-title">Arsip Soal N3</h2>
         <div class="file-list" id="file-container"></div>
     </div>
 
     <div id="exam-screen">
         <div id="exam-content">
-            <div style="display:flex; justify-content:space-between;">
-                <button onclick="location.reload()">⬅ Keluar</button>
-                <b id="progress-indicator"></b>
+            <div style="display:flex; justify-content:space-between; align-items: center; max-width: 800px; margin: auto;">
+                <button onclick="location.reload()" style="padding: 8px 15px; cursor:pointer;">⬅ Keluar</button>
+                <b id="progress-indicator" style="background: #fff; padding: 5px 15px; border-radius: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">Progres: 0 / 0</b>
             </div>
-            <h2 id="exam-title-display"></h2>
+            <h2 id="exam-title-display" style="text-align: center;"></h2>
             <div id="questions-area"></div>
             <div style="text-align:center;">
                 <button id="submit-btn" class="btn-finish" onclick="showResults()">Selesai & Cek Skor</button>
@@ -77,15 +79,15 @@
     </div>
 
     <div id="chat-icon" onclick="openDanbo()">
-        <img src="assets/icon robot.jpeg" alt="Danbo">
+        <img src="assets/icon robot.jpeg" alt="Danbo" onerror="this.src='https://via.placeholder.com/70?text=AI'">
     </div>
 
     <div id="chat-sidebar">
-        <div class="chat-header"><span>Danbo AI Helper</span><span onclick="closeDanbo()">✖</span></div>
+        <div class="chat-header"><span>Danbo AI Assistant</span><span onclick="closeDanbo()" style="cursor:pointer;">✖</span></div>
         <div id="danbo-msg"></div>
         <div class="chat-input-area">
             <input type="text" id="user-input" placeholder="Tanya Danbo..." onkeypress="if(event.key === 'Enter') sendMessage()">
-            <button onclick="sendMessage()">Kirim</button>
+            <button id="send-btn" onclick="sendMessage()">Kirim</button>
         </div>
     </div>
 
@@ -96,53 +98,120 @@
         let totalSoal = 0;
         let isFinished = false;
         let chatHistory = [];
+        let currentLevel = "";
+        let currentFilePath = "";
 
-        const mockFiles = { 'n3': ['2011/07'] };
+        const mockFiles = { 'n3': ['2011/07', '2011/12', '2012/07'] };
 
-        function showFolders() { document.getElementById('folder-screen').classList.remove('hidden'); document.getElementById('file-screen').classList.add('hidden'); }
+        function showFolders() { 
+            document.getElementById('folder-screen').classList.remove('hidden'); 
+            document.getElementById('file-screen').classList.add('hidden'); 
+        }
+
         function openFolder(level) {
+            currentLevel = level;
             document.getElementById('folder-screen').classList.add('hidden');
             document.getElementById('file-screen').classList.remove('hidden');
-            const container = document.getElementById('file-container'); container.innerHTML = '';
+            const container = document.getElementById('file-container'); 
+            container.innerHTML = '';
+            
             mockFiles[level].forEach(file => {
                 const item = document.createElement('div');
-                item.className = 'file-item'; item.innerText = "📄 " + file;
-                item.onclick = () => startExam(level, file); container.appendChild(item);
+                item.className = 'file-item'; 
+                item.innerText = "📄 JLPT " + level.toUpperCase() + " - Periode " + file;
+                item.onclick = () => startExam(level, file); 
+                container.appendChild(item);
             });
         }
 
+        // Fungsi pembantu untuk menentukan nama gambar berdasarkan nomor soal
+        function getQuestionImage(qText) {
+            const match = qText.match(/^(\d+)\./);
+            if (!match) return null;
+            const n = parseInt(match[1]);
+            if (n >= 19 && n <= 23) return "19-23.png";
+            if (n >= 24 && n <= 27) return `${n}.png`;
+            if (n >= 28 && n <= 30) return "28-30.png";
+            if (n >= 31 && n <= 33) return "31-33.png";
+            if (n >= 34 && n <= 37) return "34-37.png";
+            if (n >= 38 && n <= 39) return "38-39.png";
+            return null;
+        }
+
         async function startExam(level, file) {
+            currentFilePath = file; // Contoh: "2011/07"
             document.getElementById('file-screen').classList.add('hidden');
             document.getElementById('exam-screen').style.display = 'flex';
             document.getElementById('chat-icon').style.display = 'flex';
-            const area = document.getElementById('questions-area'); area.innerHTML = "Memuat...";
+            
+            const area = document.getElementById('questions-area'); 
+            area.innerHTML = "<p style='text-align:center;'>Memuat soal dari GitHub...</p>";
+            
             try {
+                // Pastikan path JSON benar: assets/n3/2011/07.json
                 const res = await fetch(`assets/${level}/${file}.json`);
                 const data = await res.json();
-                const key = Object.keys(data)[0];
+                
+                // Cari array questions di dalam objek JSON
+                const key = Object.keys(data).find(k => data[k].questions);
+                if (!key) throw new Error("Format JSON tidak dikenali");
+
                 currentQuestions = data[key].questions;
                 totalSoal = currentQuestions.length;
                 currentAnswers = new Array(totalSoal).fill(null);
+                
                 area.innerHTML = '';
                 currentQuestions.forEach((q, i) => {
-                    const card = document.createElement('div'); card.className = 'question-card';
+                    const card = document.createElement('div'); 
+                    card.className = 'question-card';
+                    
+                    // Logika Gambar Pendukung
+                    let imgHtml = "";
+                    const imgName = getQuestionImage(q.q);
+                    if (imgName) {
+                        // Path gambar: assets/n3/2011/07/19-23.png
+                        imgHtml = `<img src="assets/${level}/${file}/${imgName}" class="q-image" onerror="this.style.display='none'">`;
+                    }
+
                     let opts = '';
-                    q.options.forEach((opt, o) => { opts += `<div class="option-item" id="q${i}-o${o}" onclick="pickOption(${i}, ${o})">${o+1}. ${opt}</div>`; });
-                    card.innerHTML = `<p><b>${i+1}.</b> ${q.q}</p><div class="options-list">${opts}</div>`;
+                    q.options.forEach((opt, o) => { 
+                        opts += `<div class="option-item" id="q${i}-o${o}" onclick="pickOption(${i}, ${o})">${o+1}. ${opt}</div>`; 
+                    });
+                    
+                    card.innerHTML = `
+                        ${imgHtml}
+                        <p><b>${q.q}</b></p>
+                        <div class="options-list">${opts}</div>
+                    `;
                     area.appendChild(card);
                 });
                 updateStatus();
-            } catch (e) { area.innerHTML = "Gagal memuat soal."; }
+            } catch (e) { 
+                area.innerHTML = `<p style='color:red; text-align:center;'>Gagal memuat soal.<br>Pastikan file tersedia di: assets/${level}/${file}.json</p>`; 
+            }
         }
 
-        function pickOption(q, o) { if(isFinished) return; currentAnswers[q] = o; document.querySelectorAll(`[id^="q${q}-o"]`).forEach(el => el.classList.remove('selected')); document.getElementById(`q${q}-o${o}`).classList.add('selected'); updateStatus(); }
-        function updateStatus() { document.getElementById('progress-indicator').innerText = `Progres: ${currentAnswers.filter(a=>a!==null).length} / ${totalSoal}`; }
+        function pickOption(q, o) { 
+            if(isFinished) return; 
+            currentAnswers[q] = o; 
+            document.querySelectorAll(`[id^="q${q}-o"]`).forEach(el => el.classList.remove('selected')); 
+            document.getElementById(`q${q}-o${o}`).classList.add('selected'); 
+            updateStatus(); 
+        }
+
+        function updateStatus() { 
+            const filled = currentAnswers.filter(a => a !== null).length;
+            document.getElementById('progress-indicator').innerText = `Progres: ${filled} / ${totalSoal}`; 
+        }
 
         function showResults() {
+            if (currentAnswers.includes(null)) {
+                if (!confirm("Beberapa soal belum dijawab. Yakin ingin selesai?")) return;
+            }
+
             isFinished = true;
             let totalBenar = 0;
             
-            // Inisialisasi 8 sub-kategori spesifik
             const stats = {
                 KANJI: {c:0, t:0}, GOI: {c:0, t:0},
                 BUNPOU_KUMITATE: {c:0, t:0}, BUNPOU: {c:0, t:0},
@@ -151,10 +220,7 @@
             };
 
             currentQuestions.forEach((q, i) => {
-                // Normalisasi Kategori (Ubah ke Uppercase dan bersihkan spasi)
                 let rawCat = (q.category || "GOI").toUpperCase().trim();
-                
-                // Jika kategori di JSON aneh/salah, lempar ke GOI agar diagram tidak rusak
                 if (!stats[rawCat]) rawCat = "GOI";
 
                 stats[rawCat].t++;
@@ -168,7 +234,6 @@
                 }
             });
 
-            // Mapping 5 Pilar Diagram (Gabungkan sub-kategori)
             const pilarScores = [
                 stats.KANJI.t ? (stats.KANJI.c/stats.KANJI.t)*100 : 0,
                 stats.GOI.t ? (stats.GOI.c/stats.GOI.t)*100 : 0,
@@ -178,33 +243,19 @@
             ];
 
             document.getElementById('result-box').style.display = 'block';
+            document.getElementById('submit-btn').style.display = 'none';
             document.getElementById('final-score').innerText = `Skor Akhir: ${totalBenar} / ${totalSoal}`;
             drawChart(pilarScores);
             
-            // Pesan Danbo Rinci
-            let report = `<strong>Danbo:</strong> Ujian selesai! Skor: <b>${totalBenar}/${totalSoal}</b>.<br><br>`;
-            report += `<b>Detail Jawaban Benar:</b><br>`;
-            report += `• Kanji: ${stats.KANJI.c}/${stats.KANJI.t}<br>`;
-            report += `• Goi: ${stats.GOI.c}/${stats.GOI.t}<br>`;
-            report += `• Bunpou Kumitate: ${stats.BUNPOU_KUMITATE.c}/${stats.BUNPOU_KUMITATE.t}<br>`;
-            report += `• Bunpou: ${stats.BUNPOU.c}/${stats.BUNPOU.t}<br>`;
-            report += `• Dokkai Tanbun: ${stats.TANBUN.c}/${stats.TANBUN.t}<br>`;
-            report += `• Dokkai Choubun: ${stats.CHOUBUN.c}/${stats.CHOUBUN.t}<br>`;
-            report += `• Choukai Nichijyou: ${stats.NICHIJYOU.c}/${stats.NICHIJYOU.t}<br>`;
-            report += `• Choukai Jyouhou: ${stats.JYOUHOU.c}/${stats.JYOUHOU.t}<br><br>`;
+            let report = `<strong>Danbo:</strong> Ujian selesai! Skor kamu <b>${totalBenar}/${totalSoal}</b>.<br><br>`;
+            report += `<b>Rincian Penilaian:</b><br>`;
+            if(stats.KANJI.t) report += `• Kanji: ${stats.KANJI.c}/${stats.KANJI.t}<br>`;
+            if(stats.GOI.t) report += `• Goi: ${stats.GOI.c}/${stats.GOI.t}<br>`;
+            if(stats.BUNPOU.t || stats.BUNPOU_KUMITATE.t) report += `• Bunpou: ${stats.BUNPOU.c + stats.BUNPOU_KUMITATE.c}/${stats.BUNPOU.t + stats.BUNPOU_KUMITATE.t}<br>`;
+            if(stats.TANBUN.t || stats.CHOUBUN.t) report += `• Dokkai: ${stats.TANBUN.c + stats.CHOUBUN.c}/${stats.TANBUN.t + stats.CHOUBUN.t}<br>`;
             
-            if(totalBenar === totalSoal) {
-                report += "<b>Luar biasa!</b> Kamu menjawab semua dengan benar! Pertahankan performa ini untuk ujian aslinya ya!";
-            } else if(totalBenar <= 10) {
-                report += "Jangan menyerah! Setiap kesalahan adalah pelajaran. Bagian mana yang menurutmu paling membingungkan? Danbo siap bantu jelaskan.";
-            } else {
-                report += "Kerja bagus! Sedikit lagi kamu akan menguasai materi ini. Ayo diskusikan bagian yang tadi masih salah.";
-            }
-
             openDanbo();
-            addDanboMessage(report);
-
-            chatHistory.push({ role: "system", content: `User benar ${totalBenar}/${totalSoal}. Berikan feedback suportif sebagai teman belajar yang cerdas dan suportif.` });
+            addDanboMessage(report + "<br>Terus semangat belajarnya!");
         }
 
         function drawChart(dataPoin) {
@@ -224,9 +275,8 @@
                     scales: { 
                         r: { 
                             min: 0, max: 100, 
-                            beginAtZero: true,
                             ticks: { display: false, stepSize: 20 },
-                            pointLabels: { font: { size: 14, weight: 'bold' } }
+                            pointLabels: { font: { size: 12, weight: 'bold' } }
                         } 
                     }, 
                     plugins: { legend: { display: false } } 
@@ -237,7 +287,9 @@
         async function sendMessage() {
             const input = document.getElementById('user-input');
             const msg = input.value.trim(); if(!msg) return;
-            addDanboMessage(`<strong>Kamu:</strong> ${msg}`); input.value = '';
+            addDanboMessage(`<strong>Kamu:</strong> ${msg}`); 
+            input.value = '';
+            
             try {
                 const res = await fetch(BACKEND_URL, {
                     method: "POST",
@@ -250,9 +302,27 @@
             } catch (e) { addDanboMessage("<strong>Danbo:</strong> Gagal terhubung ke sistem."); }
         }
 
-        function addDanboMessage(t) { const b = document.getElementById('danbo-msg'); const p = document.createElement('p'); p.innerHTML = t; b.appendChild(p); b.scrollTop = b.scrollHeight; }
-        function openDanbo() { document.getElementById('chat-sidebar').classList.add('active'); document.getElementById('chat-icon').style.display = 'none'; document.body.classList.add('chat-open'); }
-        function closeDanbo() { document.getElementById('chat-sidebar').classList.remove('active'); document.getElementById('chat-icon').style.display = 'flex'; document.body.classList.remove('chat-open'); }
+        function addDanboMessage(t) { 
+            const b = document.getElementById('danbo-msg'); 
+            const p = document.createElement('p'); 
+            p.innerHTML = t; 
+            b.appendChild(p); 
+            b.scrollTop = b.scrollHeight; 
+        }
+
+        function openDanbo() { 
+            document.getElementById('chat-sidebar').classList.add('active'); 
+            document.getElementById('chat-icon').style.display = 'none'; 
+            document.body.classList.add('chat-open'); 
+        }
+
+        function closeDanbo() { 
+            document.getElementById('chat-sidebar').classList.remove('active'); 
+            if(document.getElementById('exam-screen').style.display === 'flex') {
+                document.getElementById('chat-icon').style.display = 'flex'; 
+            }
+            document.body.classList.remove('chat-open'); 
+        }
     </script>
 </body>
 </html>
