@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Danbo JLPT Learning System - Stable Version</title>
+    <title>Danbo JLPT Learning System</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { --primary: #2c3e50; --accent: #3498db; --bg: #f0f2f5; --success: #27ae60; --error: #e74c3c; }
@@ -17,8 +17,10 @@
         .file-item { padding: 15px; border-bottom: 1px solid #eee; cursor: pointer; color: var(--accent); font-weight: bold; }
 
         #exam-screen { display: none; flex-direction: column; height: 100vh; }
-        #exam-content { flex: 1; padding: 20px; overflow-y: auto; padding-bottom: 150px; }
-        body.chat-open #exam-content { height: 40vh; flex: none; } /* Disesuaikan agar layar soal tetap terlihat sedikit */
+        #exam-content { flex: 1; padding: 20px; overflow-y: auto; padding-bottom: 50px; }
+        
+        /* Sidebar Tinggi 1/3 */
+        body.chat-open #exam-content { height: 67vh; flex: none; }
 
         .question-card { background: white; padding: 20px; margin-bottom: 25px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); max-width: 800px; margin-left: auto; margin-right: auto; }
         .q-image { display: block; max-width: 100%; height: auto; margin: 15px auto; border: 1px solid #ddd; border-radius: 8px; }
@@ -29,18 +31,20 @@
         .option-item.wrong { background: var(--error) !important; color: white !important; }
 
         .btn-finish { background: var(--success); color: white; padding: 15px 40px; border: none; border-radius: 30px; font-size: 18px; cursor: pointer; margin: 20px 0; }
-        #result-box { display: none; margin: 30px 0; padding: 20px; background: white; border-radius: 10px; border: 2px solid var(--success); }
+        #result-box { display: none; margin: 30px auto; padding: 20px; background: white; border-radius: 10px; border: 2px solid var(--success); max-width: 800px; }
         .chart-container { max-width: 450px; margin: 20px auto; }
 
         #chat-icon { position: fixed; bottom: 20px; right: 20px; width: 70px; height: 70px; background: white; border-radius: 50%; box-shadow: 0 4px 12px rgba(0,0,0,0.2); cursor: pointer; display: none; z-index: 1000; border: 2px solid var(--accent); overflow: hidden; }
         #chat-icon img { width: 100%; height: 100%; object-fit: cover; }
-        #chat-sidebar { position: fixed; bottom: -55vh; left: 0; width: 100%; height: 50vh; background: white; box-shadow: 0 -5px 15px rgba(0,0,0,0.1); display: flex; flex-direction: column; transition: bottom 0.4s ease; z-index: 1001; }
+        
+        #chat-sidebar { position: fixed; bottom: -35vh; left: 0; width: 100%; height: 33vh; background: white; box-shadow: 0 -5px 15px rgba(0,0,0,0.1); display: flex; flex-direction: column; transition: bottom 0.4s ease; z-index: 1001; }
         #chat-sidebar.active { bottom: 0; }
-        .chat-header { background: var(--primary); color: white; padding: 12px 20px; display: flex; justify-content: space-between; align-items: center; }
-        #danbo-msg { padding: 15px; overflow-y: auto; flex: 1; background: #f9f9f9; font-size: 14px; line-height: 1.6; }
-        .chat-input-area { display: flex; padding: 10px; background: white; border-top: 1px solid #ddd; }
-        #user-input { flex: 1; padding: 12px; border: 1px solid #ccc; border-radius: 25px; outline: none; }
-        #send-btn { background: var(--accent); color: white; border: none; padding: 0 20px; margin-left: 10px; border-radius: 20px; cursor: pointer; }
+        
+        .chat-header { background: var(--primary); color: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
+        #danbo-msg { padding: 12px; overflow-y: auto; flex: 1; background: #f9f9f9; font-size: 13px; line-height: 1.5; }
+        .chat-input-area { display: flex; padding: 8px; background: white; border-top: 1px solid #ddd; }
+        #user-input { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 20px; outline: none; font-size: 13px; }
+        #send-btn { background: var(--accent); color: white; border: none; padding: 0 15px; margin-left: 8px; border-radius: 15px; cursor: pointer; }
         .hidden { display: none !important; }
     </style>
 </head>
@@ -77,7 +81,7 @@
     </div>
 
     <div id="chat-icon" onclick="openDanbo()">
-        <img src="assets/icon robot.jpeg" alt="Danbo" onerror="this.src='https://via.placeholder.com/70?text=AI'">
+        <img src="assets/icon robot.jpeg" alt="Danbo">
     </div>
 
     <div id="chat-sidebar">
@@ -111,15 +115,12 @@
                     card.onclick = () => openLevelFiles(lvl);
                     container.appendChild(card);
                 });
-            } catch (e) {
-                console.error("Gagal memuat manifest:", e);
-            }
+            } catch (e) { console.error(e); }
         }
 
         function openLevelFiles(levelData) {
             document.getElementById('folder-screen').classList.add('hidden');
             document.getElementById('file-screen').classList.remove('hidden');
-            document.getElementById('folder-title').innerText = `Arsip Soal ${levelData.name}`;
             const container = document.getElementById('file-container');
             container.innerHTML = '';
             levelData.years.forEach(y => {
@@ -139,20 +140,17 @@
             document.getElementById('chat-icon').style.display = 'flex';
             document.getElementById('exam-title-display').innerText = label;
             const area = document.getElementById('questions-area');
-            area.innerHTML = "<p style='text-align:center;'>Menyusun soal...</p>";
+            area.innerHTML = '';
 
             try {
                 const res = await fetch(`assets/${path}`);
-                if (!res.ok) throw new Error("File soal tidak ditemukan");
                 const data = await res.json();
                 
                 currentQuestions = [];
-                const categories = ['kanji', 'bunpou', 'dokkai', 'choukai'];
-                
-                categories.forEach(cat => {
+                ['kanji', 'bunpou', 'dokkai', 'choukai'].forEach(cat => {
                     if (data[cat]) {
-                        data[cat].forEach(q => {
-                            currentQuestions.push({ ...q, categoryGroup: cat });
+                        data[cat].forEach((q, idx) => {
+                            currentQuestions.push({ ...q, categoryGroup: cat, originalNum: idx + 1 });
                         });
                     }
                 });
@@ -160,55 +158,30 @@
                 totalSoal = currentQuestions.length;
                 currentAnswers = new Array(totalSoal).fill(null);
                 isFinished = false;
-                area.innerHTML = '';
 
-                // --- LOGIKA PERBAIKAN PATH GAMBAR ---
                 const pathParts = path.split('/'); 
-                const fileName = pathParts.pop(); 
+                const imageFolder = pathParts.pop().replace('.json', ''); 
                 const folderPath = pathParts.join('/'); 
-                const imageFolder = fileName.replace('.json', ''); 
 
                 currentQuestions.forEach((q, i) => {
                     const card = document.createElement('div');
                     card.className = 'question-card';
-                    
-                    let imgHtml = "";
-                    if (q.image) {
-                        // Pastikan folder di GitHub: assets/n3/2011/07/24.png
-                        const src = `assets/${folderPath}/${imageFolder}/${q.image}`;
-                        imgHtml = `
-                            <small style="color:var(--accent); font-weight:bold; text-transform:uppercase;">[${q.categoryGroup}]</small>
-                            <img src="${src}" class="q-image" onerror="this.style.display='none'; console.warn('Missing image: ${src}');">
-                        `;
-                    } else {
-                        imgHtml = `<small style="color:var(--accent); font-weight:bold; text-transform:uppercase;">[${q.categoryGroup}]</small>`;
-                    }
-
+                    let imgHtml = q.image ? `<img src="assets/${folderPath}/${imageFolder}/${q.image}" class="q-image">` : "";
                     let opts = '';
                     q.options.forEach((opt, o) => {
                         opts += `<div class="option-item" id="q${i}-o${o}" onclick="pickOption(${i}, ${o})">${o+1}. ${opt}</div>`;
                     });
-
-                    card.innerHTML = `
-                        ${imgHtml}
-                        <p style="font-size: 1.1em; margin-top: 10px;"><b>${q.q}</b></p>
-                        <div class="options-list">${opts}</div>
-                    `;
+                    card.innerHTML = `<small style="color:var(--accent)">[${q.categoryGroup.toUpperCase()}]</small>${imgHtml}<p><b>${q.q}</b></p><div class="options-list">${opts}</div>`;
                     area.appendChild(card);
                 });
                 updateStatus();
-            } catch (e) {
-                console.error(e);
-                area.innerHTML = `<p style='color:red; text-align:center;'>Gagal memuat file soal.<br><small>${e.message}</small></p>`;
-            }
+            } catch (e) { console.error(e); }
         }
 
-        // Fitur Pick Option, Update Status, Draw Chart, Chat Danbo dsb tetap dipertahankan
         function pickOption(qIdx, oIdx) {
             if (isFinished) return;
             currentAnswers[qIdx] = oIdx;
-            const options = document.querySelectorAll(`[id^="q${qIdx}-o"]`);
-            options.forEach(el => el.classList.remove('selected'));
+            document.querySelectorAll(`[id^="q${qIdx}-o"]`).forEach(el => el.classList.remove('selected'));
             document.getElementById(`q${qIdx}-o${oIdx}`).classList.add('selected');
             updateStatus();
         }
@@ -219,52 +192,84 @@
         }
 
         function showResults() {
-            if (currentAnswers.includes(null)) {
-                if (!confirm("Masih ada soal yang belum dijawab. Selesai sekarang?")) return;
-            }
+            if (currentAnswers.includes(null) && !confirm("Selesai sekarang?")) return;
             isFinished = true;
             let totalBenar = 0;
-            const stats = { kanji: {c:0, t:0}, bunpou: {c:0, t:0}, dokkai: {c:0, t:0}, choukai: {c:0, t:0} };
+            
+            // Data untuk Chart (Tetap 4 Aspek Utama)
+            const mainStats = { "Kanji": {c:0, t:0}, "Goi": {c:0, t:0}, "Bunpou": {c:0, t:0}, "Dokkai": {c:0, t:0} };
+
+            // Data untuk Sidebar Danbo (6 Sub-Kategori Detail)
+            const subStats = {
+                "Kanji": {c:0, t:0}, "Goi": {c:0, t:0}, "Bunpou": {c:0, t:0},
+                "Bunpou Kumitate": {c:0, t:0}, "Dokkai Tanbun": {c:0, t:0}, "Dokkai Choubun": {c:0, t:0}
+            };
 
             currentQuestions.forEach((q, i) => {
-                const isCorrect = currentAnswers[i] === q.correct;
-                if (isCorrect) {
-                    totalBenar++;
-                    stats[q.categoryGroup].c++;
-                }
-                stats[q.categoryGroup].t++;
+                const correct = currentAnswers[i] === q.correct;
+                if (correct) totalBenar++;
 
-                const options = document.querySelectorAll(`[id^="q${i}-o"]`);
-                options.forEach((el, oIdx) => {
+                const n = q.originalNum;
+                let sub = "";
+
+                // Mapping Sub-Kategori untuk Sidebar
+                if (q.categoryGroup === 'kanji') {
+                    if (n <= 14) { sub = "Kanji"; mainStats["Kanji"].t++; if(correct) mainStats["Kanji"].c++; }
+                    else if (n >= 15 && n <= 35) { sub = "Goi"; mainStats["Goi"].t++; if(correct) mainStats["Goi"].c++; }
+                } 
+                else if (q.categoryGroup === 'bunpou') {
+                    mainStats["Bunpou"].t++; if(correct) mainStats["Bunpou"].c++;
+                    if ((n >= 1 && n <= 13) || (n >= 19 && n <= 23)) sub = "Bunpou";
+                    else if (n >= 14 && n <= 18) sub = "Bunpou Kumitate";
+                }
+                else if (q.categoryGroup === 'dokkai') {
+                    mainStats["Dokkai"].t++; if(correct) mainStats["Dokkai"].c++;
+                    if (n >= 24 && n <= 27) sub = "Dokkai Tanbun";
+                    else if (n >= 28 && n <= 39) sub = "Dokkai Choubun";
+                }
+
+                if(sub !== "") {
+                    subStats[sub].t++;
+                    if(correct) subStats[sub].c++;
+                }
+
+                document.querySelectorAll(`[id^="q${i}-o"]`).forEach((el, oIdx) => {
                     el.classList.remove('selected');
                     if (oIdx === q.correct) el.classList.add('correct');
                     else if (oIdx === currentAnswers[i]) el.classList.add('wrong');
                 });
             });
 
-            const pilarScores = [
-                stats.kanji.t ? (stats.kanji.c/stats.kanji.t)*100 : 0,
-                stats.bunpou.t ? (stats.bunpou.c/stats.bunpou.t)*100 : 0,
-                stats.dokkai.t ? (stats.dokkai.c/stats.dokkai.t)*100 : 0,
-                stats.choukai.t ? (stats.choukai.c/stats.choukai.t)*100 : 0
-            ];
-
             document.getElementById('result-box').style.display = 'block';
             document.getElementById('submit-btn').style.display = 'none';
             document.getElementById('final-score').innerText = `Skor Akhir: ${totalBenar} / ${totalSoal}`;
-            drawChart(pilarScores);
+
+            // Gambar Chart dengan 4 Aspek Utama saja
+            const chartLabels = Object.keys(mainStats);
+            const chartData = chartLabels.map(l => mainStats[l].t ? Math.round((mainStats[l].c / mainStats[l].t) * 100) : 0);
+            drawChart(chartLabels, chartData);
+
             openDanbo();
-            addDanboMessage(`<strong>Danbo:</strong> Ujian selesai! Skor kamu <b>${totalBenar}/${totalSoal}</b>. Ada bagian yang bingung?`);
-            document.getElementById('exam-content').scrollTo({top: 0, behavior: 'smooth'});
+
+            // Pesan Danbo di Sidebar dengan 6 Sub-Kategori Detail
+            let summaryMsg = `<strong>Danbo:</strong> Ujian selesai! Skor totalmu <b>${totalBenar}/${totalSoal}</b>.<br><br>Detail performamu:<ul>`;
+            Object.keys(subStats).forEach(l => {
+                if(subStats[l].t > 0) {
+                    const pct = Math.round((subStats[l].c / subStats[l].t) * 100);
+                    summaryMsg += `<li>${l}: ${subStats[l].c}/${subStats[l].t} (${pct}%)</li>`;
+                }
+            });
+            summaryMsg += `</ul>Ada bagian yang bingung?`;
+            addDanboMessage(summaryMsg);
         }
 
-        function drawChart(dataPoin) {
+        function drawChart(labels, dataPoin) {
             const ctx = document.getElementById('scoreChart').getContext('2d');
             if (myRadarChart) myRadarChart.destroy();
             myRadarChart = new Chart(ctx, {
                 type: 'radar',
                 data: {
-                    labels: ['Kanji', 'Bunpou', 'Dokkai', 'Choukai'],
+                    labels: labels,
                     datasets: [{
                         label: '% Penguasaan',
                         data: dataPoin,
@@ -274,7 +279,10 @@
                         pointBackgroundColor: '#3498db'
                     }]
                 },
-                options: { scales: { r: { min: 0, max: 100, ticks: { display: false } } }, plugins: { legend: { display: false } } }
+                options: { 
+                    scales: { r: { min: 0, max: 100, ticks: { display: false } } }, 
+                    plugins: { legend: { display: false } } 
+                }
             });
         }
 
