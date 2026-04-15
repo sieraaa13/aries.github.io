@@ -21,7 +21,7 @@
         body.chat-open #exam-content { height: 60vh; flex: none; }
 
         .question-card { background: white; padding: 20px; margin-bottom: 25px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); max-width: 800px; margin-left: auto; margin-right: auto; }
-        .q-image { display: block; max-width: 100%; height: auto; margin: 10px auto; border: 1px solid #ddd; border-radius: 5px; }
+        .q-image { display: block; max-width: 100%; height: auto; margin: 15px auto; border: 1px solid #ddd; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         .options-list { margin-top: 15px; display: flex; flex-direction: column; gap: 10px; }
         .option-item { padding: 12px 15px; border: 2px solid #ddd; border-radius: 8px; cursor: pointer; transition: 0.2s; }
         .option-item.selected { background: #e3f2fd; border-color: var(--accent); }
@@ -48,8 +48,7 @@
 
     <div id="folder-screen">
         <h1>Materi JLPT</h1>
-        <div class="folder-grid">
-            </div>
+        <div class="folder-grid"></div>
     </div>
 
     <div id="file-screen" class="hidden">
@@ -99,15 +98,12 @@
         let chatHistory = [];
         let myRadarChart = null;
 
-        // 1. LOAD MANIFEST
         async function loadLevels() {
             try {
                 const res = await fetch('assets/manifest.json');
-                if (!res.ok) throw new Error("Manifest tidak ditemukan");
                 const data = await res.json();
                 const container = document.querySelector('.folder-grid');
                 container.innerHTML = '';
-                
                 data.levels.forEach(lvl => {
                     const card = document.createElement('div');
                     card.className = 'folder-card';
@@ -117,7 +113,6 @@
                 });
             } catch (e) {
                 console.error("Gagal memuat manifest:", e);
-                document.querySelector('.folder-grid').innerHTML = "<p>Gagal memuat daftar materi.</p>";
             }
         }
 
@@ -127,7 +122,6 @@
             document.getElementById('folder-title').innerText = `Arsip Soal ${levelData.name}`;
             const container = document.getElementById('file-container');
             container.innerHTML = '';
-
             levelData.years.forEach(y => {
                 y.exams.forEach(ex => {
                     const item = document.createElement('div');
@@ -139,21 +133,17 @@
             });
         }
 
-        // 2. START EXAM & MERGE CATEGORIES
         async function startExam(path, label) {
             document.getElementById('file-screen').classList.add('hidden');
             document.getElementById('exam-screen').style.display = 'flex';
             document.getElementById('chat-icon').style.display = 'flex';
             document.getElementById('exam-title-display').innerText = label;
-            
             const area = document.getElementById('questions-area');
             area.innerHTML = "<p style='text-align:center;'>Menyusun soal...</p>";
 
             try {
                 const res = await fetch(`assets/${path}`);
                 const data = await res.json();
-                
-                // Menggabungkan kategori
                 currentQuestions = [];
                 const categories = ['kanji', 'bunpou', 'dokkai', 'choukai'];
                 
@@ -173,11 +163,15 @@
                     const card = document.createElement('div');
                     card.className = 'question-card';
                     
-                    // Folder Image Logic: assets/n3/2011/07/kanji/1.png
+                    // LOGIKA GAMBAR PERBAIKAN:
+                    // Mencari file di assets/n3/2011/07/gambar.png
                     let imgHtml = "";
                     if (q.image) {
-                        const baseDir = path.replace('.json', '');
-                        imgHtml = `<img src="assets/${baseDir}/${q.categoryGroup}/${q.image}" class="q-image" onerror="this.style.display='none'">`;
+                        const basePath = path.substring(0, path.lastIndexOf('/')); // Ambil path folder (misal assets/n3/2011)
+                        const imageFolder = path.split('/').pop().replace('.json', ''); // Ambil nama file (misal 07)
+                        const src = `assets/${basePath}/${imageFolder}/${q.image}`;
+                        
+                        imgHtml = `<img src="${src}" class="q-image" onerror="this.style.display='none'; console.warn('Missing image:', '${src}')">`;
                     }
 
                     let opts = '';
@@ -186,9 +180,9 @@
                     });
 
                     card.innerHTML = `
-                        <small style="color:var(--accent); font-weight:bold; text-transform:uppercase;">[${q.categoryGroup}]</small>
+                        <small style="color:var(--accent); font-weight:bold; text-transform:uppercase;">[${q.categoryGroup}] Soal No. ${i+1}</small>
                         ${imgHtml}
-                        <p><b>${q.q}</b></p>
+                        <p style="font-size: 1.1em; margin-top: 10px;"><b>${q.q}</b></p>
                         <div class="options-list">${opts}</div>
                     `;
                     area.appendChild(card);
@@ -196,7 +190,7 @@
                 updateStatus();
             } catch (e) {
                 console.error(e);
-                area.innerHTML = "<p style='color:red; text-align:center;'>Gagal memuat file soal. Pastikan path di manifest benar.</p>";
+                area.innerHTML = "<p style='color:red; text-align:center;'>Gagal memuat file soal.</p>";
             }
         }
 
@@ -213,12 +207,10 @@
             document.getElementById('progress-indicator').innerText = `Progres: ${filled} / ${totalSoal}`;
         }
 
-        // 3. RESULTS & CHART
         function showResults() {
             if (currentAnswers.includes(null)) {
                 if (!confirm("Masih ada soal yang belum dijawab. Selesai sekarang?")) return;
             }
-
             isFinished = true;
             let totalBenar = 0;
             const stats = { kanji: {c:0, t:0}, bunpou: {c:0, t:0}, dokkai: {c:0, t:0}, choukai: {c:0, t:0} };
@@ -226,7 +218,6 @@
             currentQuestions.forEach((q, i) => {
                 const cat = q.categoryGroup;
                 if (stats[cat]) stats[cat].t++;
-                
                 document.getElementById(`q${i}-o${q.correct}`).classList.add('correct');
                 if (currentAnswers[i] === q.correct) {
                     totalBenar++;
@@ -247,16 +238,8 @@
             document.getElementById('submit-btn').style.display = 'none';
             document.getElementById('final-score').innerText = `Skor Akhir: ${totalBenar} / ${totalSoal}`;
             drawChart(pilarScores);
-            
-            let detailMsg = `<strong>Danbo:</strong> Ujian Selesai! Skor: <b>${totalBenar}/${totalSoal}</b>.<br><br>`;
-            detailMsg += `<b>Rincian per Bagian:</b><br>`;
-            detailMsg += `• Kanji & Goi: ${stats.kanji.c}/${stats.kanji.t}<br>`;
-            detailMsg += `• Bunpou: ${stats.bunpou.c}/${stats.bunpou.t}<br>`;
-            detailMsg += `• Dokkai: ${stats.dokkai.c}/${stats.dokkai.t}<br>`;
-            if(stats.choukai.t > 0) detailMsg += `• Choukai: ${stats.choukai.c}/${stats.choukai.t}<br>`;
-            
             openDanbo();
-            addDanboMessage(detailMsg + "<br>Ada yang ingin kamu tanyakan tentang soal tadi?");
+            addDanboMessage(`<strong>Danbo:</strong> Ujian selesai! Skor kamu <b>${totalBenar}/${totalSoal}</b>. Bagian mana yang ingin kamu bahas?`);
         }
 
         function drawChart(dataPoin) {
@@ -275,26 +258,15 @@
                         pointBackgroundColor: '#3498db'
                     }]
                 },
-                options: { 
-                    scales: { 
-                        r: { 
-                            min: 0, 
-                            max: 100,
-                            ticks: { display: false, stepSize: 20 }
-                        } 
-                    },
-                    plugins: { legend: { display: false } }
-                }
+                options: { scales: { r: { min: 0, max: 100, ticks: { display: false } } }, plugins: { legend: { display: false } } }
             });
         }
 
-        // 4. CHAT SYSTEM
         async function sendMessage() {
             const input = document.getElementById('user-input');
             const msg = input.value.trim(); if(!msg) return;
             addDanboMessage(`<strong>Kamu:</strong> ${msg}`); 
             input.value = '';
-            
             try {
                 const res = await fetch(BACKEND_URL, {
                     method: "POST",
@@ -304,15 +276,13 @@
                 const data = await res.json();
                 addDanboMessage(`<strong>Danbo:</strong> ${data.reply}`);
                 chatHistory.push({ role: "user", content: msg }, { role: "assistant", content: data.reply });
-            } catch (e) { addDanboMessage("<strong>Danbo:</strong> Gagal terhubung ke sistem."); }
+            } catch (e) { addDanboMessage("<strong>Danbo:</strong> Gagal terhubung."); }
         }
 
         function addDanboMessage(t) { 
             const b = document.getElementById('danbo-msg'); 
-            const p = document.createElement('p'); 
-            p.innerHTML = t; 
-            b.appendChild(p); 
-            b.scrollTop = b.scrollHeight; 
+            const p = document.createElement('p'); p.innerHTML = t; 
+            b.appendChild(p); b.scrollTop = b.scrollHeight; 
         }
 
         function openDanbo() { 
@@ -323,9 +293,7 @@
 
         function closeDanbo() { 
             document.getElementById('chat-sidebar').classList.remove('active'); 
-            if(document.getElementById('exam-screen').style.display === 'flex') {
-                document.getElementById('chat-icon').style.display = 'flex'; 
-            }
+            if(document.getElementById('exam-screen').style.display === 'flex') document.getElementById('chat-icon').style.display = 'flex'; 
             document.body.classList.remove('chat-open'); 
         }
 
@@ -334,7 +302,6 @@
             document.getElementById('file-screen').classList.add('hidden'); 
         }
 
-        // Jalankan saat load
         window.onload = loadLevels;
     </script>
 </body>
