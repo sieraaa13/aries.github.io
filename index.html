@@ -287,21 +287,49 @@
         }
 
         async function sendMessage() {
-            const input = document.getElementById('user-input');
-            const msg = input.value.trim(); if(!msg) return;
-            addDanboMessage(`<strong>Kamu:</strong> ${msg}`); 
-            input.value = '';
-            try {
-                const res = await fetch(BACKEND_URL, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ userQuery: msg, history: chatHistory })
-                });
-                const data = await res.json();
-                addDanboMessage(`<strong>Danbo:</strong> ${data.reply}`);
-                chatHistory.push({ role: "user", content: msg }, { role: "assistant", content: data.reply });
-            } catch (e) { addDanboMessage("<strong>Danbo:</strong> Gagal terhubung."); }
-        }
+    const input = document.getElementById('user-input');
+    const msg = input.value.trim(); 
+    if(!msg) return;
+
+    addDanboMessage(`<strong>Kamu:</strong> ${msg}`); 
+    input.value = '';
+
+    // Mencari apakah user menyebutkan nomor soal dalam pertanyaannya
+    const questionMatch = msg.match(/\d+/); // Mencari angka di pesan user
+    let relevantQuestionData = null;
+
+    if (questionMatch) {
+        const questionNum = parseInt(questionMatch[0]);
+        // Mencari soal yang sesuai di dalam currentQuestions
+        // Kita cari berdasarkan originalNum atau index
+        relevantQuestionData = currentQuestions.find(q => q.originalNum === questionNum);
+    }
+
+    try {
+        const res = await fetch(BACKEND_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ 
+                userQuery: msg, 
+                history: chatHistory,
+                // Mengirim data soal yang relevan agar AI bisa langsung membaca isinya
+                currentQuestionContext: relevantQuestionData ? {
+                    nomor: relevantQuestionData.originalNum,
+                    pertanyaan: relevantQuestionData.q,
+                    pilihan: relevantQuestionData.options,
+                    kunci_jawaban: relevantQuestionData.correct,
+                    kategori: relevantQuestionData.categoryGroup
+                } : null
+            })
+        });
+        
+        const data = await res.json();
+        addDanboMessage(`<strong>Danbo:</strong> ${data.reply}`);
+        chatHistory.push({ role: "user", content: msg }, { role: "assistant", content: data.reply });
+    } catch (e) { 
+        addDanboMessage("<strong>Danbo:</strong> Waduh, koneksiku terputus."); 
+    }
+}
 
         function addDanboMessage(t) { 
             const b = document.getElementById('danbo-msg'); 
