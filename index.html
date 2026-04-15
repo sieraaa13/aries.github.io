@@ -294,15 +294,31 @@
     addDanboMessage(`<strong>Kamu:</strong> ${msg}`); 
     input.value = '';
 
-    // Mencari apakah user menyebutkan nomor soal dalam pertanyaannya
-    const questionMatch = msg.match(/\d+/); // Mencari angka di pesan user
+    // 1. Deteksi nomor soal dari input user
+    const questionMatch = msg.match(/\d+/); 
     let relevantQuestionData = null;
 
     if (questionMatch) {
         const questionNum = parseInt(questionMatch[0]);
-        // Mencari soal yang sesuai di dalam currentQuestions
-        // Kita cari berdasarkan originalNum atau index
-        relevantQuestionData = currentQuestions.find(q => q.originalNum === questionNum);
+        
+        // 2. Deteksi keyword kategori untuk memfilter soal yang benar
+        const isAskingKanji = /kanji|bacaan|arti|huruf/i.test(msg);
+        const isAskingGrammar = /grammar|bunpou|tata bahasa|pola/i.test(msg);
+        const isAskingDokkai = /dokkai|bacaan|teks|paragraf/i.test(msg);
+
+        // Cari soal yang cocok dengan nomor DAN kategorinya
+        relevantQuestionData = currentQuestions.find(q => {
+            const matchNum = q.originalNum === questionNum;
+            if (isAskingKanji) return matchNum && q.categoryGroup === 'kanji';
+            if (isAskingGrammar) return matchNum && q.categoryGroup === 'bunpou';
+            if (isAskingDokkai) return matchNum && q.categoryGroup === 'dokkai';
+            return matchNum; // Default jika tidak sebut kategori
+        });
+
+        // Fallback: Jika filter kategori tidak menemukan hasil, ambil yang pertama cocok dengan nomor
+        if (!relevantQuestionData) {
+            relevantQuestionData = currentQuestions.find(q => q.originalNum === questionNum);
+        }
     }
 
     try {
@@ -311,23 +327,27 @@
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ 
                 userQuery: msg, 
-                history: chatHistory,
-                // Mengirim data soal yang relevan agar AI bisa langsung membaca isinya
+                // Data soal dikirim secara spesifik agar backend langsung paham
                 currentQuestionContext: relevantQuestionData ? {
                     nomor: relevantQuestionData.originalNum,
                     pertanyaan: relevantQuestionData.q,
                     pilihan: relevantQuestionData.options,
                     kunci_jawaban: relevantQuestionData.correct,
                     kategori: relevantQuestionData.categoryGroup
-                } : null
+                } : null,
+                // Status krusial untuk menentukan Danbo memberi jawaban atau clue
+                status: isFinished ? "POST_EXAM" : "DURING_EXAM",
+                history: chatHistory
             })
         });
         
         const data = await res.json();
         addDanboMessage(`<strong>Danbo:</strong> ${data.reply}`);
+        
+        // Simpan ke history chat
         chatHistory.push({ role: "user", content: msg }, { role: "assistant", content: data.reply });
     } catch (e) { 
-        addDanboMessage("<strong>Danbo:</strong> Waduh, koneksiku terputus."); 
+        addDanboMessage("<strong>Danbo:</strong> Aduh, koneksiku ke server terputus."); 
     }
 }
 
