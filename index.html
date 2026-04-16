@@ -155,27 +155,20 @@
                 categories.forEach(cat => {
                     if (Array.isArray(data[cat])) {
                         data[cat].forEach((item) => {
-                            // --- REVISI LOGIKA DISINI ---
-                            // Cek apakah item ini adalah grup bacaan (Dokkai)
+                            // LOGIKA: Jika item punya "text", ini adalah kelompok Dokkai
                             if (item.text && item.questions) {
-                                // 1. Buat kontainer teks bacaan
-                                const readingCard = document.createElement('div');
-                                readingCard.className = 'question-card reading-block';
-                                readingCard.innerHTML = `
-                                    <small style="color:var(--primary)"><b>${item.section_title || 'BACAAN'}</b></small>
-                                    <div style="white-space: pre-wrap; margin-top:10px; font-size:16px; line-height:1.6;">${item.text}</div>
-                                `;
-                                area.appendChild(readingCard);
-
-                                // 2. Masukkan semua sub-soal (33, 34, 35, 36) ke array utama
                                 item.questions.forEach((subQ) => {
                                     const qIndex = currentQuestions.length;
-                                    // Simpan referensi parentText agar Danbo AI tahu soal ini punya bacaan
-                                    currentQuestions.push({ ...subQ, categoryGroup: cat, parentText: item.text });
+                                    currentQuestions.push({ 
+                                        ...subQ, 
+                                        categoryGroup: cat, 
+                                        embeddedText: item.text, // Teks hanya nempel di grup ini
+                                        sectionTitle: item.section_title 
+                                    });
                                     renderSingleQuestion(currentQuestions[qIndex], qIndex, area);
                                 });
                             } 
-                            // Jika ini soal mandiri (Kanji/Bunpou)
+                            // LOGIKA: Jika item hanya "q", ini soal mandiri (Nomor 39 dsb mungkin di sini)
                             else if (item.q) {
                                 const qIndex = currentQuestions.length;
                                 currentQuestions.push({ ...item, categoryGroup: cat });
@@ -198,20 +191,39 @@
         function renderSingleQuestion(q, i, container) {
             const card = document.createElement('div');
             card.className = 'question-card';
+            
+            let htmlContent = '';
+
+            // CEK: Apakah soal ini membawa teks? 
+            // Kalau q nomor 39 tidak bawa text di JSON, bagian ini dilewati (Teks tidak muncul)
+            if (q.embeddedText) {
+                htmlContent += `
+                    <div class="reading-block" style="padding: 15px; margin-bottom: 15px; border-radius: 8px; font-size: 15px; line-height: 1.6;">
+                        <small style="color:var(--primary)"><b>${q.sectionTitle || 'BACAAN'}</b></small>
+                        <div style="white-space: pre-wrap; margin-top:5px;">${q.embeddedText}</div>
+                    </div>
+                    <hr style="border: 0; border-top: 1px dashed #ccc; margin: 20px 0;">
+                `;
+            }
+
             let opts = '';
             if(q.options) {
                 q.options.forEach((opt, o) => {
                     opts += `<div class="option-item" id="q${i}-o${o}" onclick="pickOption(${i}, ${o})">${o+1}. ${opt}</div>`;
                 });
             }
-            card.innerHTML = `
+
+            htmlContent += `
                 <small style="color:var(--accent)">[${q.categoryGroup.toUpperCase()} - No. ${i+1}]</small>
-                <p><b>${q.q}</b></p>
+                <p style="font-size: 17px; margin-top: 10px;"><b>${q.q}</b></p>
                 <div class="options-list">${opts}</div>
             `;
+
+            card.innerHTML = htmlContent;
             container.appendChild(card);
         }
 
+        // --- SISA FUNGSI (pickOption, showResults, drawChart, sendMessage, dll) TETAP SAMA ---
         function pickOption(qIdx, oIdx) {
             if (isFinished) return;
             currentAnswers[qIdx] = oIdx;
@@ -222,7 +234,8 @@
 
         function updateStatus() {
             const answered = currentAnswers.filter(a => a !== null).length;
-            document.getElementById('progress-indicator').innerText = `Progres: ${answered} / ${totalSoal}`;
+            const progressEl = document.getElementById('progress-indicator');
+            if(progressEl) progressEl.innerText = `Progres: ${answered} / ${totalSoal}`;
         }
 
         function showResults() {
@@ -234,14 +247,11 @@
             currentQuestions.forEach((q, i) => {
                 const isCorrect = currentAnswers[i] === q.correct;
                 if (isCorrect) totalBenar++;
-                
                 let catKey = "Kanji";
                 if(q.categoryGroup === 'bunpou') catKey = "Bunpou";
                 else if(q.categoryGroup === 'dokkai') catKey = "Dokkai";
-                
                 mainStats[catKey].t++;
                 if(isCorrect) mainStats[catKey].c++;
-
                 document.querySelectorAll(`[id^="q${i}-o"]`).forEach((el, oIdx) => {
                     el.classList.remove('selected');
                     if (oIdx === q.correct) el.classList.add('correct');
@@ -252,7 +262,6 @@
             document.getElementById('result-box').style.display = 'block';
             document.getElementById('submit-btn').style.display = 'none';
             document.getElementById('final-score').innerText = `Skor Akhir: ${totalBenar} / ${totalSoal}`;
-
             drawChart(Object.keys(mainStats), Object.keys(mainStats).map(l => mainStats[l].t ? Math.round((mainStats[l].c / mainStats[l].t) * 100) : 0));
             openDanbo();
         }
@@ -282,7 +291,6 @@
             if(!msg) return;
             addDanboMessage(`<strong>Kamu:</strong> ${msg}`); 
             input.value = '';
-            
             try {
                 const res = await fetch(BACKEND_URL, {
                     method: "POST",
