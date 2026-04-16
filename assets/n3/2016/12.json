@@ -1,7 +1,5 @@
 {
-  "test_jlpt_n3_set_2": {
-    "title": "Tes JLPT N3 - Set 2",
-    "questions": [
+  "kanji": [
       {
         "q": "1. 会場には大勢の【観客】がいた。",
         "category": "KANJI",
