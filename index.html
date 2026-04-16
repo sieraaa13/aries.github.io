@@ -19,10 +19,11 @@
         #exam-screen { display: none; flex-direction: column; height: 100vh; }
         #exam-content { flex: 1; padding: 20px; overflow-y: auto; padding-bottom: 50px; }
         
-        /* Sidebar Tinggi 1/3 */
+        /* Layout saat Chat Terbuka */
         body.chat-open #exam-content { height: 67vh; flex: none; }
 
         .question-card { background: white; padding: 20px; margin-bottom: 25px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); max-width: 800px; margin-left: auto; margin-right: auto; }
+        .reading-block { background: #fffbe6 !important; border-left: 5px solid #f1c40f; }
         .q-image { display: block; max-width: 100%; height: auto; margin: 15px auto; border: 1px solid #ddd; border-radius: 8px; }
         .options-list { margin-top: 15px; display: flex; flex-direction: column; gap: 10px; }
         .option-item { padding: 12px 15px; border: 2px solid #ddd; border-radius: 8px; cursor: pointer; transition: 0.2s; }
@@ -107,7 +108,6 @@
                 const res = await fetch('assets/manifest.json');
                 const data = await res.json();
                 const container = document.querySelector('.folder-grid');
-                if(!container) return;
                 container.innerHTML = '';
                 data.levels.forEach(lvl => {
                     const card = document.createElement('div');
@@ -136,7 +136,6 @@
         }
 
         async function startExam(path, label) {
-            console.log("Mencoba memuat file:", path); // Log untuk debug
             document.getElementById('file-screen').classList.add('hidden');
             document.getElementById('exam-screen').style.display = 'flex';
             document.getElementById('chat-icon').style.display = 'flex';
@@ -146,48 +145,40 @@
 
             try {
                 const res = await fetch(`assets/${path}`);
-                if (!res.ok) throw new Error(`Gagal memuat file: ${res.status}`);
                 const data = await res.json();
-                console.log("Data JSON berhasil dibaca:", data);
 
                 area.innerHTML = ''; 
                 currentQuestions = [];
-                const categories = ['kanji', 'bunpou', 'dokkai', 'choukai'];
-
-                const pathParts = path.split('/'); 
-                const imageFolder = pathParts.pop().replace('.json', ''); 
-                const folderPath = pathParts.join('/'); 
+                
+                // Gunakan kunci yang ada di JSON (kanji, bunpou, dokkai)
+                const categories = Object.keys(data);
 
                 categories.forEach(cat => {
-                    if (data[cat] && Array.isArray(data[cat])) {
-                        data[cat].forEach((item, idx) => {
-                            // Cek jika item adalah grup bacaan (seperti nomor 33-36)
-                            if (item.questions && Array.isArray(item.questions)) {
+                    if (Array.isArray(data[cat])) {
+                        data[cat].forEach((item) => {
+                            // LOGIKA UTAMA: Cek apakah ini Blok Bacaan (Reading)
+                            if (item.questions && item.text) {
+                                // 1. Render teks bacaannya dulu
                                 const textBlock = document.createElement('div');
-                                textBlock.className = 'question-card';
-                                textBlock.style.background = "#f9f9f9";
-                                textBlock.style.borderLeft = "5px solid var(--accent)";
+                                textBlock.className = 'question-card reading-block';
                                 textBlock.innerHTML = `
-                                    <small style="color:var(--accent)"><b>${item.section_title || 'READING SECTION'}</b></small>
-                                    <div style="white-space: pre-wrap; margin-top:10px; font-size:15px; line-height:1.7;">${item.text}</div>
+                                    <small style="color:var(--primary)"><b>${item.section_title || 'READING SECTION'}</b></small>
+                                    <div style="white-space: pre-wrap; margin-top:10px; font-size:16px;">${item.text}</div>
                                 `;
                                 area.appendChild(textBlock);
 
+                                // 2. Render sub-pertanyaannya
                                 item.questions.forEach((subQ) => {
                                     const qIndex = currentQuestions.length;
-                                    currentQuestions.push({ 
-                                        ...subQ, 
-                                        categoryGroup: cat, 
-                                        originalNum: parseInt(subQ.q) || (qIndex + 1)
-                                    });
-                                    renderSingleQuestion(currentQuestions[qIndex], qIndex, area, folderPath, imageFolder);
+                                    currentQuestions.push({ ...subQ, categoryGroup: cat });
+                                    renderSingleQuestion(currentQuestions[qIndex], qIndex, area);
                                 });
                             } 
-                            // Cek jika item adalah soal biasa
+                            // Jika ini soal biasa
                             else if (item.q) {
                                 const qIndex = currentQuestions.length;
-                                currentQuestions.push({ ...item, categoryGroup: cat, originalNum: idx + 1 });
-                                renderSingleQuestion(currentQuestions[qIndex], qIndex, area, folderPath, imageFolder);
+                                currentQuestions.push({ ...item, categoryGroup: cat });
+                                renderSingleQuestion(currentQuestions[qIndex], qIndex, area);
                             }
                         });
                     }
@@ -197,26 +188,26 @@
                 currentAnswers = new Array(totalSoal).fill(null);
                 isFinished = false;
                 updateStatus();
-                
-                if(totalSoal === 0) area.innerHTML = "File ditemukan, tapi tidak ada data soal di dalamnya.";
 
             } catch (e) { 
-                console.error("Kesalahan StartExam:", e); 
-                area.innerHTML = `<p style='color:red;'>Error: ${e.message}. Periksa format file JSON Anda.</p>`;
+                area.innerHTML = `<p style='color:red;'>Gagal memuat: ${e.message}</p>`;
             }
         }
 
-        function renderSingleQuestion(q, i, container, folderPath, imageFolder) {
+        function renderSingleQuestion(q, i, container) {
             const card = document.createElement('div');
             card.className = 'question-card';
-            let imgHtml = q.image ? `<img src="assets/${folderPath}/${imageFolder}/${q.image}" class="q-image">` : "";
             let opts = '';
             if(q.options) {
                 q.options.forEach((opt, o) => {
                     opts += `<div class="option-item" id="q${i}-o${o}" onclick="pickOption(${i}, ${o})">${o+1}. ${opt}</div>`;
                 });
             }
-            card.innerHTML = `<small style="color:var(--accent)">[${q.categoryGroup.toUpperCase()}]</small>${imgHtml}<p><b>${q.q}</b></p><div class="options-list">${opts}</div>`;
+            card.innerHTML = `
+                <small style="color:var(--accent)">[${q.categoryGroup.toUpperCase()} - No. ${i+1}]</small>
+                <p><b>${q.q}</b></p>
+                <div class="options-list">${opts}</div>
+            `;
             container.appendChild(card);
         }
 
@@ -224,35 +215,31 @@
             if (isFinished) return;
             currentAnswers[qIdx] = oIdx;
             document.querySelectorAll(`[id^="q${qIdx}-o"]`).forEach(el => el.classList.remove('selected'));
-            const target = document.getElementById(`q${qIdx}-o${oIdx}`);
-            if(target) target.classList.add('selected');
+            document.getElementById(`q${qIdx}-o${oIdx}`).classList.add('selected');
             updateStatus();
         }
 
         function updateStatus() {
             const answered = currentAnswers.filter(a => a !== null).length;
-            const el = document.getElementById('progress-indicator');
-            if(el) el.innerText = `Progres: ${answered} / ${totalSoal}`;
+            document.getElementById('progress-indicator').innerText = `Progres: ${answered} / ${totalSoal}`;
         }
 
         function showResults() {
-            if (currentAnswers.includes(null) && !confirm("Belum selesai, yakin mau cek skor?")) return;
+            if (currentAnswers.includes(null) && !confirm("Ada soal belum dijawab. Yakin?")) return;
             isFinished = true;
             let totalBenar = 0;
-            const mainStats = { "Kanji": {c:0, t:0}, "Goi": {c:0, t:0}, "Bunpou": {c:0, t:0}, "Dokkai": {c:0, t:0} };
+            const mainStats = { "Kanji": {c:0, t:0}, "Bunpou": {c:0, t:0}, "Dokkai": {c:0, t:0} };
 
             currentQuestions.forEach((q, i) => {
-                const correct = currentAnswers[i] === q.correct;
-                if (correct) totalBenar++;
+                const isCorrect = currentAnswers[i] === q.correct;
+                if (isCorrect) totalBenar++;
                 
                 let catKey = "Kanji";
                 if(q.categoryGroup === 'bunpou') catKey = "Bunpou";
                 else if(q.categoryGroup === 'dokkai') catKey = "Dokkai";
                 
-                if(mainStats[catKey]) {
-                    mainStats[catKey].t++;
-                    if(correct) mainStats[catKey].c++;
-                }
+                mainStats[catKey].t++;
+                if(isCorrect) mainStats[catKey].c++;
 
                 document.querySelectorAll(`[id^="q${i}-o"]`).forEach((el, oIdx) => {
                     el.classList.remove('selected');
@@ -304,13 +291,13 @@
                 const data = await res.json();
                 addDanboMessage(`<strong>Danbo:</strong> ${data.reply}`);
                 chatHistory.push({ role: "user", content: msg }, { role: "assistant", content: data.reply });
-            } catch (e) { addDanboMessage("<strong>Danbo:</strong> Koneksi server terputus."); }
+            } catch (e) { addDanboMessage("<strong>Danbo:</strong> Gagal terhubung."); }
         }
 
         function addDanboMessage(t) { 
             const b = document.getElementById('danbo-msg'); 
             const p = document.createElement('p'); p.innerHTML = t; 
-            if(b) { b.appendChild(p); b.scrollTop = b.scrollHeight; }
+            b.appendChild(p); b.scrollTop = b.scrollHeight; 
         }
 
         function openDanbo() { 
