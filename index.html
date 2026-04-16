@@ -107,6 +107,7 @@
                 const res = await fetch('assets/manifest.json');
                 const data = await res.json();
                 const container = document.querySelector('.folder-grid');
+                if(!container) return;
                 container.innerHTML = '';
                 data.levels.forEach(lvl => {
                     const card = document.createElement('div');
@@ -115,12 +116,7 @@
                     card.onclick = () => openLevelFiles(lvl);
                     container.appendChild(card);
                 });
-            } catch (e) { console.error(e); }
-        }
-
-        function showFolders() { 
-            document.getElementById('folder-screen').classList.remove('hidden'); 
-            document.getElementById('file-screen').classList.add('hidden'); 
+            } catch (e) { console.error("Manifest Error:", e); }
         }
 
         function openLevelFiles(levelData) {
@@ -139,19 +135,22 @@
             });
         }
 
-        // --- FUNGSI UTAMA YANG DIREVISI ---
         async function startExam(path, label) {
+            console.log("Mencoba memuat file:", path); // Log untuk debug
             document.getElementById('file-screen').classList.add('hidden');
             document.getElementById('exam-screen').style.display = 'flex';
             document.getElementById('chat-icon').style.display = 'flex';
             document.getElementById('exam-title-display').innerText = label;
             const area = document.getElementById('questions-area');
-            area.innerHTML = '';
+            area.innerHTML = 'Memuat data soal...';
 
             try {
                 const res = await fetch(`assets/${path}`);
+                if (!res.ok) throw new Error(`Gagal memuat file: ${res.status}`);
                 const data = await res.json();
-                
+                console.log("Data JSON berhasil dibaca:", data);
+
+                area.innerHTML = ''; 
                 currentQuestions = [];
                 const categories = ['kanji', 'bunpou', 'dokkai', 'choukai'];
 
@@ -160,11 +159,10 @@
                 const folderPath = pathParts.join('/'); 
 
                 categories.forEach(cat => {
-                    if (data[cat]) {
+                    if (data[cat] && Array.isArray(data[cat])) {
                         data[cat].forEach((item, idx) => {
-                            // Cek jika ini adalah Section Bacaan (Soal 33-36)
-                            if (item.questions) {
-                                // Buat kotak teks bacaan
+                            // Cek jika item adalah grup bacaan (seperti nomor 33-36)
+                            if (item.questions && Array.isArray(item.questions)) {
                                 const textBlock = document.createElement('div');
                                 textBlock.className = 'question-card';
                                 textBlock.style.background = "#f9f9f9";
@@ -175,19 +173,18 @@
                                 `;
                                 area.appendChild(textBlock);
 
-                                // Render setiap sub-pertanyaan di bawah teks
                                 item.questions.forEach((subQ) => {
                                     const qIndex = currentQuestions.length;
-                                    const numMatch = subQ.q.match(/\d+/);
                                     currentQuestions.push({ 
                                         ...subQ, 
                                         categoryGroup: cat, 
-                                        originalNum: numMatch ? parseInt(numMatch[0]) : (qIndex + 1)
+                                        originalNum: parseInt(subQ.q) || (qIndex + 1)
                                     });
                                     renderSingleQuestion(currentQuestions[qIndex], qIndex, area, folderPath, imageFolder);
                                 });
-                            } else {
-                                // Render soal biasa
+                            } 
+                            // Cek jika item adalah soal biasa
+                            else if (item.q) {
                                 const qIndex = currentQuestions.length;
                                 currentQuestions.push({ ...item, categoryGroup: cat, originalNum: idx + 1 });
                                 renderSingleQuestion(currentQuestions[qIndex], qIndex, area, folderPath, imageFolder);
@@ -200,7 +197,13 @@
                 currentAnswers = new Array(totalSoal).fill(null);
                 isFinished = false;
                 updateStatus();
-            } catch (e) { console.error("Gagal memuat soal:", e); }
+                
+                if(totalSoal === 0) area.innerHTML = "File ditemukan, tapi tidak ada data soal di dalamnya.";
+
+            } catch (e) { 
+                console.error("Kesalahan StartExam:", e); 
+                area.innerHTML = `<p style='color:red;'>Error: ${e.message}. Periksa format file JSON Anda.</p>`;
+            }
         }
 
         function renderSingleQuestion(q, i, container, folderPath, imageFolder) {
@@ -208,9 +211,11 @@
             card.className = 'question-card';
             let imgHtml = q.image ? `<img src="assets/${folderPath}/${imageFolder}/${q.image}" class="q-image">` : "";
             let opts = '';
-            q.options.forEach((opt, o) => {
-                opts += `<div class="option-item" id="q${i}-o${o}" onclick="pickOption(${i}, ${o})">${o+1}. ${opt}</div>`;
-            });
+            if(q.options) {
+                q.options.forEach((opt, o) => {
+                    opts += `<div class="option-item" id="q${i}-o${o}" onclick="pickOption(${i}, ${o})">${o+1}. ${opt}</div>`;
+                });
+            }
             card.innerHTML = `<small style="color:var(--accent)">[${q.categoryGroup.toUpperCase()}]</small>${imgHtml}<p><b>${q.q}</b></p><div class="options-list">${opts}</div>`;
             container.appendChild(card);
         }
@@ -219,47 +224,35 @@
             if (isFinished) return;
             currentAnswers[qIdx] = oIdx;
             document.querySelectorAll(`[id^="q${qIdx}-o"]`).forEach(el => el.classList.remove('selected'));
-            document.getElementById(`q${qIdx}-o${oIdx}`).classList.add('selected');
+            const target = document.getElementById(`q${qIdx}-o${oIdx}`);
+            if(target) target.classList.add('selected');
             updateStatus();
         }
 
         function updateStatus() {
             const answered = currentAnswers.filter(a => a !== null).length;
-            document.getElementById('progress-indicator').innerText = `Progres: ${answered} / ${totalSoal}`;
+            const el = document.getElementById('progress-indicator');
+            if(el) el.innerText = `Progres: ${answered} / ${totalSoal}`;
         }
 
         function showResults() {
-            if (currentAnswers.includes(null) && !confirm("Masih ada soal yang belum dijawab. Selesai sekarang?")) return;
+            if (currentAnswers.includes(null) && !confirm("Belum selesai, yakin mau cek skor?")) return;
             isFinished = true;
             let totalBenar = 0;
             const mainStats = { "Kanji": {c:0, t:0}, "Goi": {c:0, t:0}, "Bunpou": {c:0, t:0}, "Dokkai": {c:0, t:0} };
-            const subStats = {
-                "Kanji": {c:0, t:0}, "Goi": {c:0, t:0}, "Bunpou": {c:0, t:0},
-                "Bunpou Kumitate": {c:0, t:0}, "Dokkai Tanbun": {c:0, t:0}, "Dokkai Choubun": {c:0, t:0}
-            };
 
             currentQuestions.forEach((q, i) => {
                 const correct = currentAnswers[i] === q.correct;
                 if (correct) totalBenar++;
-                const n = q.originalNum;
-                let sub = "";
-
-                if (q.categoryGroup === 'kanji') {
-                    if (n <= 14) { sub = "Kanji"; mainStats["Kanji"].t++; if(correct) mainStats["Kanji"].c++; }
-                    else { sub = "Goi"; mainStats["Goi"].t++; if(correct) mainStats["Goi"].c++; }
-                } 
-                else if (q.categoryGroup === 'bunpou') {
-                    mainStats["Bunpou"].t++; if(correct) mainStats["Bunpou"].c++;
-                    if (n >= 14 && n <= 18) sub = "Bunpou Kumitate";
-                    else sub = "Bunpou";
+                
+                let catKey = "Kanji";
+                if(q.categoryGroup === 'bunpou') catKey = "Bunpou";
+                else if(q.categoryGroup === 'dokkai') catKey = "Dokkai";
+                
+                if(mainStats[catKey]) {
+                    mainStats[catKey].t++;
+                    if(correct) mainStats[catKey].c++;
                 }
-                else if (q.categoryGroup === 'dokkai') {
-                    mainStats["Dokkai"].t++; if(correct) mainStats["Dokkai"].c++;
-                    if (n <= 27) sub = "Dokkai Tanbun";
-                    else sub = "Dokkai Choubun";
-                }
-
-                if(sub !== "") { subStats[sub].t++; if(correct) subStats[sub].c++; }
 
                 document.querySelectorAll(`[id^="q${i}-o"]`).forEach((el, oIdx) => {
                     el.classList.remove('selected');
@@ -274,13 +267,6 @@
 
             drawChart(Object.keys(mainStats), Object.keys(mainStats).map(l => mainStats[l].t ? Math.round((mainStats[l].c / mainStats[l].t) * 100) : 0));
             openDanbo();
-
-            let summaryMsg = `<strong>Danbo:</strong> Ujian selesai! Skor totalmu <b>${totalBenar}/${totalSoal}</b>.<br><ul>`;
-            Object.keys(subStats).forEach(l => {
-                if(subStats[l].t > 0) summaryMsg += `<li>${l}: ${Math.round((subStats[l].c / subStats[l].t) * 100)}%</li>`;
-            });
-            summaryMsg += `</ul>Ada yang ingin ditanyakan?`;
-            addDanboMessage(summaryMsg);
         }
 
         function drawChart(labels, dataPoin) {
@@ -291,14 +277,14 @@
                 data: {
                     labels: labels,
                     datasets: [{
-                        label: '% Penguasaan',
+                        label: 'Penguasaan %',
                         data: dataPoin,
                         backgroundColor: 'rgba(52, 152, 219, 0.2)',
                         borderColor: '#3498db',
-                        borderWidth: 3
+                        borderWidth: 2
                     }]
                 },
-                options: { scales: { r: { min: 0, max: 100 } }, plugins: { legend: { display: false } } }
+                options: { scales: { r: { min: 0, max: 100 } } }
             });
         }
 
@@ -306,57 +292,40 @@
             const input = document.getElementById('user-input');
             const msg = input.value.trim(); 
             if(!msg) return;
-
             addDanboMessage(`<strong>Kamu:</strong> ${msg}`); 
             input.value = '';
-
-            const questionMatch = msg.match(/\d+/); 
-            let relevantQuestionData = null;
-
-            if (questionMatch) {
-                const questionNum = parseInt(questionMatch[0]);
-                relevantQuestionData = currentQuestions.find(q => q.originalNum === questionNum);
-            }
-
+            
             try {
                 const res = await fetch(BACKEND_URL, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ 
-                        userQuery: msg, 
-                        currentQuestionContext: relevantQuestionData ? {
-                            nomor: relevantQuestionData.originalNum,
-                            pertanyaan: relevantQuestionData.q,
-                            pilihan: relevantQuestionData.options,
-                            kunci_jawaban: relevantQuestionData.correct,
-                            kategori: relevantQuestionData.categoryGroup
-                        } : null,
-                        status: isFinished ? "POST_EXAM" : "DURING_EXAM",
-                        history: chatHistory
-                    })
+                    body: JSON.stringify({ userQuery: msg, status: isFinished ? "POST" : "DURING", history: chatHistory })
                 });
                 const data = await res.json();
                 addDanboMessage(`<strong>Danbo:</strong> ${data.reply}`);
                 chatHistory.push({ role: "user", content: msg }, { role: "assistant", content: data.reply });
-            } catch (e) { addDanboMessage("<strong>Danbo:</strong> Koneksi terputus."); }
+            } catch (e) { addDanboMessage("<strong>Danbo:</strong> Koneksi server terputus."); }
         }
 
         function addDanboMessage(t) { 
             const b = document.getElementById('danbo-msg'); 
             const p = document.createElement('p'); p.innerHTML = t; 
-            b.appendChild(p); b.scrollTop = b.scrollHeight; 
+            if(b) { b.appendChild(p); b.scrollTop = b.scrollHeight; }
         }
 
         function openDanbo() { 
             document.getElementById('chat-sidebar').classList.add('active'); 
-            document.getElementById('chat-icon').style.display = 'none'; 
             document.body.classList.add('chat-open'); 
         }
 
         function closeDanbo() { 
             document.getElementById('chat-sidebar').classList.remove('active'); 
-            if(document.getElementById('exam-screen').style.display === 'flex') document.getElementById('chat-icon').style.display = 'flex'; 
             document.body.classList.remove('chat-open'); 
+        }
+
+        function showFolders() { 
+            document.getElementById('folder-screen').classList.remove('hidden'); 
+            document.getElementById('file-screen').classList.add('hidden'); 
         }
 
         window.onload = loadLevels;
