@@ -118,6 +118,11 @@
             } catch (e) { console.error(e); }
         }
 
+        function showFolders() { 
+            document.getElementById('folder-screen').classList.remove('hidden'); 
+            document.getElementById('file-screen').classList.add('hidden'); 
+        }
+
         function openLevelFiles(levelData) {
             document.getElementById('folder-screen').classList.add('hidden');
             document.getElementById('file-screen').classList.remove('hidden');
@@ -134,6 +139,7 @@
             });
         }
 
+        // --- FUNGSI UTAMA YANG DIREVISI ---
         async function startExam(path, label) {
             document.getElementById('file-screen').classList.add('hidden');
             document.getElementById('exam-screen').style.display = 'flex';
@@ -147,10 +153,45 @@
                 const data = await res.json();
                 
                 currentQuestions = [];
-                ['kanji', 'bunpou', 'dokkai', 'choukai'].forEach(cat => {
+                const categories = ['kanji', 'bunpou', 'dokkai', 'choukai'];
+
+                const pathParts = path.split('/'); 
+                const imageFolder = pathParts.pop().replace('.json', ''); 
+                const folderPath = pathParts.join('/'); 
+
+                categories.forEach(cat => {
                     if (data[cat]) {
-                        data[cat].forEach((q, idx) => {
-                            currentQuestions.push({ ...q, categoryGroup: cat, originalNum: idx + 1 });
+                        data[cat].forEach((item, idx) => {
+                            // Cek jika ini adalah Section Bacaan (Soal 33-36)
+                            if (item.questions) {
+                                // Buat kotak teks bacaan
+                                const textBlock = document.createElement('div');
+                                textBlock.className = 'question-card';
+                                textBlock.style.background = "#f9f9f9";
+                                textBlock.style.borderLeft = "5px solid var(--accent)";
+                                textBlock.innerHTML = `
+                                    <small style="color:var(--accent)"><b>${item.section_title || 'READING SECTION'}</b></small>
+                                    <div style="white-space: pre-wrap; margin-top:10px; font-size:15px; line-height:1.7;">${item.text}</div>
+                                `;
+                                area.appendChild(textBlock);
+
+                                // Render setiap sub-pertanyaan di bawah teks
+                                item.questions.forEach((subQ) => {
+                                    const qIndex = currentQuestions.length;
+                                    const numMatch = subQ.q.match(/\d+/);
+                                    currentQuestions.push({ 
+                                        ...subQ, 
+                                        categoryGroup: cat, 
+                                        originalNum: numMatch ? parseInt(numMatch[0]) : (qIndex + 1)
+                                    });
+                                    renderSingleQuestion(currentQuestions[qIndex], qIndex, area, folderPath, imageFolder);
+                                });
+                            } else {
+                                // Render soal biasa
+                                const qIndex = currentQuestions.length;
+                                currentQuestions.push({ ...item, categoryGroup: cat, originalNum: idx + 1 });
+                                renderSingleQuestion(currentQuestions[qIndex], qIndex, area, folderPath, imageFolder);
+                            }
                         });
                     }
                 });
@@ -158,24 +199,20 @@
                 totalSoal = currentQuestions.length;
                 currentAnswers = new Array(totalSoal).fill(null);
                 isFinished = false;
-
-                const pathParts = path.split('/'); 
-                const imageFolder = pathParts.pop().replace('.json', ''); 
-                const folderPath = pathParts.join('/'); 
-
-                currentQuestions.forEach((q, i) => {
-                    const card = document.createElement('div');
-                    card.className = 'question-card';
-                    let imgHtml = q.image ? `<img src="assets/${folderPath}/${imageFolder}/${q.image}" class="q-image">` : "";
-                    let opts = '';
-                    q.options.forEach((opt, o) => {
-                        opts += `<div class="option-item" id="q${i}-o${o}" onclick="pickOption(${i}, ${o})">${o+1}. ${opt}</div>`;
-                    });
-                    card.innerHTML = `<small style="color:var(--accent)">[${q.categoryGroup.toUpperCase()}]</small>${imgHtml}<p><b>${q.q}</b></p><div class="options-list">${opts}</div>`;
-                    area.appendChild(card);
-                });
                 updateStatus();
-            } catch (e) { console.error(e); }
+            } catch (e) { console.error("Gagal memuat soal:", e); }
+        }
+
+        function renderSingleQuestion(q, i, container, folderPath, imageFolder) {
+            const card = document.createElement('div');
+            card.className = 'question-card';
+            let imgHtml = q.image ? `<img src="assets/${folderPath}/${imageFolder}/${q.image}" class="q-image">` : "";
+            let opts = '';
+            q.options.forEach((opt, o) => {
+                opts += `<div class="option-item" id="q${i}-o${o}" onclick="pickOption(${i}, ${o})">${o+1}. ${opt}</div>`;
+            });
+            card.innerHTML = `<small style="color:var(--accent)">[${q.categoryGroup.toUpperCase()}]</small>${imgHtml}<p><b>${q.q}</b></p><div class="options-list">${opts}</div>`;
+            container.appendChild(card);
         }
 
         function pickOption(qIdx, oIdx) {
@@ -192,14 +229,10 @@
         }
 
         function showResults() {
-            if (currentAnswers.includes(null) && !confirm("Selesai sekarang?")) return;
+            if (currentAnswers.includes(null) && !confirm("Masih ada soal yang belum dijawab. Selesai sekarang?")) return;
             isFinished = true;
             let totalBenar = 0;
-            
-            // Data untuk Chart (Tetap 4 Aspek Utama)
             const mainStats = { "Kanji": {c:0, t:0}, "Goi": {c:0, t:0}, "Bunpou": {c:0, t:0}, "Dokkai": {c:0, t:0} };
-
-            // Data untuk Sidebar Danbo (6 Sub-Kategori Detail)
             const subStats = {
                 "Kanji": {c:0, t:0}, "Goi": {c:0, t:0}, "Bunpou": {c:0, t:0},
                 "Bunpou Kumitate": {c:0, t:0}, "Dokkai Tanbun": {c:0, t:0}, "Dokkai Choubun": {c:0, t:0}
@@ -208,30 +241,25 @@
             currentQuestions.forEach((q, i) => {
                 const correct = currentAnswers[i] === q.correct;
                 if (correct) totalBenar++;
-
                 const n = q.originalNum;
                 let sub = "";
 
-                // Mapping Sub-Kategori untuk Sidebar
                 if (q.categoryGroup === 'kanji') {
                     if (n <= 14) { sub = "Kanji"; mainStats["Kanji"].t++; if(correct) mainStats["Kanji"].c++; }
-                    else if (n >= 15 && n <= 35) { sub = "Goi"; mainStats["Goi"].t++; if(correct) mainStats["Goi"].c++; }
+                    else { sub = "Goi"; mainStats["Goi"].t++; if(correct) mainStats["Goi"].c++; }
                 } 
                 else if (q.categoryGroup === 'bunpou') {
                     mainStats["Bunpou"].t++; if(correct) mainStats["Bunpou"].c++;
-                    if ((n >= 1 && n <= 13) || (n >= 19 && n <= 23)) sub = "Bunpou";
-                    else if (n >= 14 && n <= 18) sub = "Bunpou Kumitate";
+                    if (n >= 14 && n <= 18) sub = "Bunpou Kumitate";
+                    else sub = "Bunpou";
                 }
                 else if (q.categoryGroup === 'dokkai') {
                     mainStats["Dokkai"].t++; if(correct) mainStats["Dokkai"].c++;
-                    if (n >= 24 && n <= 27) sub = "Dokkai Tanbun";
-                    else if (n >= 28 && n <= 39) sub = "Dokkai Choubun";
+                    if (n <= 27) sub = "Dokkai Tanbun";
+                    else sub = "Dokkai Choubun";
                 }
 
-                if(sub !== "") {
-                    subStats[sub].t++;
-                    if(correct) subStats[sub].c++;
-                }
+                if(sub !== "") { subStats[sub].t++; if(correct) subStats[sub].c++; }
 
                 document.querySelectorAll(`[id^="q${i}-o"]`).forEach((el, oIdx) => {
                     el.classList.remove('selected');
@@ -244,22 +272,14 @@
             document.getElementById('submit-btn').style.display = 'none';
             document.getElementById('final-score').innerText = `Skor Akhir: ${totalBenar} / ${totalSoal}`;
 
-            // Gambar Chart dengan 4 Aspek Utama saja
-            const chartLabels = Object.keys(mainStats);
-            const chartData = chartLabels.map(l => mainStats[l].t ? Math.round((mainStats[l].c / mainStats[l].t) * 100) : 0);
-            drawChart(chartLabels, chartData);
-
+            drawChart(Object.keys(mainStats), Object.keys(mainStats).map(l => mainStats[l].t ? Math.round((mainStats[l].c / mainStats[l].t) * 100) : 0));
             openDanbo();
 
-            // Pesan Danbo di Sidebar dengan 6 Sub-Kategori Detail
-            let summaryMsg = `<strong>Danbo:</strong> Ujian selesai! Skor totalmu <b>${totalBenar}/${totalSoal}</b>.<br><br>Detail performamu:<ul>`;
+            let summaryMsg = `<strong>Danbo:</strong> Ujian selesai! Skor totalmu <b>${totalBenar}/${totalSoal}</b>.<br><ul>`;
             Object.keys(subStats).forEach(l => {
-                if(subStats[l].t > 0) {
-                    const pct = Math.round((subStats[l].c / subStats[l].t) * 100);
-                    summaryMsg += `<li>${l}: ${subStats[l].c}/${subStats[l].t} (${pct}%)</li>`;
-                }
+                if(subStats[l].t > 0) summaryMsg += `<li>${l}: ${Math.round((subStats[l].c / subStats[l].t) * 100)}%</li>`;
             });
-            summaryMsg += `</ul>Ada bagian yang bingung?`;
+            summaryMsg += `</ul>Ada yang ingin ditanyakan?`;
             addDanboMessage(summaryMsg);
         }
 
@@ -275,81 +295,51 @@
                         data: dataPoin,
                         backgroundColor: 'rgba(52, 152, 219, 0.2)',
                         borderColor: '#3498db',
-                        borderWidth: 3,
-                        pointBackgroundColor: '#3498db'
+                        borderWidth: 3
                     }]
                 },
-                options: { 
-                    scales: { r: { min: 0, max: 100, ticks: { display: false } } }, 
-                    plugins: { legend: { display: false } } 
-                }
+                options: { scales: { r: { min: 0, max: 100 } }, plugins: { legend: { display: false } } }
             });
         }
 
         async function sendMessage() {
-    const input = document.getElementById('user-input');
-    const msg = input.value.trim(); 
-    if(!msg) return;
+            const input = document.getElementById('user-input');
+            const msg = input.value.trim(); 
+            if(!msg) return;
 
-    addDanboMessage(`<strong>Kamu:</strong> ${msg}`); 
-    input.value = '';
+            addDanboMessage(`<strong>Kamu:</strong> ${msg}`); 
+            input.value = '';
 
-    // 1. Deteksi nomor soal dari input user
-    const questionMatch = msg.match(/\d+/); 
-    let relevantQuestionData = null;
+            const questionMatch = msg.match(/\d+/); 
+            let relevantQuestionData = null;
 
-    if (questionMatch) {
-        const questionNum = parseInt(questionMatch[0]);
-        
-        // 2. Deteksi keyword kategori untuk memfilter soal yang benar
-        const isAskingKanji = /kanji|bacaan|arti|huruf/i.test(msg);
-        const isAskingGrammar = /grammar|bunpou|tata bahasa|pola/i.test(msg);
-        const isAskingDokkai = /dokkai|bacaan|teks|paragraf/i.test(msg);
+            if (questionMatch) {
+                const questionNum = parseInt(questionMatch[0]);
+                relevantQuestionData = currentQuestions.find(q => q.originalNum === questionNum);
+            }
 
-        // Cari soal yang cocok dengan nomor DAN kategorinya
-        relevantQuestionData = currentQuestions.find(q => {
-            const matchNum = q.originalNum === questionNum;
-            if (isAskingKanji) return matchNum && q.categoryGroup === 'kanji';
-            if (isAskingGrammar) return matchNum && q.categoryGroup === 'bunpou';
-            if (isAskingDokkai) return matchNum && q.categoryGroup === 'dokkai';
-            return matchNum; // Default jika tidak sebut kategori
-        });
-
-        // Fallback: Jika filter kategori tidak menemukan hasil, ambil yang pertama cocok dengan nomor
-        if (!relevantQuestionData) {
-            relevantQuestionData = currentQuestions.find(q => q.originalNum === questionNum);
+            try {
+                const res = await fetch(BACKEND_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ 
+                        userQuery: msg, 
+                        currentQuestionContext: relevantQuestionData ? {
+                            nomor: relevantQuestionData.originalNum,
+                            pertanyaan: relevantQuestionData.q,
+                            pilihan: relevantQuestionData.options,
+                            kunci_jawaban: relevantQuestionData.correct,
+                            kategori: relevantQuestionData.categoryGroup
+                        } : null,
+                        status: isFinished ? "POST_EXAM" : "DURING_EXAM",
+                        history: chatHistory
+                    })
+                });
+                const data = await res.json();
+                addDanboMessage(`<strong>Danbo:</strong> ${data.reply}`);
+                chatHistory.push({ role: "user", content: msg }, { role: "assistant", content: data.reply });
+            } catch (e) { addDanboMessage("<strong>Danbo:</strong> Koneksi terputus."); }
         }
-    }
-
-    try {
-        const res = await fetch(BACKEND_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ 
-                userQuery: msg, 
-                // Data soal dikirim secara spesifik agar backend langsung paham
-                currentQuestionContext: relevantQuestionData ? {
-                    nomor: relevantQuestionData.originalNum,
-                    pertanyaan: relevantQuestionData.q,
-                    pilihan: relevantQuestionData.options,
-                    kunci_jawaban: relevantQuestionData.correct,
-                    kategori: relevantQuestionData.categoryGroup
-                } : null,
-                // Status krusial untuk menentukan Danbo memberi jawaban atau clue
-                status: isFinished ? "POST_EXAM" : "DURING_EXAM",
-                history: chatHistory
-            })
-        });
-        
-        const data = await res.json();
-        addDanboMessage(`<strong>Danbo:</strong> ${data.reply}`);
-        
-        // Simpan ke history chat
-        chatHistory.push({ role: "user", content: msg }, { role: "assistant", content: data.reply });
-    } catch (e) { 
-        addDanboMessage("<strong>Danbo:</strong> Aduh, koneksiku ke server terputus."); 
-    }
-}
 
         function addDanboMessage(t) { 
             const b = document.getElementById('danbo-msg'); 
@@ -367,11 +357,6 @@
             document.getElementById('chat-sidebar').classList.remove('active'); 
             if(document.getElementById('exam-screen').style.display === 'flex') document.getElementById('chat-icon').style.display = 'flex'; 
             document.body.classList.remove('chat-open'); 
-        }
-
-        function showFolders() { 
-            document.getElementById('folder-screen').classList.remove('hidden'); 
-            document.getElementById('file-screen').classList.add('hidden'); 
         }
 
         window.onload = loadLevels;
