@@ -19,12 +19,13 @@
         #exam-screen { display: none; flex-direction: column; height: 100vh; }
         #exam-content { flex: 1; padding: 20px; overflow-y: auto; padding-bottom: 50px; }
         
-        /* Layout saat Chat Terbuka */
         body.chat-open #exam-content { height: 67vh; flex: none; }
 
         .question-card { background: white; padding: 20px; margin-bottom: 25px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); max-width: 800px; margin-left: auto; margin-right: auto; }
-        .reading-block { background: #fffbe6 !important; border-left: 5px solid #f1c40f; }
-        .q-image { display: block; max-width: 100%; height: auto; margin: 15px auto; border: 1px solid #ddd; border-radius: 8px; }
+        .reading-block { background: #fffbe6 !important; border-left: 5px solid #f1c40f; padding: 15px; margin-bottom: 15px; border-radius: 8px; font-size: 15px; line-height: 1.6; }
+        .q-image-container { background: #fff; padding: 10px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 15px; text-align: center; }
+        .q-image { max-width: 100%; height: auto; border-radius: 4px; }
+        
         .options-list { margin-top: 15px; display: flex; flex-direction: column; gap: 10px; }
         .option-item { padding: 12px 15px; border: 2px solid #ddd; border-radius: 8px; cursor: pointer; transition: 0.2s; }
         .option-item.selected { background: #e3f2fd; border-color: var(--accent); }
@@ -102,6 +103,7 @@
         let isFinished = false;
         let chatHistory = [];
         let myRadarChart = null;
+        let currentFolderPath = ""; // Variabel global untuk menyimpan lokasi folder soal aktif
 
         async function loadLevels() {
             try {
@@ -136,6 +138,9 @@
         }
 
         async function startExam(path, label) {
+            // REVISI: Simpan folder path agar gambar bisa diload sesuai folder n3/2011/07/
+            currentFolderPath = path.substring(0, path.lastIndexOf('/') + 1);
+
             document.getElementById('file-screen').classList.add('hidden');
             document.getElementById('exam-screen').style.display = 'flex';
             document.getElementById('chat-icon').style.display = 'flex';
@@ -149,26 +154,26 @@
 
                 area.innerHTML = ''; 
                 currentQuestions = [];
-                
                 const categories = Object.keys(data);
 
                 categories.forEach(cat => {
                     if (Array.isArray(data[cat])) {
                         data[cat].forEach((item) => {
-                            // LOGIKA: Jika item punya "text", ini adalah kelompok Dokkai
-                            if (item.text && item.questions) {
+                            // REVISI: Logika untuk Nested Questions (Blok Dokkai dengan Text/Image bersama)
+                            if (item.questions && Array.isArray(item.questions)) {
                                 item.questions.forEach((subQ) => {
                                     const qIndex = currentQuestions.length;
                                     currentQuestions.push({ 
                                         ...subQ, 
                                         categoryGroup: cat, 
-                                        embeddedText: item.text, // Teks hanya nempel di grup ini
-                                        sectionTitle: item.section_title 
+                                        embeddedText: item.text || null,
+                                        sectionTitle: item.section_title || null,
+                                        image: item.image || subQ.image || null // Gambar bisa di level grup (38-39) atau per soal
                                     });
                                     renderSingleQuestion(currentQuestions[qIndex], qIndex, area);
                                 });
                             } 
-                            // LOGIKA: Jika item hanya "q", ini soal mandiri (Nomor 39 dsb mungkin di sini)
+                            // Logika untuk soal mandiri (tanpa grup)
                             else if (item.q) {
                                 const qIndex = currentQuestions.length;
                                 currentQuestions.push({ ...item, categoryGroup: cat });
@@ -191,18 +196,24 @@
         function renderSingleQuestion(q, i, container) {
             const card = document.createElement('div');
             card.className = 'question-card';
-            
             let htmlContent = '';
 
-            // CEK: Apakah soal ini membawa teks? 
-            // Kalau q nomor 39 tidak bawa text di JSON, bagian ini dilewati (Teks tidak muncul)
-            if (q.embeddedText) {
+            // REVISI: Prioritas Tampilkan Gambar (Path otomatis menyesuaikan folder JSON)
+            if (q.image) {
                 htmlContent += `
-                    <div class="reading-block" style="padding: 15px; margin-bottom: 15px; border-radius: 8px; font-size: 15px; line-height: 1.6;">
+                    <div class="q-image-container">
+                        <img src="assets/${currentFolderPath}${q.image}" class="q-image" alt="Soal ${i+1}">
+                    </div>
+                `;
+            }
+
+            // Tampilkan teks bacaan jika ada (Hanya jika tidak ada gambar atau sebagai pelengkap)
+            if (q.embeddedText && !q.image) {
+                htmlContent += `
+                    <div class="reading-block">
                         <small style="color:var(--primary)"><b>${q.sectionTitle || 'BACAAN'}</b></small>
                         <div style="white-space: pre-wrap; margin-top:5px;">${q.embeddedText}</div>
                     </div>
-                    <hr style="border: 0; border-top: 1px dashed #ccc; margin: 20px 0;">
                 `;
             }
 
@@ -223,7 +234,6 @@
             container.appendChild(card);
         }
 
-        // --- SISA FUNGSI (pickOption, showResults, drawChart, sendMessage, dll) TETAP SAMA ---
         function pickOption(qIdx, oIdx) {
             if (isFinished) return;
             currentAnswers[qIdx] = oIdx;
@@ -248,10 +258,12 @@
                 const isCorrect = currentAnswers[i] === q.correct;
                 if (isCorrect) totalBenar++;
                 let catKey = "Kanji";
-                if(q.categoryGroup === 'bunpou') catKey = "Bunpou";
-                else if(q.categoryGroup === 'dokkai') catKey = "Dokkai";
+                if(q.categoryGroup.toLowerCase().includes('bunpou')) catKey = "Bunpou";
+                else if(q.categoryGroup.toLowerCase().includes('dokkai')) catKey = "Dokkai";
+                
                 mainStats[catKey].t++;
                 if(isCorrect) mainStats[catKey].c++;
+                
                 document.querySelectorAll(`[id^="q${i}-o"]`).forEach((el, oIdx) => {
                     el.classList.remove('selected');
                     if (oIdx === q.correct) el.classList.add('correct');
