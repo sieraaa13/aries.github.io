@@ -43,10 +43,20 @@
         #chat-sidebar.active { bottom: 0; }
         
         .chat-header { background: var(--primary); color: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
+        
+        /* REVISI CSS: Gaya untuk ikon Kelinci Tidur sebagai tombol tutup */
+        #rabbit-close-icon { width: 30px; height: auto; cursor: pointer; transition: transform 0.2s; }
+        #rabbit-close-icon:hover { transform: scale(1.1); }
+
         #danbo-msg { padding: 12px; overflow-y: auto; flex: 1; background: #f9f9f9; font-size: 13px; line-height: 1.5; }
         .chat-input-area { display: flex; padding: 8px; background: white; border-top: 1px solid #ddd; }
         #user-input { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 20px; outline: none; font-size: 13px; }
         #send-btn { background: var(--accent); color: white; border: none; padding: 0 15px; margin-left: 8px; border-radius: 15px; cursor: pointer; }
+        
+        /* REVISI CSS: Gaya untuk kotak pencarian */
+        .search-container { background: white; padding: 10px 20px; border-bottom: 1px solid #ddd; display: flex; justify-content: center; }
+        #search-input { width: 100%; max-width: 400px; padding: 8px 15px; border-radius: 20px; border: 1px solid #ccc; outline: none; }
+
         .hidden { display: none !important; }
     </style>
 </head>
@@ -65,10 +75,15 @@
 
     <div id="exam-screen">
         <div id="exam-content">
-            <div style="display:flex; justify-content:space-between; align-items: center; max-width: 800px; margin: auto;">
+            <div style="display:flex; justify-content:space-between; align-items: center; max-width: 800px; margin: auto; padding-bottom: 10px;">
                 <button onclick="location.reload()" style="padding: 8px 15px; cursor:pointer;">⬅ Keluar</button>
                 <b id="progress-indicator">Progres: 0 / 0</b>
             </div>
+            
+            <div class="search-container">
+                <input type="text" id="search-input" placeholder="Cari kosakata atau soal..." onkeyup="searchQuestions()">
+            </div>
+
             <h2 id="exam-title-display" style="text-align: center;"></h2>
             <div id="questions-area"></div>
             <div style="text-align:center;">
@@ -83,11 +98,14 @@
     </div>
 
     <div id="chat-icon" onclick="openDanbo()">
-        <img id="anya-icon" src="assets/icon robot.jpeg" alt="Anya Belajar">
+        <img src="assets/icon robot.jpeg" alt="Danbo">
     </div>
 
     <div id="chat-sidebar">
-        <div class="chat-header"><span>Danbo AI Assistant</span><span onclick="closeDanbo()" style="cursor:pointer;">✖</span></div>
+        <div class="chat-header">
+            <span>Danbo AI Assistant</span>
+            <img src="assets/kelinci tidur.jpeg" alt="Tutup" id="rabbit-close-icon" onclick="closeDanbo()">
+        </div>
         <div id="danbo-msg"></div>
         <div class="chat-input-area">
             <input type="text" id="user-input" placeholder="Tanya Danbo..." onkeypress="if(event.key === 'Enter') sendMessage()">
@@ -164,14 +182,15 @@
                                         categoryGroup: cat, 
                                         embeddedText: item.text || null,
                                         sectionTitle: item.section_title || null,
-                                        image: item.image || subQ.image || null 
+                                        image: item.image || subQ.image || null,
+                                        originalIndex: qIndex // Menyimpan index asli untuk sinkronisasi jawaban
                                     });
                                     renderSingleQuestion(currentQuestions[qIndex], qIndex, area);
                                 });
                             } 
                             else if (item.q) {
                                 const qIndex = currentQuestions.length;
-                                currentQuestions.push({ ...item, categoryGroup: cat });
+                                currentQuestions.push({ ...item, categoryGroup: cat, originalIndex: qIndex });
                                 renderSingleQuestion(currentQuestions[qIndex], qIndex, area);
                             }
                         });
@@ -189,6 +208,9 @@
         function renderSingleQuestion(q, i, container) {
             const card = document.createElement('div');
             card.className = 'question-card';
+            // Menambahkan ID unik berdasarkan originalIndex agar bisa direferensikan saat pencarian
+            card.id = `question-card-${q.originalIndex}`; 
+            
             let htmlContent = '';
             if (q.image) {
                 htmlContent += `<div class="q-image-container"><img src="assets/${imageFolderPath}${q.image}" class="q-image" alt="Soal ${i+1}"></div>`;
@@ -199,7 +221,8 @@
             let opts = '';
             if(q.options) {
                 q.options.forEach((opt, o) => {
-                    opts += `<div class="option-item" id="q${i}-o${o}" onclick="pickOption(${i}, ${o})">${o+1}. ${opt}</div>`;
+                    // pickOption menggunakan q.originalIndex
+                    opts += `<div class="option-item" id="q${q.originalIndex}-o${o}" onclick="pickOption(${q.originalIndex}, ${o})">${o+1}. ${opt}</div>`;
                 });
             }
             htmlContent += `<small style="color:var(--accent)">[${q.categoryGroup.toUpperCase()} - No. ${i+1}]</small><p style="font-size: 17px; margin-top: 10px;"><b>${q.q}</b></p><div class="options-list">${opts}</div>`;
@@ -207,11 +230,13 @@
             container.appendChild(card);
         }
 
-        function pickOption(qIdx, oIdx) {
+        function pickOption(originalQIdx, oIdx) {
             if (isFinished) return;
-            currentAnswers[qIdx] = oIdx;
-            document.querySelectorAll(`[id^="q${qIdx}-o"]`).forEach(el => el.classList.remove('selected'));
-            document.getElementById(`q${qIdx}-o${oIdx}`).classList.add('selected');
+            currentAnswers[originalQIdx] = oIdx;
+            // Membersihkan seleksi hanya pada soal ini
+            document.querySelectorAll(`[id^="q${originalQIdx}-o"]`).forEach(el => el.classList.remove('selected'));
+            // Menambahkan kelas selected
+            document.getElementById(`q${originalQIdx}-o${oIdx}`).classList.add('selected');
             updateStatus();
         }
 
@@ -223,6 +248,12 @@
 
         function showResults() {
             if (currentAnswers.includes(null) && !confirm("Ada soal belum dijawab. Yakin?")) return;
+            
+            // REVISI LOGIKA: Pastikan semua soal ditampilkan kembali sebelum cek skor
+            const searchInput = document.getElementById('search-input');
+            if (searchInput) searchInput.value = ''; 
+            searchQuestions(); // Reset filter
+
             isFinished = true;
             let totalBenar = 0;
             const mainStats = { "Kanji": {c:0, t:0}, "Bunpou": {c:0, t:0}, "Dokkai": {c:0, t:0} };
@@ -267,6 +298,29 @@
             });
         }
 
+        // REVISI JAVASCRIPT: Fungsi Logika Pencarian Kosakata/Soal lokal
+        function searchQuestions() {
+            const searchTerm = document.getElementById('search-input').value.toLowerCase();
+            const area = document.getElementById('questions-area');
+            
+            // Logika: Sembunyikan/Tampilkan kartu soal yang sudah ada di DOM
+            currentQuestions.forEach((q) => {
+                const card = document.getElementById(`question-card-${q.originalIndex}`);
+                if (!card) return;
+
+                const questionText = q.q ? q.q.toLowerCase() : "";
+                const embeddedText = q.embeddedText ? q.embeddedText.toLowerCase() : "";
+                const category = q.categoryGroup ? q.categoryGroup.toLowerCase() : "";
+                
+                // Cek apakah kata kunci ada di soal, bacaan, atau kategori
+                if (questionText.includes(searchTerm) || embeddedText.includes(searchTerm) || category.includes(searchTerm)) {
+                    card.style.display = 'block'; // Tampilkan
+                } else {
+                    card.style.display = 'none'; // Sembunyikan
+                }
+            });
+        }
+
         async function sendMessage() {
             const input = document.getElementById('user-input');
             const msg = input.value.trim(); 
@@ -291,28 +345,14 @@
             b.appendChild(p); b.scrollTop = b.scrollHeight; 
         }
 
-        // REVISI: Fungsi buka chat menampilkan Anya tidur dan mengubah aksi klik ikon
         function openDanbo() { 
             document.getElementById('chat-sidebar').classList.add('active'); 
             document.body.classList.add('chat-open'); 
-            
-            const anyaImg = document.getElementById('anya-icon');
-            anyaImg.src = "assets/anya tidur.jpg"; 
-            anyaImg.alt = "Anya Tidur";
-            
-            document.getElementById('chat-icon').onclick = closeDanbo;
         }
 
-        // REVISI: Fungsi tutup chat mengembalikan Anya belajar
         function closeDanbo() { 
             document.getElementById('chat-sidebar').classList.remove('active'); 
             document.body.classList.remove('chat-open'); 
-            
-            const anyaImg = document.getElementById('anya-icon');
-            anyaImg.src = "assets/icon robot.jpeg"; 
-            anyaImg.alt = "Anya Belajar";
-            
-            document.getElementById('chat-icon').onclick = openDanbo;
         }
 
         function showFolders() { 
