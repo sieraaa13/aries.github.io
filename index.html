@@ -36,22 +36,15 @@
         #result-box { display: none; margin: 30px auto; padding: 20px; background: white; border-radius: 10px; border: 2px solid var(--success); max-width: 800px; }
         .chart-container { max-width: 450px; margin: 20px auto; }
 
-        /* REVISI: Ikon Chopper Transparan */
-        #chat-icon { 
-            position: fixed; bottom: 20px; right: 20px; width: 90px; height: auto; 
-            background: transparent !important; cursor: pointer; display: none; z-index: 1000; 
-            transition: transform 0.2s;
-        }
+        #chat-icon { position: fixed; bottom: 20px; right: 20px; width: 90px; height: auto; background: transparent !important; cursor: pointer; display: none; z-index: 1000; transition: transform 0.2s; }
         #chat-icon:hover { transform: scale(1.1); }
-        #chat-icon img { width: 100%; height: auto; display: block; }
+        #chat-icon img { width: 100%; height: auto; display: block; border-radius: 10px; }
         
         #chat-sidebar { position: fixed; bottom: -35vh; left: 0; width: 100%; height: 33vh; background: white; box-shadow: 0 -5px 15px rgba(0,0,0,0.1); display: flex; flex-direction: column; transition: bottom 0.4s ease; z-index: 1001; }
         #chat-sidebar.active { bottom: 0; }
         
         .chat-header { background: var(--primary); color: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
-        
         #rabbit-close-icon { width: 45px; height: auto; cursor: pointer; transition: all 0.2s; padding: 5px; }
-        #rabbit-close-icon:hover { transform: scale(1.15) rotate(-5deg); }
 
         #danbo-msg { padding: 12px; overflow-y: auto; flex: 1; background: #f9f9f9; font-size: 13px; line-height: 1.5; }
         .chat-input-area { display: flex; padding: 8px; background: white; border-top: 1px solid #ddd; }
@@ -60,7 +53,6 @@
         
         .search-container { background: white; padding: 10px 20px; border-bottom: 1px solid #ddd; display: flex; justify-content: center; }
         #search-input { width: 100%; max-width: 400px; padding: 8px 15px; border-radius: 20px; border: 1px solid #ccc; outline: none; }
-
         .hidden { display: none !important; }
     </style>
 </head>
@@ -150,6 +142,7 @@
             const container = document.getElementById('file-container');
             container.innerHTML = '';
             levelData.years.forEach(y => {
+                y.years ? y.years.forEach(innerY => { /* Handle nested if any */ }) : null;
                 y.exams.forEach(ex => {
                     const item = document.createElement('div');
                     item.className = 'file-item';
@@ -281,7 +274,6 @@
             drawChart(Object.keys(mainStats), Object.keys(mainStats).map(l => mainStats[l].t ? Math.round((mainStats[l].c / mainStats[l].t) * 100) : 0));
             
             openDanbo();
-            // Kirim ringkasan otomatis hasil ujian
             sendMessage("Sistem: Ujian Selesai", true);
         }
 
@@ -322,56 +314,58 @@
         }
 
         async function sendMessage(overrideMsg = null, isAuto = false) {
-    const input = document.getElementById('user-input');
-    const msg = overrideMsg || input.value.trim(); 
-    
-    if(!msg) return;
-    if(!isAuto) addDanboMessage(`<strong>Kamu:</strong> ${msg}`); 
-    if(input) input.value = '';
+            const input = document.getElementById('user-input');
+            const msg = overrideMsg || (input ? input.value.trim() : ""); 
+            
+            if(!msg) return;
+            if(!isAuto) addDanboMessage(`<strong>Kamu:</strong> ${msg}`); 
+            if(input) input.value = '';
 
-    // 1. Cari soal yang sedang aktif/terlihat oleh user (filter berdasarkan search)
-    // Jika user sedang bertanya tentang soal tertentu, AI butuh konteksnya.
-    const visibleQuestionsContext = currentQuestions
-    .filter(q => {
-        const card = document.getElementById(`question-card-${q.originalIndex}`);
-        return card && card.style.display !== 'none';
-    })
-    .map(q => ({
-        nomor: q.originalIndex + 1,
-        pertanyaan: (q.embeddedText || "") + " " + q.q, // Gabungkan teks bacaan & pertanyaan
-        pilihan: q.options,
-        kategori: q.categoryGroup,
-        kunci_jawaban: q.correct
-    }));
+            // Filter soal yang tampil di layar (konteks dinamis)
+            const visibleQuestionsContext = currentQuestions
+                .filter(q => {
+                    const card = document.getElementById(`question-card-${q.originalIndex}`);
+                    return card && card.style.display !== 'none';
+                })
+                .map(q => ({
+                    nomor: q.originalIndex + 1,
+                    pertanyaan: (q.embeddedText || "") + " " + (q.q || ""),
+                    pilihan: q.options || [],
+                    kategori: q.categoryGroup,
+                    kunci_jawaban: q.correct
+                }));
 
-// Kirim ke backend
-const res = await fetch(BACKEND_URL, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ 
-        userQuery: msg, 
-        status: isFinished ? "POST" : "DURING_EXAM", 
-        history: chatHistory,
-        currentQuestionContext: visibleQuestionsContext // Sekarang berisi DAFTAR soal
-    })
+            try {
+                const res = await fetch(BACKEND_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ 
+                        userQuery: msg, 
+                        status: isFinished ? "POST" : "DURING_EXAM", 
+                        history: chatHistory,
+                        currentQuestionContext: visibleQuestionsContext 
+                    })
+                });
 
-        const data = await res.json();
-        addDanboMessage(`<strong>Danbo:</strong> ${data.reply}`);
-        
-        // Simpan riwayat agar percakapan nyambung
-        chatHistory.push({ role: "user", content: msg });
-        chatHistory.push({ role: "assistant", content: data.reply });
+                const data = await res.json();
+                addDanboMessage(`<strong>Danbo:</strong> ${data.reply}`);
+                
+                chatHistory.push({ role: "user", content: msg });
+                chatHistory.push({ role: "assistant", content: data.reply });
 
-    } catch (e) { 
-        console.error("Chat Error:", e);
-        addDanboMessage("<strong>Danbo:</strong> Gagal terhubung ke server."); 
-    }
-}
+            } catch (e) { 
+                console.error("Chat Error:", e);
+                addDanboMessage("<strong>Danbo:</strong> Gagal terhubung ke server."); 
+            }
+        }
 
         function addDanboMessage(t) { 
             const b = document.getElementById('danbo-msg'); 
             const p = document.createElement('p'); p.innerHTML = t; 
-            b.appendChild(p); b.scrollTop = b.scrollHeight; 
+            if(b) {
+                b.appendChild(p); 
+                b.scrollTop = b.scrollHeight; 
+            }
         }
 
         function openDanbo() { 
