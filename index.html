@@ -110,299 +110,291 @@
     </div>
 
     <script>
-        const BACKEND_URL = "https://web-backend-l5p7.onrender.com/danbo-chat"; 
-        let currentQuestions = [];
-        let currentAnswers = [];
-        let totalSoal = 0;
-        let totalBenar = 0;
-        let isFinished = false;
-        let chatHistory = [];
-        let myRadarChart = null;
-        let imageFolderPath = "";
+    const BACKEND_URL = "https://web-backend-l5p7.onrender.com/danbo-chat"; 
+    let currentQuestions = [];
+    let currentAnswers = [];
+    let totalSoal = 0;
+    let totalBenar = 0;
+    let isFinished = false;
+    let chatHistory = [];
+    let myRadarChart = null;
+    let imageFolderPath = "";
 
-        async function loadLevels() {
-            try {
-                const res = await fetch('assets/manifest.json');
-                const data = await res.json();
-                const container = document.querySelector('.folder-grid');
-                container.innerHTML = '';
-                data.levels.forEach(lvl => {
-                    const card = document.createElement('div');
-                    card.className = 'folder-card';
-                    card.innerHTML = `📁<br>${lvl.name}`;
-                    card.onclick = () => openLevelFiles(lvl);
-                    container.appendChild(card);
-                });
-            } catch (e) { console.error("Manifest Error:", e); }
-        }
-
-        function openLevelFiles(levelData) {
-            document.getElementById('folder-screen').classList.add('hidden');
-            document.getElementById('file-screen').classList.remove('hidden');
-            const container = document.getElementById('file-container');
+    // 1. Load Levels & Files (Tetap sama)
+    async function loadLevels() {
+        try {
+            const res = await fetch('assets/manifest.json');
+            const data = await res.json();
+            const container = document.querySelector('.folder-grid');
             container.innerHTML = '';
-            levelData.years.forEach(y => {
-                y.years ? y.years.forEach(innerY => { /* Handle nested if any */ }) : null;
-                y.exams.forEach(ex => {
-                    const item = document.createElement('div');
-                    item.className = 'file-item';
-                    item.innerText = `📄 ${levelData.name} - ${ex.label}`;
-                    item.onclick = () => startExam(ex.path, ex.label);
-                    container.appendChild(item);
-                });
+            data.levels.forEach(lvl => {
+                const card = document.createElement('div');
+                card.className = 'folder-card';
+                card.innerHTML = `📁<br>${lvl.name}`;
+                card.onclick = () => openLevelFiles(lvl);
+                container.appendChild(card);
             });
-        }
+        } catch (e) { console.error("Manifest Error:", e); }
+    }
 
-        async function startExam(path, label) {
-            imageFolderPath = path.replace('.json', '/');
-            document.getElementById('file-screen').classList.add('hidden');
-            document.getElementById('exam-screen').style.display = 'flex';
-            document.getElementById('chat-icon').style.display = 'block';
-            document.getElementById('exam-title-display').innerText = label;
-            const area = document.getElementById('questions-area');
-            area.innerHTML = 'Memuat data soal...';
+    function openLevelFiles(levelData) {
+        document.getElementById('folder-screen').classList.add('hidden');
+        document.getElementById('file-screen').classList.remove('hidden');
+        const container = document.getElementById('file-container');
+        container.innerHTML = '';
+        levelData.years.forEach(y => {
+            y.exams.forEach(ex => {
+                const item = document.createElement('div');
+                item.className = 'file-item';
+                item.innerText = `📄 ${levelData.name} - ${ex.label}`;
+                item.onclick = () => startExam(ex.path, ex.label);
+                container.appendChild(item);
+            });
+        });
+    }
 
-            try {
-                const res = await fetch(`assets/${path}`);
-                const data = await res.json();
-                area.innerHTML = ''; 
-                currentQuestions = [];
-                const categories = Object.keys(data);
+    // 2. Start Exam - Inisialisasi Data Soal ke Memori
+    async function startExam(path, label) {
+        imageFolderPath = path.replace('.json', '/');
+        document.getElementById('file-screen').classList.add('hidden');
+        document.getElementById('exam-screen').style.display = 'flex';
+        document.getElementById('chat-icon').style.display = 'block';
+        document.getElementById('exam-title-display').innerText = label;
+        const area = document.getElementById('questions-area');
+        area.innerHTML = 'Memuat data soal...';
 
-                categories.forEach(cat => {
-                    if (Array.isArray(data[cat])) {
-                        data[cat].forEach((item) => {
-                            if (item.questions && Array.isArray(item.questions)) {
-                                item.questions.forEach((subQ) => {
-                                    const qIndex = currentQuestions.length;
-                                    currentQuestions.push({ 
-                                        ...subQ, 
-                                        categoryGroup: cat, 
-                                        embeddedText: item.text || null,
-                                        sectionTitle: item.section_title || null,
-                                        image: item.image || subQ.image || null,
-                                        originalIndex: qIndex
-                                    });
-                                    renderSingleQuestion(currentQuestions[qIndex], qIndex, area);
-                                });
-                            } 
-                            else if (item.q) {
+        try {
+            const res = await fetch(`assets/${path}`);
+            const data = await res.json();
+            area.innerHTML = ''; 
+            currentQuestions = [];
+            
+            const categories = Object.keys(data);
+            categories.forEach(cat => {
+                if (Array.isArray(data[cat])) {
+                    data[cat].forEach((item) => {
+                        if (item.questions && Array.isArray(item.questions)) {
+                            item.questions.forEach((subQ) => {
                                 const qIndex = currentQuestions.length;
-                                currentQuestions.push({ ...item, categoryGroup: cat, originalIndex: qIndex });
+                                currentQuestions.push({ 
+                                    ...subQ, 
+                                    categoryGroup: cat, 
+                                    embeddedText: item.text || null,
+                                    sectionTitle: item.section_title || null,
+                                    image: item.image || subQ.image || null,
+                                    originalIndex: qIndex
+                                });
                                 renderSingleQuestion(currentQuestions[qIndex], qIndex, area);
-                            }
-                        });
-                    }
-                });
-                totalSoal = currentQuestions.length;
-                currentAnswers = new Array(totalSoal).fill(null);
-                isFinished = false;
-                updateStatus();
-            } catch (e) { 
-                area.innerHTML = `<p style='color:red;'>Gagal memuat: ${e.message}</p>`;
-            }
-        }
-
-        function renderSingleQuestion(q, i, container) {
-            const card = document.createElement('div');
-            card.className = 'question-card';
-            card.id = `question-card-${q.originalIndex}`; 
-            
-            let htmlContent = '';
-            if (q.image) {
-                htmlContent += `<div class="q-image-container"><img src="assets/${imageFolderPath}${q.image}" class="q-image" alt="Soal ${i+1}"></div>`;
-            }
-            if (q.embeddedText && !q.image) {
-                htmlContent += `<div class="reading-block"><small style="color:var(--primary)"><b>${q.sectionTitle || 'BACAAN'}</b></small><div style="white-space: pre-wrap; margin-top:5px;">${q.embeddedText}</div></div>`;
-            }
-            let opts = '';
-            if(q.options) {
-                q.options.forEach((opt, o) => {
-                    opts += `<div class="option-item" id="q${q.originalIndex}-o${o}" onclick="pickOption(${q.originalIndex}, ${o})">${o+1}. ${opt}</div>`;
-                });
-            }
-            htmlContent += `<small style="color:var(--accent)">[${q.categoryGroup.toUpperCase()} - No. ${i+1}]</small><p style="font-size: 17px; margin-top: 10px;"><b>${q.q}</b></p><div class="options-list">${opts}</div>`;
-            card.innerHTML = htmlContent;
-            container.appendChild(card);
-        }
-
-        function pickOption(originalQIdx, oIdx) {
-            if (isFinished) return;
-            currentAnswers[originalQIdx] = oIdx;
-            document.querySelectorAll(`[id^="q${originalQIdx}-o"]`).forEach(el => el.classList.remove('selected'));
-            document.getElementById(`q${originalQIdx}-o${oIdx}`).classList.add('selected');
+                            });
+                        } else if (item.q) {
+                            const qIndex = currentQuestions.length;
+                            currentQuestions.push({ ...item, categoryGroup: cat, originalIndex: qIndex });
+                            renderSingleQuestion(currentQuestions[qIndex], qIndex, area);
+                        }
+                    });
+                }
+            });
+            totalSoal = currentQuestions.length;
+            currentAnswers = new Array(totalSoal).fill(null);
+            isFinished = false;
             updateStatus();
+        } catch (e) { 
+            area.innerHTML = `<p style='color:red;'>Gagal memuat: ${e.message}</p>`;
         }
+    }
 
-        function updateStatus() {
-            const answered = currentAnswers.filter(a => a !== null).length;
-            const progressEl = document.getElementById('progress-indicator');
-            if(progressEl) progressEl.innerText = `Progres: ${answered} / ${totalSoal}`;
+    function renderSingleQuestion(q, i, container) {
+        const card = document.createElement('div');
+        card.className = 'question-card';
+        card.id = `question-card-${q.originalIndex}`; 
+        
+        let htmlContent = '';
+        if (q.image) {
+            htmlContent += `<div class="q-image-container"><img src="assets/${imageFolderPath}${q.image}" class="q-image" alt="Soal ${i+1}"></div>`;
         }
-
-        function showResults() {
-            if (currentAnswers.includes(null) && !confirm("Ada soal belum dijawab. Yakin?")) return;
-            
-            const searchInput = document.getElementById('search-input');
-            if (searchInput) searchInput.value = ''; 
-            searchQuestions(); 
-
-            isFinished = true;
-            totalBenar = 0;
-            const mainStats = { "Kanji": {c:0, t:0}, "Bunpou": {c:0, t:0}, "Dokkai": {c:0, t:0} };
-
-            currentQuestions.forEach((q, i) => {
-                const isCorrect = currentAnswers[i] === q.correct;
-                if (isCorrect) totalBenar++;
-                let catKey = "Kanji";
-                if(q.categoryGroup.toLowerCase().includes('bunpou')) catKey = "Bunpou";
-                else if(q.categoryGroup.toLowerCase().includes('dokkai')) catKey = "Dokkai";
-                mainStats[catKey].t++;
-                if(isCorrect) mainStats[catKey].c++;
-                
-                document.querySelectorAll(`[id^="q${i}-o"]`).forEach((el, oIdx) => {
-                    el.classList.remove('selected');
-                    if (oIdx === q.correct) el.classList.add('correct');
-                    else if (oIdx === currentAnswers[i]) el.classList.add('wrong');
-                });
-            });
-
-            document.getElementById('result-box').style.display = 'block';
-            document.getElementById('submit-btn').style.display = 'none';
-            document.getElementById('final-score').innerText = `Skor Akhir: ${totalBenar} / ${totalSoal}`;
-            
-            drawChart(Object.keys(mainStats), Object.keys(mainStats).map(l => mainStats[l].t ? Math.round((mainStats[l].c / mainStats[l].t) * 100) : 0));
-            
-            openDanbo();
-            sendMessage("Sistem: Ujian Selesai", true);
+        if (q.embeddedText && !q.image) {
+            htmlContent += `<div class="reading-block"><small style="color:var(--primary)"><b>${q.sectionTitle || 'BACAAN'}</b></small><div style="white-space: pre-wrap; margin-top:5px;">${q.embeddedText}</div></div>`;
         }
-
-        function drawChart(labels, dataPoin) {
-            const ctx = document.getElementById('scoreChart').getContext('2d');
-            if (myRadarChart) myRadarChart.destroy();
-            myRadarChart = new Chart(ctx, {
-                type: 'radar',
-                data: {
-                    labels: labels,
-                    datasets: [{
-                        label: 'Penguasaan %',
-                        data: dataPoin,
-                        backgroundColor: 'rgba(52, 152, 219, 0.2)',
-                        borderColor: '#3498db',
-                        borderWidth: 2
-                    }]
-                },
-                options: { scales: { r: { min: 0, max: 100 } } }
+        let opts = '';
+        if(q.options) {
+            q.options.forEach((opt, o) => {
+                opts += `<div class="option-item" id="q${q.originalIndex}-o${o}" onclick="pickOption(${q.originalIndex}, ${o})">${o+1}. ${opt}</div>`;
             });
         }
+        htmlContent += `<small style="color:var(--accent)">[${q.categoryGroup.toUpperCase()} - No. ${i+1}]</small><p style="font-size: 17px; margin-top: 10px;"><b>${q.q}</b></p><div class="options-list">${opts}</div>`;
+        card.innerHTML = htmlContent;
+        container.appendChild(card);
+    }
 
-        function searchQuestions() {
-            const searchTerm = document.getElementById('search-input').value.toLowerCase();
-            currentQuestions.forEach((q) => {
-                const card = document.getElementById(`question-card-${q.originalIndex}`);
-                if (!card) return;
-                const questionText = q.q ? q.q.toLowerCase() : "";
-                const embeddedText = q.embeddedText ? q.embeddedText.toLowerCase() : "";
-                const category = q.categoryGroup ? q.categoryGroup.toLowerCase() : "";
-                
-                if (questionText.includes(searchTerm) || embeddedText.includes(searchTerm) || category.includes(searchTerm)) {
-                    card.style.display = 'block';
-                } else {
-                    card.style.display = 'none';
+    // 3. Logika Jawaban & Status
+    function pickOption(originalQIdx, oIdx) {
+        if (isFinished) return;
+        currentAnswers[originalQIdx] = oIdx;
+        document.querySelectorAll(`[id^="q${originalQIdx}-o"]`).forEach(el => el.classList.remove('selected'));
+        document.getElementById(`q${originalQIdx}-o${oIdx}`).classList.add('selected');
+        updateStatus();
+    }
+
+    function updateStatus() {
+        const answered = currentAnswers.filter(a => a !== null).length;
+        const progressEl = document.getElementById('progress-indicator');
+        if(progressEl) progressEl.innerText = `Progres: ${answered} / ${totalSoal}`;
+    }
+
+    // 4. Send Message - REVISI UTAMA (Deteksi Nomor & Konteks)
+    async function sendMessage(overrideMsg = null, isAuto = false) {
+        const input = document.getElementById('user-input');
+        const msg = overrideMsg || (input ? input.value.trim() : ""); 
+        
+        if(!msg) return;
+        if(!isAuto) addDanboMessage(`<strong>Kamu:</strong> ${msg}`); 
+        if(input) input.value = '';
+
+        // Deteksi angka dalam pesan user
+        const foundNumbers = msg.match(/\d+/g); 
+        let selectedContext = [];
+
+        if (foundNumbers) {
+            foundNumbers.forEach(num => {
+                const actualIndex = parseInt(num) - 1;
+                // Pastikan indeks valid sebelum mengambil data
+                if (currentQuestions[actualIndex]) {
+                    selectedContext.push({
+                        nomor: num,
+                        pertanyaan: (currentQuestions[actualIndex].embeddedText || "") + " " + (currentQuestions[actualIndex].q || ""),
+                        pilihan: currentQuestions[actualIndex].options || [],
+                        kategori: currentQuestions[actualIndex].categoryGroup,
+                        kunci_jawaban: currentQuestions[actualIndex].correct
+                    });
                 }
             });
         }
 
-        async function sendMessage(overrideMsg = null, isAuto = false) {
-    const input = document.getElementById('user-input');
-    const msg = overrideMsg || (input ? input.value.trim() : ""); 
-    
-    if(!msg) return;
-    if(!isAuto) addDanboMessage(`<strong>Kamu:</strong> ${msg}`); 
-    if(input) input.value = '';
+        // Jika tidak sebut nomor, ambil 5 soal pertama sebagai gambaran materi
+        if (selectedContext.length === 0 && currentQuestions.length > 0) {
+            selectedContext = currentQuestions.slice(0, 5).map(q => ({
+                nomor: q.originalIndex + 1,
+                pertanyaan: (q.embeddedText || "") + " " + (q.q || ""),
+                pilihan: q.options || [],
+                kategori: q.categoryGroup,
+                kunci_jawaban: q.correct
+            }));
+        }
 
-    // --- LOGIKA BARU: MENCARI NOMOR SOAL DALAM PESAN ---
-    const foundNumbers = msg.match(/\d+/g); // Mencari angka di pesan user
-    let selectedContext = [];
+        // Tampilkan indikator loading sederhana
+        const loadingId = "load-" + Date.now();
+        addDanboMessage(`<span id="${loadingId}"><em>Danbo sedang berpikir...</em></span>`);
 
-    if (foundNumbers) {
-        // Jika user menyebutkan nomor, kita ambil soal spesifik tersebut
-        foundNumbers.forEach(num => {
-            const actualIndex = parseInt(num) - 1; // Array mulai dari 0
-            if (currentQuestions[actualIndex]) {
-                selectedContext.push({
-                    nomor: num,
-                    pertanyaan: (currentQuestions[actualIndex].embeddedText || "") + " " + (currentQuestions[actualIndex].q || ""),
-                    pilihan: currentQuestions[actualIndex].options || [],
-                    kategori: currentQuestions[actualIndex].categoryGroup,
-                    kunci_jawaban: currentQuestions[actualIndex].correct
-                });
-            }
+        try {
+            const res = await fetch(BACKEND_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ 
+                    userQuery: msg, 
+                    status: isFinished ? "POST_EXAM" : "DURING_EXAM", 
+                    history: chatHistory,
+                    currentQuestionContext: selectedContext 
+                })
+            });
+
+            const data = await res.json();
+            
+            // Hapus loading dan tampilkan jawaban
+            const loader = document.getElementById(loadingId);
+            if(loader) loader.parentElement.remove();
+
+            addDanboMessage(`<strong>Danbo:</strong> ${data.reply}`);
+            
+            chatHistory.push({ role: "user", content: msg });
+            chatHistory.push({ role: "assistant", content: data.reply });
+
+        } catch (e) { 
+            console.error("Chat Error:", e);
+            const loader = document.getElementById(loadingId);
+            if(loader) loader.innerHTML = "Gagal terhubung ke Danbo. Coba cek koneksi internetmu.";
+        }
+    }
+
+    // 5. Fungsi Utility & UI
+    function addDanboMessage(t) { 
+        const b = document.getElementById('danbo-msg'); 
+        const p = document.createElement('p'); p.innerHTML = t; 
+        if(b) {
+            b.appendChild(p); 
+            b.scrollTop = b.scrollHeight; 
+        }
+    }
+
+    function openDanbo() { 
+        document.getElementById('chat-sidebar').classList.add('active'); 
+        document.body.classList.add('chat-open'); 
+    }
+
+    function closeDanbo() { 
+        document.getElementById('chat-sidebar').classList.remove('active'); 
+        document.body.classList.remove('chat-open'); 
+    }
+
+    function searchQuestions() {
+        const searchTerm = document.getElementById('search-input').value.toLowerCase();
+        currentQuestions.forEach((q) => {
+            const card = document.getElementById(`question-card-${q.originalIndex}`);
+            if (!card) return;
+            const content = (q.q + (q.embeddedText || "") + q.categoryGroup).toLowerCase();
+            card.style.display = content.includes(searchTerm) ? 'block' : 'none';
         });
     }
 
-    // Jika user TIDAK menyebutkan nomor, kirimkan MAKSIMAL 5-10 soal pertama sebagai konteks umum
-    // agar token tidak bengkak tapi AI tetap punya gambaran materi.
-    if (selectedContext.length === 0) {
-        selectedContext = currentQuestions.slice(0, 10).map(q => ({
-            nomor: q.originalIndex + 1,
-            pertanyaan: (q.embeddedText || "") + " " + (q.q || ""),
-            pilihan: q.options || [],
-            kategori: q.categoryGroup,
-            kunci_jawaban: q.correct
-        }));
-    }
+    function showResults() {
+        if (currentAnswers.includes(null) && !confirm("Ada soal belum dijawab. Yakin?")) return;
+        isFinished = true;
+        totalBenar = 0;
+        const mainStats = { "Kanji": {c:0, t:0}, "Bunpou": {c:0, t:0}, "Dokkai": {c:0, t:0} };
 
-    try {
-        // Tambahkan indikator loading titik-titik (opsional jika sudah ada)
-        const res = await fetch(BACKEND_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ 
-                userQuery: msg, 
-                status: isFinished ? "POST" : "DURING_EXAM", 
-                history: chatHistory,
-                // Kita kirim context yang sudah difilter berdasarkan nomor yang disebut user
-                currentQuestionContext: selectedContext 
-            })
+        currentQuestions.forEach((q, i) => {
+            const isCorrect = currentAnswers[i] === q.correct;
+            if (isCorrect) totalBenar++;
+            let catKey = q.categoryGroup.toLowerCase().includes('bunpou') ? "Bunpou" : 
+                         q.categoryGroup.toLowerCase().includes('dokkai') ? "Dokkai" : "Kanji";
+            mainStats[catKey].t++;
+            if(isCorrect) mainStats[catKey].c++;
+            
+            document.querySelectorAll(`[id^="q${i}-o"]`).forEach((el, oIdx) => {
+                el.classList.remove('selected');
+                if (oIdx === q.correct) el.classList.add('correct');
+                else if (oIdx === currentAnswers[i]) el.classList.add('wrong');
+            });
         });
 
-        const data = await res.json();
-        addDanboMessage(`<strong>Danbo:</strong> ${data.reply}`);
+        document.getElementById('result-box').style.display = 'block';
+        document.getElementById('submit-btn').style.display = 'none';
+        document.getElementById('final-score').innerText = `Skor Akhir: ${totalBenar} / ${totalSoal}`;
         
-        chatHistory.push({ role: "user", content: msg });
-        chatHistory.push({ role: "assistant", content: data.reply });
-
-    } catch (e) { 
-        console.error("Chat Error:", e);
-        addDanboMessage("<strong>Danbo:</strong> Gagal terhubung ke server."); 
+        drawChart(Object.keys(mainStats), Object.keys(mainStats).map(l => mainStats[l].t ? Math.round((mainStats[l].c / mainStats[l].t) * 100) : 0));
+        openDanbo();
+        sendMessage(`Sistem: Ujian Selesai. Saya benar ${totalBenar} dari ${totalSoal} soal. Berikan evaluasi emosional dan teknis.`, true);
     }
-}
-        function addDanboMessage(t) { 
-            const b = document.getElementById('danbo-msg'); 
-            const p = document.createElement('p'); p.innerHTML = t; 
-            if(b) {
-                b.appendChild(p); 
-                b.scrollTop = b.scrollHeight; 
-            }
-        }
 
-        function openDanbo() { 
-            document.getElementById('chat-sidebar').classList.add('active'); 
-            document.body.classList.add('chat-open'); 
-        }
+    function drawChart(labels, dataPoin) {
+        const ctx = document.getElementById('scoreChart').getContext('2d');
+        if (myRadarChart) myRadarChart.destroy();
+        myRadarChart = new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Penguasaan %',
+                    data: dataPoin,
+                    backgroundColor: 'rgba(52, 152, 219, 0.2)',
+                    borderColor: '#3498db',
+                    borderWidth: 2
+                }]
+            },
+            options: { scales: { r: { min: 0, max: 100 } } }
+        });
+    }
 
-        function closeDanbo() { 
-            document.getElementById('chat-sidebar').classList.remove('active'); 
-            document.body.classList.remove('chat-open'); 
-        }
-
-        function showFolders() { 
-            document.getElementById('folder-screen').classList.remove('hidden'); 
-            document.getElementById('file-screen').classList.add('hidden'); 
-        }
-
-        window.onload = loadLevels;
-    </script>
+    window.onload = loadLevels;
+</script>
 </body>
 </html>
