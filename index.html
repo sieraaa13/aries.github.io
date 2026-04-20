@@ -314,51 +314,70 @@
         }
 
         async function sendMessage(overrideMsg = null, isAuto = false) {
-            const input = document.getElementById('user-input');
-            const msg = overrideMsg || (input ? input.value.trim() : ""); 
-            
-            if(!msg) return;
-            if(!isAuto) addDanboMessage(`<strong>Kamu:</strong> ${msg}`); 
-            if(input) input.value = '';
+    const input = document.getElementById('user-input');
+    const msg = overrideMsg || (input ? input.value.trim() : ""); 
+    
+    if(!msg) return;
+    if(!isAuto) addDanboMessage(`<strong>Kamu:</strong> ${msg}`); 
+    if(input) input.value = '';
 
-            // Filter soal yang tampil di layar (konteks dinamis)
-            const visibleQuestionsContext = currentQuestions
-                .filter(q => {
-                    const card = document.getElementById(`question-card-${q.originalIndex}`);
-                    return card && card.style.display !== 'none';
-                })
-                .map(q => ({
-                    nomor: q.originalIndex + 1,
-                    pertanyaan: (q.embeddedText || "") + " " + (q.q || ""),
-                    pilihan: q.options || [],
-                    kategori: q.categoryGroup,
-                    kunci_jawaban: q.correct
-                }));
+    // --- LOGIKA BARU: MENCARI NOMOR SOAL DALAM PESAN ---
+    const foundNumbers = msg.match(/\d+/g); // Mencari angka di pesan user
+    let selectedContext = [];
 
-            try {
-                const res = await fetch(BACKEND_URL, {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ 
-                        userQuery: msg, 
-                        status: isFinished ? "POST" : "DURING_EXAM", 
-                        history: chatHistory,
-                        currentQuestionContext: visibleQuestionsContext 
-                    })
+    if (foundNumbers) {
+        // Jika user menyebutkan nomor, kita ambil soal spesifik tersebut
+        foundNumbers.forEach(num => {
+            const actualIndex = parseInt(num) - 1; // Array mulai dari 0
+            if (currentQuestions[actualIndex]) {
+                selectedContext.push({
+                    nomor: num,
+                    pertanyaan: (currentQuestions[actualIndex].embeddedText || "") + " " + (currentQuestions[actualIndex].q || ""),
+                    pilihan: currentQuestions[actualIndex].options || [],
+                    kategori: currentQuestions[actualIndex].categoryGroup,
+                    kunci_jawaban: currentQuestions[actualIndex].correct
                 });
-
-                const data = await res.json();
-                addDanboMessage(`<strong>Danbo:</strong> ${data.reply}`);
-                
-                chatHistory.push({ role: "user", content: msg });
-                chatHistory.push({ role: "assistant", content: data.reply });
-
-            } catch (e) { 
-                console.error("Chat Error:", e);
-                addDanboMessage("<strong>Danbo:</strong> Gagal terhubung ke server."); 
             }
-        }
+        });
+    }
 
+    // Jika user TIDAK menyebutkan nomor, kirimkan MAKSIMAL 5-10 soal pertama sebagai konteks umum
+    // agar token tidak bengkak tapi AI tetap punya gambaran materi.
+    if (selectedContext.length === 0) {
+        selectedContext = currentQuestions.slice(0, 10).map(q => ({
+            nomor: q.originalIndex + 1,
+            pertanyaan: (q.embeddedText || "") + " " + (q.q || ""),
+            pilihan: q.options || [],
+            kategori: q.categoryGroup,
+            kunci_jawaban: q.correct
+        }));
+    }
+
+    try {
+        // Tambahkan indikator loading titik-titik (opsional jika sudah ada)
+        const res = await fetch(BACKEND_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ 
+                userQuery: msg, 
+                status: isFinished ? "POST" : "DURING_EXAM", 
+                history: chatHistory,
+                // Kita kirim context yang sudah difilter berdasarkan nomor yang disebut user
+                currentQuestionContext: selectedContext 
+            })
+        });
+
+        const data = await res.json();
+        addDanboMessage(`<strong>Danbo:</strong> ${data.reply}`);
+        
+        chatHistory.push({ role: "user", content: msg });
+        chatHistory.push({ role: "assistant", content: data.reply });
+
+    } catch (e) { 
+        console.error("Chat Error:", e);
+        addDanboMessage("<strong>Danbo:</strong> Gagal terhubung ke server."); 
+    }
+}
         function addDanboMessage(t) { 
             const b = document.getElementById('danbo-msg'); 
             const p = document.createElement('p'); p.innerHTML = t; 
