@@ -119,6 +119,7 @@
     let chatHistory = [];
     let myRadarChart = null;
     let imageFolderPath = "";
+    let lastActiveIndex = null; // Menangkap index soal yang sedang aktif/diklik    
 
     // 1. Load Levels & Files (Tetap sama)
     async function loadLevels() {
@@ -229,6 +230,8 @@
     // 3. Logika Jawaban & Status
     function pickOption(originalQIdx, oIdx) {
         if (isFinished) return;
+       lastActiveIndex = originalQIdx; // <--- Tambahkan baris ini
+    currentAnswers[originalQIdx] = oIdx;
         currentAnswers[originalQIdx] = oIdx;
         document.querySelectorAll(`[id^="q${originalQIdx}-o"]`).forEach(el => el.classList.remove('selected'));
         document.getElementById(`q${originalQIdx}-o${oIdx}`).classList.add('selected');
@@ -250,22 +253,32 @@
     if(!isAuto) addDanboMessage(`<strong>Kamu:</strong> ${msg}`); 
     if(input) input.value = '';
 
-// --- REVISI LOADING GIF SEMPURNA (NAMA BARU) ---
-const loadingId = "load-" + Date.now();
+    const loadingId = "load-" + Date.now();
+    const loadingHtml = `<div id="${loadingId}" style="margin: 10px 0;"><img src="assets/kon.gif" style="width: 80px; border-radius: 10px;"></div>`;
+    addDanboMessage(loadingHtml);
 
-const loadingHtml = `
-    <div id="${loadingId}" style="margin: 10px 0; display: flex; align-items: center;">
-        <img src="assets/kon.gif" 
-             style="width: 80px; height: auto; border-radius: 10px; display: block;"
-             onerror="this.onerror=null; this.src='https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHJueGZueXF4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4JmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCZjdD1n/3o7bu3XilJ5BOiSGic/giphy.gif';">
-    </div>
-`;
-addDanboMessage(loadingHtml);
-    // -------------------------------------
-
-    const foundNumbers = msg.match(/\d+/g); 
+    // --- REVISI LOGIKA KONTEKS START ---
     let selectedContext = [];
-    // ... (logika pengambilan context tetap sama seperti sebelumnya) ...
+    let targetIdx = lastActiveIndex; // Default ke soal yang terakhir diklik
+
+    // Jika user menyebutkan angka (misal: "jelaskan nomor 5"), prioritaskan angka itu
+    const foundNumbers = msg.match(/\d+/g);
+    if(foundNumbers) {
+        targetIdx = parseInt(foundNumbers[0]) - 1;
+    }
+
+    if(targetIdx !== null && currentQuestions[targetIdx]) {
+        const q = currentQuestions[targetIdx];
+        selectedContext.push({
+            nomor: targetIdx + 1,
+            kategori: q.categoryGroup,
+            pertanyaan: q.q,
+            pilihan: q.options || [],
+            kunci_jawaban: q.correct,
+            bacaan: q.embeddedText || null // Penting untuk soal Dokkai/Reading
+        });
+    }
+    // --- REVISI LOGIKA KONTEKS END ---
 
     try {
         const res = await fetch(BACKEND_URL, {
@@ -278,7 +291,6 @@ addDanboMessage(loadingHtml);
                 history: chatHistory
             })
         });
-
         const data = await res.json();
         
         // --- HAPUS GAMBAR LOADING SEBELUM TAMPILKAN JAWABAN ---
