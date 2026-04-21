@@ -250,13 +250,14 @@
     if(!isAuto) addDanboMessage(`<strong>Kamu:</strong> ${msg}`); 
     if(input) input.value = '';
 
-   // --- REVISI GAMBAR LOADING: TANPA TEKS & FIX PATH ---
+// --- REVISI LOADING GIF SEMPURNA (NAMA BARU) ---
 const loadingId = "load-" + Date.now();
+
 const loadingHtml = `
     <div id="${loadingId}" style="margin: 10px 0; display: flex; align-items: center;">
-        <img src="assets/k%20on.gif" 
-             style="width: 80px; border-radius: 10px;" 
-             onerror="this.src='https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHJueGZueXF4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4JmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCZjdD1n/3o7bu3XilJ5BOiSGic/giphy.gif'">
+        <img src="assets/kon.gif" 
+             style="width: 80px; height: auto; border-radius: 10px; display: block;"
+             onerror="this.onerror=null; this.src='https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNHJueGZueXF4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4JmVwPXYxX2ludGVybmFsX2dpZl9ieV9pZCZjdD1n/3o7bu3XilJ5BOiSGic/giphy.gif';">
     </div>
 `;
 addDanboMessage(loadingHtml);
