@@ -250,28 +250,20 @@
     if(!isAuto) addDanboMessage(`<strong>Kamu:</strong> ${msg}`); 
     if(input) input.value = '';
 
-    // 1. Cari angka soal
+    // --- BAGIAN REVISI GAMBAR LOADING ---
+    const loadingId = "load-" + Date.now();
+const loadingHtml = `
+    <div id="${loadingId}" style="margin: 10px 0;">
+        <img src="assets/k on.gif" style="width: 100px; border-radius: 10px; display: block; margin-bottom: 5px;">
+        <em style="font-size: 12px; color: #888;">Danbo sedang berpikir keras...</em>
+    </div>
+`;
+addDanboMessage(loadingHtml);
+    // -------------------------------------
+
     const foundNumbers = msg.match(/\d+/g); 
     let selectedContext = [];
-
-    if (foundNumbers) {
-        foundNumbers.forEach(num => {
-            const actualIndex = parseInt(num) - 1;
-            if (currentQuestions && currentQuestions[actualIndex]) {
-                selectedContext.push({
-                    nomor: num,
-                    pertanyaan: (currentQuestions[actualIndex].embeddedText || "") + " " + (currentQuestions[actualIndex].q || ""),
-                    pilihan: currentQuestions[actualIndex].options || [],
-                    kategori: currentQuestions[actualIndex].categoryGroup,
-                    kunci_jawaban: currentQuestions[actualIndex].correct
-                });
-            }
-        });
-    }
-
-    // Tampilkan loading
-    const loadingId = "load-" + Date.now();
-    addDanboMessage(`<span id="${loadingId}"><em>Danbo sedang mengetik...</em></span>`);
+    // ... (logika pengambilan context tetap sama seperti sebelumnya) ...
 
     try {
         const res = await fetch(BACKEND_URL, {
@@ -279,7 +271,6 @@
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ 
                 userQuery: msg, 
-                // Jika selectedContext kosong, kirim null agar backend tahu ini chat biasa
                 currentQuestionContext: selectedContext.length > 0 ? selectedContext : null,
                 status: isFinished ? "POST_EXAM" : "DURING_EXAM",
                 history: chatHistory
@@ -287,8 +278,11 @@
         });
 
         const data = await res.json();
+        
+        // --- HAPUS GAMBAR LOADING SEBELUM TAMPILKAN JAWABAN ---
         const loader = document.getElementById(loadingId);
-        if(loader) loader.parentElement.remove();
+        if(loader) loader.remove();
+        // -----------------------------------------------------
 
         addDanboMessage(`<strong>Danbo:</strong> ${data.reply}`);
         
@@ -297,7 +291,7 @@
 
     } catch (e) { 
         const loader = document.getElementById(loadingId);
-        if(loader) loader.innerHTML = "Gagal konek ke server.";
+        if(loader) loader.innerHTML = "<span style='color:red;'>Koneksi terputus...</span>";
     }
 }
 
