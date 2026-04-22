@@ -213,24 +213,20 @@
     const container = document.getElementById('login-container');
     
     if (input.value.trim() !== "") {
-        currentUsername = input.value; // Simpan ke variabel global
+        // 1. Simpan nama ke variabel global agar sistem tetap tahu
+        currentUsername = input.value; 
         
-        // --- PROSES MENGHILANGKAN TAMPILAN ---
-        // Kita beri transisi sedikit agar halus sebelum benar-benar hilang
-        container.style.opacity = "0";
-        
-        setTimeout(() => {
-            container.style.display = "none"; // Benar-benar hilang dari layar
-        }, 300);
+        // 2. Langsung hilangkan tampilan tanpa efek
+        container.style.display = "none"; 
 
         console.log("Siera siap membantu:", currentUsername);
         
-        // Tetap kirim sapaan otomatis ke Siera
-        addsieraMessage(`<strong>Sistem:</strong> Berhasil login. Siera sekarang mengenali kamu.`);
+        // 3. Sapaan otomatis di chat (opsional, agar kamu tahu login berhasil)
+        addsieraMessage(`<strong>Sistem:</strong> Login berhasil sebagai ${currentUsername}`);
         sendMessage(`Halo siera, saya ${currentUsername}. Saya siap belajar JLPT!`, true);
 
     } else {
-        alert("Masukkan namamu dulu ya agar Siera bisa mencatat progresmu!");
+        alert("Masukkan namamu dulu ya!");
     }
 }
         
