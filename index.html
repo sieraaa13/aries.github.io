@@ -211,25 +211,49 @@
     function loginUser() {
     const input = document.getElementById('username-input');
     const container = document.getElementById('login-container');
+    const name = input.value.trim();
     
-    if (input.value.trim() !== "") {
-        // 1. Simpan nama ke variabel global agar sistem tetap tahu
-        currentUsername = input.value; 
-        
-        // 2. Langsung hilangkan tampilan tanpa efek
-        container.style.display = "none"; 
+    if (name !== "") {
+        const now = new Date().getTime();
+        const expirationTime = now + (12 * 60 * 60 * 1000); // 12 jam dalam milidetik
 
-        console.log("Siera siap membantu:", currentUsername);
-        
-        // 3. Sapaan otomatis di chat (opsional, agar kamu tahu login berhasil)
-        addsieraMessage(`<strong>Sistem:</strong> Login berhasil sebagai ${currentUsername}`);
-        sendMessage(`Halo siera, saya ${currentUsername}. Saya siap belajar JLPT!`, true);
+        // Simpan ke memori browser
+        const userData = {
+            username: name,
+            expiry: expirationTime
+        };
+        localStorage.setItem('siera_user', JSON.stringify(userData));
 
+        // Jalankan sesi
+        currentUsername = name;
+        container.style.display = "none";
+        
+        addsieraMessage(`<strong>Sistem:</strong> Selamat datang kembali, ${currentUsername}!`);
+        sendMessage(`Halo siera, saya ${currentUsername}. Saya siap belajar!`, true);
     } else {
         alert("Masukkan namamu dulu ya!");
     }
 }
-        
+        function checkAutoLogin() {
+    const savedData = localStorage.getItem('siera_user');
+    const container = document.getElementById('login-container');
+
+    if (savedData) {
+        const userData = JSON.parse(savedData);
+        const now = new Date().getTime();
+
+        // Cek apakah waktu sekarang masih di bawah waktu kedaluwarsa
+        if (now < userData.expiry) {
+            currentUsername = userData.username;
+            container.style.display = "none";
+            console.log("Auto-login berhasil:", currentUsername);
+        } else {
+            // Jika sudah lewat 12 jam, hapus data lama
+            localStorage.removeItem('siera_user');
+            console.log("Sesi berakhir, silakan login kembali.");
+        }
+    }
+}
         
         // --- FUNGSI LOAD & EXAM TETAP SAMA (DIPERTAHANKAN) ---
     async function loadLevels() {
@@ -500,7 +524,10 @@ Kategori: ${qData.categoryGroup}`;
         });
     }
 
-    window.onload = loadLevels;
+    window.onload = () => {
+    loadLevels();       // Fungsi kamu yang sudah ada
+    checkAutoLogin();   // Fungsi cek akun 12 jam
+};
 </script>
 </body>
 </html>
