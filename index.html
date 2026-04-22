@@ -341,13 +341,16 @@
     }
 
     function pickOption(originalQIdx, oIdx) {
-        if (isFinished) return;
-        lastActiveIndex = originalQIdx;
-        currentAnswers[originalQIdx] = oIdx;
-        document.querySelectorAll(`[id^="q${originalQIdx}-o"]`).forEach(el => el.classList.remove('selected'));
-        document.getElementById(`q${originalQIdx}-o${oIdx}`).classList.add('selected');
-        updateStatus();
-    }
+    if (isFinished) return;
+    
+    // PENTING: Update index soal terakhir yang diklik
+    lastActiveIndex = originalQIdx; 
+    
+    currentAnswers[originalQIdx] = oIdx;
+    document.querySelectorAll(`[id^="q${originalQIdx}-o"]`).forEach(el => el.classList.remove('selected'));
+    document.getElementById(`q${originalQIdx}-o${oIdx}`).classList.add('selected');
+    updateStatus();
+}
 
     function updateStatus() {
         const answered = currentAnswers.filter(a => a !== null).length;
@@ -362,8 +365,16 @@
     
     if(!msg) return;
 
-    // Jika belum login, kita beri nama default "User Tamu" agar sistem tetap jalan
+    // Supaya tetap bisa chat walau belum login
     const activeUser = currentUsername || "User Tamu";
+
+    // CARA AGAR SIERA TAHU KONTEKS SOAL:
+    // Kita ambil data soal yang sedang aktif jika ada
+    let contextSoal = "";
+    if (lastActiveIndex !== null && currentQuestions[lastActiveIndex]) {
+        const qData = currentQuestions[lastActiveIndex];
+        contextSoal = `\n\n(Konteks Soal Aktif: No. ${lastActiveIndex + 1}, Pertanyaan: "${qData.q}", Opsi: ${qData.options.join(", ")})`;
+    }
 
     if(!isAuto) addsieraMessage(`<strong>Kamu:</strong> ${msg}`); 
     if(input) input.value = '';
@@ -377,9 +388,9 @@
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ 
                 username: activeUser, 
-                userQuery: msg, 
+                // Kita gabungkan pesan kamu dengan konteks soal agar AI tahu apa yang dibahas
+                userQuery: msg + contextSoal, 
                 history: chatHistory,
-                // Mengirim status ujian agar Siera tahu konteks soal yang sedang dikerjakan
                 status: isFinished ? "POST_EXAM" : "DURING_EXAM"
             })
         });
@@ -390,6 +401,7 @@
         
         addsieraMessage(`<strong>siera:</strong> ${data.reply}`);
         
+        // Simpan ke history (cukup simpan pesan asli kamu saja agar history tidak kepenuhan)
         chatHistory.push({ role: "user", content: msg });
         chatHistory.push({ role: "assistant", content: data.reply });
         if(chatHistory.length > 10) chatHistory = chatHistory.slice(-10);
