@@ -321,7 +321,11 @@ function openLevelFiles(levelData) {
         document.getElementById('exam-screen').style.display = 'flex';
         document.getElementById('chat-icon').style.display = 'block';
         document.getElementById('exam-title-display').innerText = label;
-        updateWidgetVisibility();
+        document.getElementById('folder-screen').classList.add('hidden'); // TAMBAHKAN INI
+    document.getElementById('file-screen').classList.add('hidden');
+    document.getElementById('exam-screen').style.display = 'flex';
+    
+    updateWidgetVisibility();
         const area = document.getElementById('questions-area');
         area.innerHTML = 'Memuat data soal...';
 
