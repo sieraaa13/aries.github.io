@@ -195,43 +195,46 @@
 </div> ```
 
     <script>
-     // 1. Variabel Global
-const BACKEND_URL = "https://web-backend-l5p7.onrender.com/siera-chat"; 
-let currentUsername = ""; 
-let currentQuestions = [];
-let currentAnswers = [];
-let totalSoal = 0;
-let totalBenar = 0;
-let isFinished = false;
-let chatHistory = [];
-let myRadarChart = null;
-let imageFolderPath = "";
-let lastActiveIndex = null;
-
-// 2. Fungsi Login & Sesi
-function loginUser() {
+     // 1. GABUNGKAN SEMUA VARIABEL GLOBAL DI ATAS
+    const BACKEND_URL = "https://web-backend-l5p7.onrender.com/siera-chat"; 
+    let currentUsername = ""; 
+    let currentQuestions = [];
+    let currentAnswers = [];
+    let totalSoal = 0;
+    let totalBenar = 0;
+    let isFinished = false;
+    let chatHistory = [];
+    let myRadarChart = null;
+    let imageFolderPath = "";
+    let lastActiveIndex = null;
+    // 2. FUNGSI LOGIN
+    function loginUser() {
     const input = document.getElementById('username-input');
     const container = document.getElementById('login-container');
     const name = input.value.trim();
     
     if (name !== "") {
         const now = new Date().getTime();
-        const expirationTime = now + (12 * 60 * 60 * 1000); 
+        const expirationTime = now + (12 * 60 * 60 * 1000); // 12 jam dalam milidetik
 
-        const userData = { username: name, expiry: expirationTime };
+        // Simpan ke memori browser
+        const userData = {
+            username: name,
+            expiry: expirationTime
+        };
         localStorage.setItem('siera_user', JSON.stringify(userData));
 
+        // Jalankan sesi
         currentUsername = name;
         container.style.display = "none";
         
-        addsieraMessage(`<strong>Sistem:</strong> Selamat datang, ${currentUsername}!`);
+        addsieraMessage(`<strong>Sistem:</strong> Selamat datang kembali, ${currentUsername}!`);
         sendMessage(`Halo siera, saya ${currentUsername}. Saya siap belajar!`, true);
     } else {
         alert("Masukkan namamu dulu ya!");
     }
 }
-
-function checkAutoLogin() {
+        function checkAutoLogin() {
     const savedData = localStorage.getItem('siera_user');
     const container = document.getElementById('login-container');
 
@@ -242,148 +245,194 @@ function checkAutoLogin() {
         if (now < userData.expiry) {
             currentUsername = userData.username;
             container.style.display = "none";
+            
+            // TAMBAHKAN INI: Memberitahu siera secara otomatis saat refresh
             console.log("Auto-login sukses untuk:", currentUsername);
             
+            // Kirim pesan "silent" agar AI tahu siapa yang datang tanpa muncul di chat
+            // Kita gunakan isAuto = true agar tidak muncul bubble chat "Kamu: ..."
             setTimeout(() => {
-                sendMessage(`(Sistem: User ${currentUsername} masuk kembali.)`, true);
+                sendMessage(`(Sistem: User ${currentUsername} baru saja masuk kembali ke sesi.)`, true);
             }, 1000); 
+
         } else {
             localStorage.removeItem('siera_user');
         }
     }
 }
-
-// 3. Fungsi Navigasi & Materi
-async function loadLevels() {
-    try {
-        const res = await fetch('assets/manifest.json');
-        const data = await res.json();
-        const container = document.getElementById('level-container');
-        container.innerHTML = '';
-        data.levels.forEach(lvl => {
-            const card = document.createElement('div');
-            card.className = 'folder-card';
-            card.innerHTML = `📁<br>${lvl.name}`;
-            card.onclick = () => openLevelFiles(lvl);
-            container.appendChild(card);
-        });
-    } catch (e) { console.error("Manifest Error:", e); }
-}
-
-function showFolders() {
-    document.getElementById('file-screen').classList.add('hidden');
-    document.getElementById('folder-screen').classList.remove('hidden');
-}
-
-function openLevelFiles(levelData) {
-    document.getElementById('folder-screen').classList.add('hidden');
-    document.getElementById('file-screen').classList.remove('hidden');
-    const container = document.getElementById('file-container');
-    container.innerHTML = '';
-    levelData.years.forEach(y => {
-        y.exams.forEach(ex => {
-            const item = document.createElement('div');
-            item.className = 'file-item';
-            item.innerText = `📄 ${levelData.name} - ${ex.label}`;
-            item.onclick = () => startExam(ex.path, ex.label);
-            container.appendChild(item);
-        });
-    });
-}
-
-// 4. Sistem Ujian
-async function startExam(path, label) {
-    imageFolderPath = path.replace('.json', '/');
-    document.getElementById('file-screen').classList.add('hidden');
-    document.getElementById('exam-screen').style.display = 'flex';
-    document.getElementById('chat-icon').style.display = 'block';
-    document.getElementById('exam-title-display').innerText = label;
-    const area = document.getElementById('questions-area');
-    area.innerHTML = 'Memuat data soal...';
-
-    try {
-        const res = await fetch(`assets/${path}`);
-        const data = await res.json();
-        area.innerHTML = ''; 
-        currentQuestions = [];
         
-        Object.keys(data).forEach(cat => {
-            if (Array.isArray(data[cat])) {
-                data[cat].forEach((item) => {
-                    if (item.questions) {
-                        item.questions.forEach((subQ) => {
-                            const qIndex = currentQuestions.length;
-                            currentQuestions.push({ 
-                                ...subQ, 
-                                categoryGroup: cat, 
-                                embeddedText: item.text || null,
-                                image: item.image || subQ.image || null,
-                                originalIndex: qIndex
-                            });
-                            renderSingleQuestion(currentQuestions[qIndex], qIndex, area);
-                        });
-                    }
-                });
-            }
+        // --- FUNGSI LOAD & EXAM TETAP SAMA (DIPERTAHANKAN) ---
+    async function loadLevels() {
+        try {
+            const res = await fetch('assets/manifest.json');
+            const data = await res.json();
+            const container = document.querySelector('.folder-grid');
+            container.innerHTML = '';
+            data.levels.forEach(lvl => {
+                const card = document.createElement('div');
+                card.className = 'folder-card';
+                card.innerHTML = `📁<br>${lvl.name}`;
+                card.onclick = () => openLevelFiles(lvl);
+                container.appendChild(card);
+            });
+        } catch (e) { console.error("Manifest Error:", e); }
+    }
+
+    function showFolders() {
+        document.getElementById('file-screen').classList.add('hidden');
+        document.getElementById('folder-screen').classList.remove('hidden');
+    }
+
+    function openLevelFiles(levelData) {
+        document.getElementById('folder-screen').classList.add('hidden');
+        document.getElementById('file-screen').classList.remove('hidden');
+        const container = document.getElementById('file-container');
+        container.innerHTML = '';
+        levelData.years.forEach(y => {
+            y.exams.forEach(ex => {
+                const item = document.createElement('div');
+                item.className = 'file-item';
+                item.innerText = `📄 ${levelData.name} - ${ex.label}`;
+                item.onclick = () => startExam(ex.path, ex.label);
+                container.appendChild(item);
+            });
         });
-        totalSoal = currentQuestions.length;
-        currentAnswers = new Array(totalSoal).fill(null);
-        isFinished = false;
-        updateStatus();
-    } catch (e) { area.innerHTML = `<p style='color:red;'>Gagal: ${e.message}</p>`; }
-}
+    }
 
-function renderSingleQuestion(q, i, container) {
-    const card = document.createElement('div');
-    card.className = 'question-card';
-    card.id = `question-card-${q.originalIndex}`; 
-    
-    let htmlContent = q.image ? `<img src="assets/${imageFolderPath}${q.image}" style="width:100%; margin-bottom:10px;">` : "";
-    if (q.embeddedText && !q.image) htmlContent += `<div class="reading-block">${q.embeddedText}</div>`;
-    
-    let opts = '';
-    q.options.forEach((opt, o) => {
-        opts += `<div class="option-item" id="q${q.originalIndex}-o${o}" onclick="pickOption(${q.originalIndex}, ${o})">${o+1}. ${opt}</div>`;
-    });
+    async function startExam(path, label) {
+        imageFolderPath = path.replace('.json', '/');
+        document.getElementById('file-screen').classList.add('hidden');
+        document.getElementById('exam-screen').style.display = 'flex';
+        document.getElementById('chat-icon').style.display = 'block';
+        document.getElementById('exam-title-display').innerText = label;
+        const area = document.getElementById('questions-area');
+        area.innerHTML = 'Memuat data soal...';
 
-    htmlContent += `<small>[${q.categoryGroup}]</small><p><b>${q.q}</b></p><div class="options-list">${opts}</div>`;
-    card.innerHTML = htmlContent;
-    container.appendChild(card);
-}
+        try {
+            const res = await fetch(`assets/${path}`);
+            const data = await res.json();
+            area.innerHTML = ''; 
+            currentQuestions = [];
+            
+            Object.keys(data).forEach(cat => {
+                if (Array.isArray(data[cat])) {
+                    data[cat].forEach((item) => {
+                        if (item.questions && Array.isArray(item.questions)) {
+                            item.questions.forEach((subQ) => {
+                                const qIndex = currentQuestions.length;
+                                currentQuestions.push({ 
+                                    ...subQ, 
+                                    categoryGroup: cat, 
+                                    embeddedText: item.text || null,
+                                    sectionTitle: item.section_title || null,
+                                    image: item.image || subQ.image || null,
+                                    originalIndex: qIndex
+                                });
+                                renderSingleQuestion(currentQuestions[qIndex], qIndex, area);
+                            });
+                        } else if (item.q) {
+                            const qIndex = currentQuestions.length;
+                            currentQuestions.push({ ...item, categoryGroup: cat, originalIndex: qIndex });
+                            renderSingleQuestion(currentQuestions[qIndex], qIndex, area);
+                        }
+                    });
+                }
+            });
+            totalSoal = currentQuestions.length;
+            currentAnswers = new Array(totalSoal).fill(null);
+            isFinished = false;
+            updateStatus();
+        } catch (e) { 
+            area.innerHTML = `<p style='color:red;'>Gagal memuat: ${e.message}</p>`;
+        }
+    }
 
-function pickOption(qIdx, oIdx) {
+    function renderSingleQuestion(q, i, container) {
+        const card = document.createElement('div');
+        card.className = 'question-card';
+        card.id = `question-card-${q.originalIndex}`; 
+        
+        let htmlContent = '';
+        if (q.image) {
+            htmlContent += `<div class="q-image-container"><img src="assets/${imageFolderPath}${q.image}" class="q-image" alt="Soal ${i+1}"></div>`;
+        }
+        if (q.embeddedText && !q.image) {
+            htmlContent += `<div class="reading-block"><small style="color:var(--primary)"><b>${q.sectionTitle || 'BACAAN'}</b></small><div style="white-space: pre-wrap; margin-top:5px;">${q.embeddedText}</div></div>`;
+        }
+        let opts = '';
+        if(q.options) {
+            q.options.forEach((opt, o) => {
+                opts += `<div class="option-item" id="q${q.originalIndex}-o${o}" onclick="pickOption(${q.originalIndex}, ${o})">${o+1}. ${opt}</div>`;
+            });
+        }
+        htmlContent += `<small style="color:var(--accent)">[${q.categoryGroup.toUpperCase()} - No. ${i+1}]</small><p style="font-size: 17px; margin-top: 10px;"><b>${q.q}</b></p><div class="options-list">${opts}</div>`;
+        card.innerHTML = htmlContent;
+        container.appendChild(card);
+    }
+
+    function pickOption(originalQIdx, oIdx) {
     if (isFinished) return;
-    lastActiveIndex = qIdx;
-    currentAnswers[qIdx] = oIdx;
-    document.querySelectorAll(`[id^="q${qIdx}-o"]`).forEach(el => el.classList.remove('selected'));
-    document.getElementById(`q${qIdx}-o${oIdx}`).classList.add('selected');
+    
+    // PENTING: Update index soal terakhir yang diklik
+    lastActiveIndex = originalQIdx; 
+    
+    currentAnswers[originalQIdx] = oIdx;
+    document.querySelectorAll(`[id^="q${originalQIdx}-o"]`).forEach(el => el.classList.remove('selected'));
+    document.getElementById(`q${originalQIdx}-o${oIdx}`).classList.add('selected');
     updateStatus();
 }
 
-function updateStatus() {
-    const answered = currentAnswers.filter(a => a !== null).length;
-    document.getElementById('progress-indicator').innerText = `Progres: ${answered} / ${totalSoal}`;
-}
+    function updateStatus() {
+        const answered = currentAnswers.filter(a => a !== null).length;
+        const progressEl = document.getElementById('progress-indicator');
+        if(progressEl) progressEl.innerText = `Progres: ${answered} / ${totalSoal}`;
+    }
 
-// 5. Chat & AI
-async function sendMessage(overrideMsg = null, isAuto = false) {
+    // --- REVISI UTAMA PADA FUNGSI SENDMESSAGE (SINKRON DENGAN BACKEND) ---
+    async function sendMessage(overrideMsg = null, isAuto = false) {
     const input = document.getElementById('user-input');
     const msg = overrideMsg || (input ? input.value.trim() : ""); 
     if(!msg) return;
 
-    const userDisplay = currentUsername || "User Tamu";
+    let activeUser = currentUsername;
+    if (!activeUser) {
+        const savedData = localStorage.getItem('siera_user');
+        if (savedData) {
+            const userData = JSON.parse(savedData);
+            activeUser = userData.username;
+        }
+    }
+    
+    const userDisplay = activeUser || "User Tamu";
     let contextSoal = "";
 
-    if (lastActiveIndex !== null && currentQuestions[lastActiveIndex]) {
-        const qData = currentQuestions[lastActiveIndex];
-        contextSoal = `\n\n[KONTEKS SOAL No ${lastActiveIndex+1}]: ${qData.q}`;
+    // HANYA IDENTITAS: Biarkan Backend yang mengatur cara bicara
+    const systemIdentity = `\n(User: ${userDisplay}. JANGAN sebut nama ini kecuali ditanya.)`;
+
+    const match = msg.match(/(\d+)/); 
+    let targetIndex = null;
+    if (match) {
+        targetIndex = parseInt(match[1]) - 1;
+    } else if (lastActiveIndex !== null && msg.toLowerCase().includes("ini")) {
+        targetIndex = lastActiveIndex; 
+    }
+
+    if (targetIndex !== null && currentQuestions[targetIndex]) {
+        const qData = currentQuestions[targetIndex];
+        // Data soal dikirim tanpa kunci jawaban agar AI di Backend yang memutuskan boleh/tidaknya memberi jawaban
+        contextSoal = `\n\n[KONTEKS SOAL NO ${targetIndex + 1}]:
+Pertanyaan: "${qData.q}"
+Pilihan: ${qData.options ? qData.options.join(", ") : "Tidak ada"}
+Kategori: ${qData.categoryGroup}`;
+        
+        if (qData.embeddedText) contextSoal += `\nBacaan: ${qData.embeddedText}`;
     }
 
     if(!isAuto) addsieraMessage(`<strong>Kamu:</strong> ${msg}`); 
     if(input) input.value = '';
 
     const loadingId = "load-" + Date.now();
-    addsieraMessage(`<div id="${loadingId}"><img src="assets/kon.gif" style="width: 50px;"></div>`);
+    addsieraMessage(`<div id="${loadingId}"><img src="assets/kon.gif" style="width: 60px;"></div>`);
 
     try {
         const res = await fetch(BACKEND_URL, {
@@ -391,82 +440,106 @@ async function sendMessage(overrideMsg = null, isAuto = false) {
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ 
                 username: userDisplay, 
-                userQuery: msg + contextSoal, 
+                userQuery: msg + systemIdentity + contextSoal, 
                 history: chatHistory,
                 status: isFinished ? "POST_EXAM" : "DURING_EXAM"
             })
         });
+
         const data = await res.json();
-        document.getElementById(loadingId).remove();
+        const loader = document.getElementById(loadingId);
+        if(loader) loader.remove();
+        
         addsieraMessage(`<strong>siera:</strong> ${data.reply}`);
         
-        chatHistory.push({ role: "user", content: msg }, { role: "assistant", content: data.reply });
+        chatHistory.push({ role: "user", content: msg });
+        chatHistory.push({ role: "assistant", content: data.reply });
         if(chatHistory.length > 10) chatHistory = chatHistory.slice(-10);
-    } catch (e) { document.getElementById(loadingId).innerHTML = "Gagal koneksi."; }
+
+    } catch (e) { 
+        const loader = document.getElementById(loadingId);
+        if(loader) loader.innerHTML = "<span style='color:red;'>Gagal koneksi...</span>";
+    }
 }
+    function addsieraMessage(t) { 
+        const b = document.getElementById('siera-msg'); 
+        const p = document.createElement('p'); p.innerHTML = t; 
+        if(b) { b.appendChild(p); b.scrollTop = b.scrollHeight; }
+    }
 
-function addsieraMessage(t) { 
-    const b = document.getElementById('siera-msg'); 
-    const p = document.createElement('p'); p.innerHTML = t; 
-    b.appendChild(p); b.scrollTop = b.scrollHeight; 
-}
+    function opensiera() { 
+        document.getElementById('chat-sidebar').classList.add('active'); 
+        document.body.classList.add('chat-open'); 
+    }
 
-// 6. Hasil & Grafik
-function showResults() {
-    if (currentAnswers.includes(null) && !confirm("Ada soal belum dijawab. Yakin?")) return;
-    isFinished = true;
-    totalBenar = 0;
-    const catStats = {};
+    function closesiera() { 
+        document.getElementById('chat-sidebar').classList.remove('active'); 
+        document.body.classList.remove('chat-open'); 
+    }
 
-    currentQuestions.forEach((q, i) => {
-        if (!catStats[q.categoryGroup]) catStats[q.categoryGroup] = { b: 0, t: 0 };
-        catStats[q.categoryGroup].t++;
-
-        const isCorrect = currentAnswers[i] === q.correct;
-        if (isCorrect) { totalBenar++; catStats[q.categoryGroup].b++; }
-        
-        document.querySelectorAll(`[id^="q${i}-o"]`).forEach((el, oIdx) => {
-            if (oIdx === q.correct) el.classList.add('correct');
-            else if (oIdx === currentAnswers[i]) el.classList.add('wrong');
+    function searchQuestions() {
+        const searchTerm = document.getElementById('search-input').value.toLowerCase();
+        currentQuestions.forEach((q) => {
+            const card = document.getElementById(`question-card-${q.originalIndex}`);
+            if (!card) return;
+            const content = (q.q + (q.embeddedText || "") + q.categoryGroup).toLowerCase();
+            card.style.display = content.includes(searchTerm) ? 'block' : 'none';
         });
-    });
+    }
 
-    saveExamLog(currentUsername || "User Tamu", totalBenar, totalSoal);
-    document.getElementById('result-box').style.display = 'block';
-    document.getElementById('submit-btn').style.display = 'none';
-    document.getElementById('final-score').innerText = `Skor: ${totalBenar} / ${totalSoal}`;
-    
-    drawChart(Object.keys(catStats), Object.keys(catStats).map(c => Math.round((catStats[c].b/catStats[c].t)*100)));
-    opensiera();
-    sendMessage(`Sistem: Ujian Selesai. User ${currentUsername} benar ${totalBenar}/${totalSoal}.`, true);
-}
+    function showResults() {
+        if (currentAnswers.includes(null) && !confirm("Ada soal belum dijawab. Yakin?")) return;
+        isFinished = true;
+        totalBenar = 0;
+        const mainStats = { "Kanji": {c:0, t:0}, "Bunpou": {c:0, t:0}, "Dokkai": {c:0, t:0} };
 
-function saveExamLog(user, score, total) {
-    const logs = JSON.parse(localStorage.getItem('siera_exam_logs')) || [];
-    logs.push({ user, date: new Date().toLocaleString('id-ID'), score, total });
-    localStorage.setItem('siera_exam_logs', JSON.stringify(logs));
-}
+        currentQuestions.forEach((q, i) => {
+            const isCorrect = currentAnswers[i] === q.correct;
+            if (isCorrect) totalBenar++;
+            let catKey = q.categoryGroup.toLowerCase().includes('bunpou') ? "Bunpou" : 
+                         q.categoryGroup.toLowerCase().includes('dokkai') ? "Dokkai" : "Kanji";
+            mainStats[catKey].t++;
+            if(isCorrect) mainStats[catKey].c++;
+            
+            document.querySelectorAll(`[id^="q${i}-o"]`).forEach((el, oIdx) => {
+                el.classList.remove('selected');
+                if (oIdx === q.correct) el.classList.add('correct');
+                else if (oIdx === currentAnswers[i]) el.classList.add('wrong');
+            });
+        });
 
-function drawChart(labels, data) {
-    const ctx = document.getElementById('scoreChart').getContext('2d');
-    if (myRadarChart) myRadarChart.destroy();
-    myRadarChart = new Chart(ctx, {
-        type: 'radar',
-        data: {
-            labels: labels,
-            datasets: [{ label: '% Benar', data: data, backgroundColor: 'rgba(52,152,219,0.2)', borderColor: '#3498db' }]
-        },
-        options: { scales: { r: { min: 0, max: 100 } } }
-    });
-}
+        document.getElementById('result-box').style.display = 'block';
+        document.getElementById('submit-btn').style.display = 'none';
+        document.getElementById('final-score').innerText = `Skor Akhir: ${totalBenar} / ${totalSoal}`;
+        
+        drawChart(Object.keys(mainStats), Object.keys(mainStats).map(l => mainStats[l].t ? Math.round((mainStats[l].c / mainStats[l].t) * 100) : 0));
+        opensiera();
+        // Mengirim pesan otomatis setelah selesai ujian
+        sendMessage(`Sistem: Ujian Selesai. Saya benar ${totalBenar} dari ${totalSoal} soal. Berikan evaluasi.`, true);
+    }
 
-// 7. Init
-function opensiera() { document.getElementById('chat-sidebar').classList.add('active'); }
-function closesiera() { document.getElementById('chat-sidebar').classList.remove('active'); }
+    function drawChart(labels, dataPoin) {
+        const ctx = document.getElementById('scoreChart').getContext('2d');
+        if (myRadarChart) myRadarChart.destroy();
+        myRadarChart = new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Penguasaan %',
+                    data: dataPoin,
+                    backgroundColor: 'rgba(52, 152, 219, 0.2)',
+                    borderColor: '#3498db',
+                    borderWidth: 2
+                }]
+            },
+            options: { scales: { r: { min: 0, max: 100 } } }
+        });
+    }
 
-window.onload = () => {
-    loadLevels();
-    checkAutoLogin();
+    window.onload = () => {
+    loadLevels();       // Fungsi kamu yang sudah ada
+    checkAutoLogin();   // Fungsi cek akun 12 jam
 };
 </script>
 </body>
