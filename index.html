@@ -133,7 +133,16 @@
     </style>
 </head>
 <body>
-
+<div id="user-info-widget" class="hidden">
+    <table style="margin: 20px auto; background: white; border-collapse: collapse; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1); font-size: 14px;">
+        <tr style="background: var(--primary); color: white;">
+            <th style="padding: 8px 20px;">Sesi Aktif</th>
+        </tr>
+        <tr>
+            <td id="display-id-user" style="padding: 10px 20px; font-weight: bold; color: var(--accent); text-align: center;">-</td>
+        </tr>
+    </table>
+</div>
     <div id="login-container">
     <input type="text" id="username-input" placeholder="Siapa namamu?">
     <button class="login-btn" onclick="loginUser()">Masuk</button>
@@ -195,6 +204,18 @@
 </div> ```
 
     <script>
+function updateWidgetVisibility() {
+    const widget = document.getElementById('user-info-widget');
+    const folderScreen = document.getElementById('folder-screen');
+    
+    // Tabel hanya muncul jika user sudah login DAN folder-screen sedang tidak tersembunyi
+    if (currentUsername !== "" && !folderScreen.classList.contains('hidden')) {
+        widget.classList.remove('hidden');
+    } else {
+        widget.classList.add('hidden');
+    }
+}
+        
      // 1. GABUNGKAN SEMUA VARIABEL GLOBAL DI ATAS
     const BACKEND_URL = "https://web-backend-l5p7.onrender.com/siera-chat"; 
     let currentUsername = ""; 
@@ -210,51 +231,44 @@
     // 2. FUNGSI LOGIN
     function loginUser() {
     const input = document.getElementById('username-input');
-    const container = document.getElementById('login-container');
     const name = input.value.trim();
-    
-    if (name !== "") {
-        const now = new Date().getTime();
-        const expirationTime = now + (12 * 60 * 60 * 1000); // 12 jam dalam milidetik
 
-        // Simpan ke memori browser
+    if (name !== "") {
+        currentUsername = name;
+        
+        // Simpan data ke localStorage (masa berlaku 12 jam sesuai keinginanmu sebelumnya)
         const userData = {
             username: name,
-            expiry: expirationTime
+            loginTime: new Date().getTime()
         };
         localStorage.setItem('siera_user', JSON.stringify(userData));
 
-        // Jalankan sesi
-        currentUsername = name;
-        container.style.display = "none";
+        // Update tampilan tabel
+        document.getElementById('display-id-user').innerText = name;
         
-        addsieraMessage(`<strong>Sistem:</strong> Selamat datang kembali, ${currentUsername}!`);
-        sendMessage(`Halo siera, saya ${currentUsername}. Saya siap belajar!`, true);
+        // Sembunyikan input login dan tampilkan widget
+        document.getElementById('login-container').classList.add('hidden');
+        updateWidgetVisibility();
+        
+        console.log("Login berhasil sebagai:", name);
     } else {
-        alert("Masukkan namamu dulu ya!");
+        alert("Silakan masukkan nama terlebih dahulu.");
     }
 }
-        function checkAutoLogin() {
+function checkAutoLogin() {
     const savedData = localStorage.getItem('siera_user');
-    const container = document.getElementById('login-container');
-
     if (savedData) {
         const userData = JSON.parse(savedData);
         const now = new Date().getTime();
+        const twelveHours = 12 * 60 * 60 * 1000;
 
-        if (now < userData.expiry) {
+        if (now - userData.loginTime < twelveHours) {
             currentUsername = userData.username;
-            container.style.display = "none";
+            document.getElementById('display-id-user').innerText = currentUsername;
             
-            // TAMBAHKAN INI: Memberitahu siera secara otomatis saat refresh
-            console.log("Auto-login sukses untuk:", currentUsername);
-            
-            // Kirim pesan "silent" agar AI tahu siapa yang datang tanpa muncul di chat
-            // Kita gunakan isAuto = true agar tidak muncul bubble chat "Kamu: ..."
-            setTimeout(() => {
-                sendMessage(`(Sistem: User ${currentUsername} baru saja masuk kembali ke sesi.)`, true);
-            }, 1000); 
-
+            // Sembunyikan login container karena sudah login
+            document.getElementById('login-container').classList.add('hidden');
+            updateWidgetVisibility();
         } else {
             localStorage.removeItem('siera_user');
         }
@@ -279,13 +293,15 @@
     }
 
     function showFolders() {
-        document.getElementById('file-screen').classList.add('hidden');
-        document.getElementById('folder-screen').classList.remove('hidden');
-    }
+    document.getElementById('file-screen').classList.add('hidden');
+    document.getElementById('folder-screen').classList.remove('hidden');
+    updateWidgetVisibility(); // Pastikan panggil ini
+}
 
-    function openLevelFiles(levelData) {
-        document.getElementById('folder-screen').classList.add('hidden');
-        document.getElementById('file-screen').classList.remove('hidden');
+function openLevelFiles(levelData) {
+    document.getElementById('folder-screen').classList.add('hidden');
+    document.getElementById('file-screen').classList.remove('hidden');
+    updateWidgetVisibility(); // Pastikan panggil ini
         const container = document.getElementById('file-container');
         container.innerHTML = '';
         levelData.years.forEach(y => {
@@ -305,6 +321,7 @@
         document.getElementById('exam-screen').style.display = 'flex';
         document.getElementById('chat-icon').style.display = 'block';
         document.getElementById('exam-title-display').innerText = label;
+        updateWidgetVisibility();
         const area = document.getElementById('questions-area');
         area.innerHTML = 'Memuat data soal...';
 
