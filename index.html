@@ -389,29 +389,39 @@
     
     if(!msg) return;
 
-    const activeUser = currentUsername || "User Tamu";
+    // AMBIL NAMA DARI VARIABEL GLOBAL ATAU LOCALSTORAGE
+    let activeUser = currentUsername;
+    if (!activeUser) {
+        const savedData = localStorage.getItem('siera_user');
+        if (savedData) {
+            const userData = JSON.parse(savedData);
+            activeUser = userData.username;
+        }
+    }
+    
+    const userDisplay = activeUser || "User Tamu";
     let contextSoal = "";
 
-    // --- LOGIKA PENCARIAN NOMOR SOAL OTOMATIS ---
-    // Mencari angka di dalam pesan kamu (misal: "jelaskan nomor 35")
-    const match = msg.match(/(\d+)/); 
-    if (match) {
-        const targetNumber = parseInt(match[1]); // Mengambil angka 35
-        const targetIndex = targetNumber - 1; // Karena index dimulai dari 0
+    // Tambahkan instruksi tersembunyi agar AI tahu siapa yang sedang bicara
+    const hiddenIdentity = `\n(Sistem: User yang sedang bicara adalah ${userDisplay}. Gunakan nama ini jika perlu.)`;
 
-        // Cek apakah soal nomor tersebut ada di daftar soal yang sedang dibuka
-        if (currentQuestions[targetIndex]) {
-            const qData = currentQuestions[targetIndex];
-            contextSoal = `\n\n[USER BERTANYA TENTANG SOAL NO ${targetNumber}]:
+    // LOGIKA PENCARIAN NOMOR SOAL
+    const match = msg.match(/(\d+)/); 
+    let targetIndex = null;
+    if (match) {
+        targetIndex = parseInt(match[1]) - 1;
+    } else if (lastActiveIndex !== null && msg.toLowerCase().includes("ini")) {
+        targetIndex = lastActiveIndex; 
+    }
+
+    if (targetIndex !== null && currentQuestions[targetIndex]) {
+        const qData = currentQuestions[targetIndex];
+        contextSoal = `\n\n[KONTEKS SOAL NO ${targetIndex + 1}]:
 Pertanyaan: "${qData.q}"
 Pilihan: ${qData.options ? qData.options.join(", ") : "Tidak ada"}
-Jawaban Benar: Opsi ke-${qData.correct + 1}
-Kategori: ${qData.categoryGroup}`;
-            
-            if (qData.embeddedText) {
-                contextSoal += `\nKonteks Bacaan: ${qData.embeddedText}`;
-            }
-        }
+Jawaban Benar: Opsi ke-${qData.correct + 1}`;
+        
+        if (qData.embeddedText) contextSoal += `\nKonteks Bacaan: ${qData.embeddedText}`;
     }
 
     if(!isAuto) addsieraMessage(`<strong>Kamu:</strong> ${msg}`); 
@@ -425,9 +435,9 @@ Kategori: ${qData.categoryGroup}`;
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ 
-                username: activeUser, 
-                // AI sekarang menerima pesan kamu + data soal nomor yang kamu sebut
-                userQuery: msg + contextSoal, 
+                username: userDisplay, 
+                // Kita gabungkan Pesan + Identitas + Konteks Soal
+                userQuery: msg + hiddenIdentity + contextSoal, 
                 history: chatHistory,
                 status: isFinished ? "POST_EXAM" : "DURING_EXAM"
             })
@@ -445,7 +455,7 @@ Kategori: ${qData.categoryGroup}`;
 
     } catch (e) { 
         const loader = document.getElementById(loadingId);
-        if(loader) loader.innerHTML = "<span style='color:red;'>Gagal koneksi ke siera...</span>";
+        if(loader) loader.innerHTML = "<span style='color:red;'>Gagal koneksi...</span>";
     }
 }
     function addsieraMessage(t) { 
