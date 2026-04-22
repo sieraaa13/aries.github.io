@@ -1,9 +1,11 @@
+kodingan terbaru 
+
 <!DOCTYPE html>
 <html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>siera JLPT Learning System</title>
+    <title>Danbo JLPT Learning System</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root { --primary: #2c3e50; --accent: #3498db; --bg: #f0f2f5; --success: #27ae60; --error: #e74c3c; }
@@ -11,13 +13,10 @@
         
         #folder-screen, #file-screen { padding: 50px; text-align: center; overflow-y: auto; }
         .folder-grid { display: flex; justify-content: center; gap: 20px; margin-top: 30px; flex-wrap: wrap; }
-        .folder-card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); cursor: pointer; width: 120px; transition: 0.2s; border: 2px solid transparent; }
-        .folder-card:hover { transform: translateY(-5px); border-color: var(--accent); }
-        
+        .folder-card { background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); cursor: pointer; width: 120px; transition: 0.2s; }
+        .folder-card:hover { transform: translateY(-5px); border: 2px solid var(--accent); }
         .file-list { max-width: 500px; margin: 20px auto; background: white; border-radius: 10px; text-align: left; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
-        .year-divider { background: #eee; padding: 8px 15px; font-weight: bold; font-size: 14px; color: #555; }
         .file-item { padding: 15px; border-bottom: 1px solid #eee; cursor: pointer; color: var(--accent); font-weight: bold; }
-        .file-item:hover { background: #f9f9f9; }
 
         #exam-screen { display: none; flex-direction: column; height: 100vh; }
         #exam-content { flex: 1; padding: 20px; overflow-y: auto; padding-bottom: 50px; }
@@ -26,6 +25,8 @@
 
         .question-card { background: white; padding: 20px; margin-bottom: 25px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); max-width: 800px; margin-left: auto; margin-right: auto; }
         .reading-block { background: #fffbe6 !important; border-left: 5px solid #f1c40f; padding: 15px; margin-bottom: 15px; border-radius: 8px; font-size: 15px; line-height: 1.6; }
+        .q-image-container { background: #fff; padding: 10px; border: 1px solid #ddd; border-radius: 8px; margin-bottom: 15px; text-align: center; }
+        .q-image { max-width: 100%; height: auto; border-radius: 4px; }
         
         .options-list { margin-top: 15px; display: flex; flex-direction: column; gap: 10px; }
         .option-item { padding: 12px 15px; border: 2px solid #ddd; border-radius: 8px; cursor: pointer; transition: 0.2s; }
@@ -37,16 +38,39 @@
         #result-box { display: none; margin: 30px auto; padding: 20px; background: white; border-radius: 10px; border: 2px solid var(--success); max-width: 800px; }
         .chart-container { max-width: 450px; margin: 20px auto; }
 
-        #chat-icon { position: fixed; bottom: 20px; right: 20px; width: 75px; height: 75px; background: white; cursor: pointer; display: none; z-index: 1000; border-radius: 50%; border: 3px solid var(--accent); overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
-        #chat-sidebar { position: fixed; bottom: -35vh; left: 0; width: 100%; height: 33vh; background: white; box-shadow: 0 -5px 15px rgba(0,0,0,0.1); display: flex; flex-direction: column; transition: 0.4s ease; z-index: 1001; }
-        #chat-sidebar.active { bottom: 0; }
-        .chat-header { background: var(--primary); color: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; }
-        #siera-msg { padding: 12px; overflow-y: auto; flex: 1; background: #f9f9f9; font-size: 13px; }
-        .chat-input-area { display: flex; padding: 8px; border-top: 1px solid #ddd; }
-        #user-input { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 20px; outline: none; }
+        /* CSS IKON CHAT BULAT POSISI KANAN BAWAH */
+        #chat-icon { 
+            position: fixed; 
+            bottom: 20px; 
+            right: 20px; 
+            width: 75px; 
+            height: 75px; 
+            background: white; 
+            cursor: pointer; 
+            display: none; 
+            z-index: 1000; 
+            transition: transform 0.2s;
+            border-radius: 50%; 
+            border: 3px solid var(--accent);
+            overflow: hidden; 
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        #chat-icon:hover { transform: scale(1.1); }
+        #chat-icon img { width: 100%; height: 100%; object-fit: cover; display: block; }
         
-        .search-container { background: white; padding: 10px 20px; border-bottom: 1px solid #ddd; display: flex; justify-content: center; margin-bottom: 20px; }
-        #search-input { width: 100%; max-width: 400px; padding: 8px 15px; border-radius: 20px; border: 1px solid #ccc; }
+        #chat-sidebar { position: fixed; bottom: -35vh; left: 0; width: 100%; height: 33vh; background: white; box-shadow: 0 -5px 15px rgba(0,0,0,0.1); display: flex; flex-direction: column; transition: bottom 0.4s ease; z-index: 1001; }
+        #chat-sidebar.active { bottom: 0; }
+        
+        .chat-header { background: var(--primary); color: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
+        #rabbit-close-icon { width: 45px; height: auto; cursor: pointer; padding: 5px; }
+
+        #danbo-msg { padding: 12px; overflow-y: auto; flex: 1; background: #f9f9f9; font-size: 13px; line-height: 1.5; }
+        .chat-input-area { display: flex; padding: 8px; background: white; border-top: 1px solid #ddd; }
+        #user-input { flex: 1; padding: 10px; border: 1px solid #ccc; border-radius: 20px; outline: none; font-size: 13px; }
+        #send-btn { background: var(--accent); color: white; border: none; padding: 0 15px; margin-left: 8px; border-radius: 15px; cursor: pointer; }
+        
+        .search-container { background: white; padding: 10px 20px; border-bottom: 1px solid #ddd; display: flex; justify-content: center; }
+        #search-input { width: 100%; max-width: 400px; padding: 8px 15px; border-radius: 20px; border: 1px solid #ccc; outline: none; }
         .hidden { display: none !important; }
     </style>
 </head>
@@ -54,7 +78,7 @@
 
     <div id="folder-screen">
         <h1>Materi JLPT</h1>
-        <div class="folder-grid" id="level-container">Memuat data...</div>
+        <div class="folder-grid"></div>
     </div>
 
     <div id="file-screen" class="hidden">
@@ -88,24 +112,24 @@
         </div>
     </div>
 
-    <div id="chat-icon" onclick="opensiera()">
-        <img src="assets/icon_chat.jpg" alt="siera Icon" style="width: 100%; height: 100%; object-fit: cover;">
+    <div id="chat-icon" onclick="openDanbo()">
+        <img src="assets/icon_chat.jpg" alt="Danbo Icon">
     </div>
 
     <div id="chat-sidebar">
         <div class="chat-header">
-            <span>siera AI Assistant</span>
-            <span onclick="closesiera()" style="cursor:pointer; font-weight:bold;">✖</span>
+            <span>Danbo AI Assistant</span>
+            <img src="assets/kelinci tidur.jpeg" alt="Tutup" id="rabbit-close-icon" onclick="closeDanbo()">
         </div>
-        <div id="siera-msg"></div>
+        <div id="danbo-msg"></div>
         <div class="chat-input-area">
-            <input type="text" id="user-input" placeholder="Tanya siera..." onkeypress="if(event.key === 'Enter') sendMessage()">
-            <button id="send-btn" style="background:var(--accent); color:white; border:none; padding:0 15px; border-radius:15px; cursor:pointer;" onclick="sendMessage()">Kirim</button>
+            <input type="text" id="user-input" placeholder="Tanya Danbo..." onkeypress="if(event.key === 'Enter') sendMessage()">
+            <button id="send-btn" onclick="sendMessage()">Kirim</button>
         </div>
     </div>
 
     <script>
-    const BACKEND_URL = "https://web-backend-l5p7.onrender.com/siera-chat"; 
+    const BACKEND_URL = "https://web-backend-l5p7.onrender.com/danbo-chat"; 
     let currentQuestions = [];
     let currentAnswers = [];
     let totalSoal = 0;
@@ -116,7 +140,6 @@
     let imageFolderPath = "";
     let lastActiveIndex = null;
 
-    // --- FUNGSI LOAD & EXAM TETAP SAMA (DIPERTAHANKAN) ---
     async function loadLevels() {
         try {
             const res = await fetch('assets/manifest.json');
@@ -169,7 +192,8 @@
             area.innerHTML = ''; 
             currentQuestions = [];
             
-            Object.keys(data).forEach(cat => {
+            const categories = Object.keys(data);
+            categories.forEach(cat => {
                 if (Array.isArray(data[cat])) {
                     data[cat].forEach((item) => {
                         if (item.questions && Array.isArray(item.questions)) {
@@ -240,36 +264,31 @@
         if(progressEl) progressEl.innerText = `Progres: ${answered} / ${totalSoal}`;
     }
 
-    // --- REVISI UTAMA PADA FUNGSI SENDMESSAGE (SINKRON DENGAN BACKEND) ---
     async function sendMessage(overrideMsg = null, isAuto = false) {
         const input = document.getElementById('user-input');
         const msg = overrideMsg || (input ? input.value.trim() : ""); 
         
         if(!msg) return;
-        if(!isAuto) addsieraMessage(`<strong>Kamu:</strong> ${msg}`); 
+        if(!isAuto) addDanboMessage(`<strong>Kamu:</strong> ${msg}`); 
         if(input) input.value = '';
 
         const loadingId = "load-" + Date.now();
-        addsieraMessage(`<div id="${loadingId}"><img src="assets/kon.gif" style="width: 60px;"></div>`);
+        addDanboMessage(`<div id="${loadingId}"><img src="assets/kon.gif" style="width: 60px;"></div>`);
 
         let selectedContext = [];
         let targetIdx = lastActiveIndex;
 
-        // Cek jika user menyebut nomor soal tertentu dalam chat
         const foundNumbers = msg.match(/\d+/g);
-        if(foundNumbers) {
-            // Gunakan nomor pertama yang ditemukan sebagai target soal
-            targetIdx = parseInt(foundNumbers[0]) - 1;
-        }
+        if(foundNumbers) targetIdx = parseInt(foundNumbers[0]) - 1;
 
-        // Siapkan data konteks soal sesuai format yang diminta Backend
         if(targetIdx !== null && currentQuestions[targetIdx]) {
             const q = currentQuestions[targetIdx];
             selectedContext.push({
                 nomor: targetIdx + 1,
+                kategori: q.categoryGroup,
                 pertanyaan: q.q,
                 pilihan: q.options || [],
-                kunci_jawaban: q.correct, // Backend akan melakukan +1
+                kunci_jawaban: q.correct,
                 bacaan: q.embeddedText || null
             });
         }
@@ -281,41 +300,33 @@
                 body: JSON.stringify({ 
                     userQuery: msg, 
                     currentQuestionContext: selectedContext.length > 0 ? selectedContext : null,
-                    // Status sinkron dengan instruksi di Backend (DURING_EXAM vs lainnya)
                     status: isFinished ? "POST_EXAM" : "DURING_EXAM",
                     history: chatHistory
                 })
             });
             const data = await res.json();
             document.getElementById(loadingId).remove();
+            addDanboMessage(`<strong>Danbo:</strong> ${data.reply}`);
             
-            addsieraMessage(`<strong>siera:</strong> ${data.reply}`);
-            
-            // Simpan riwayat agar AI ingat pembicaraan sebelumnya
             chatHistory.push({ role: "user", content: msg });
             chatHistory.push({ role: "assistant", content: data.reply });
-            
-            // Batasi riwayat agar tidak memberatkan request
-            if(chatHistory.length > 10) chatHistory = chatHistory.slice(-10);
-
         } catch (e) { 
-            const loader = document.getElementById(loadingId);
-            if(loader) loader.innerHTML = "<span style='color:red;'>Gagal koneksi ke siera...</span>";
+            document.getElementById(loadingId).innerHTML = "<span style='color:red;'>Koneksi terputus...</span>";
         }
     }
 
-    function addsieraMessage(t) { 
-        const b = document.getElementById('siera-msg'); 
+    function addDanboMessage(t) { 
+        const b = document.getElementById('danbo-msg'); 
         const p = document.createElement('p'); p.innerHTML = t; 
         if(b) { b.appendChild(p); b.scrollTop = b.scrollHeight; }
     }
 
-    function opensiera() { 
+    function openDanbo() { 
         document.getElementById('chat-sidebar').classList.add('active'); 
         document.body.classList.add('chat-open'); 
     }
 
-    function closesiera() { 
+    function closeDanbo() { 
         document.getElementById('chat-sidebar').classList.remove('active'); 
         document.body.classList.remove('chat-open'); 
     }
@@ -356,8 +367,7 @@
         document.getElementById('final-score').innerText = `Skor Akhir: ${totalBenar} / ${totalSoal}`;
         
         drawChart(Object.keys(mainStats), Object.keys(mainStats).map(l => mainStats[l].t ? Math.round((mainStats[l].c / mainStats[l].t) * 100) : 0));
-        opensiera();
-        // Mengirim pesan otomatis setelah selesai ujian
+        openDanbo();
         sendMessage(`Sistem: Ujian Selesai. Saya benar ${totalBenar} dari ${totalSoal} soal. Berikan evaluasi.`, true);
     }
 
