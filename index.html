@@ -417,6 +417,71 @@ function openLevelFiles(levelData) {
     }
 }
 
+  async function showGrammarMaterial(path) {
+    try {
+        const response = await fetch(`assets/${path}`);
+        if (!response.ok) throw new Error("Gagal mengambil file materi");
+        
+        const data = await response.json();
+        // Karena struktur JSON kamu memiliki array "levels" di paling luar
+        const content = data.levels[0]; 
+
+        // Sembunyikan daftar file, tampilkan layar ujian (kita pinjam layarnya)
+        document.getElementById('file-screen').classList.add('hidden');
+        document.getElementById('exam-screen').classList.remove('hidden');
+
+        // Ganti judul header
+        document.getElementById('exam-title').innerText = content.name;
+
+        // Siapkan HTML untuk konten materi
+        let html = `
+            <div style="text-align: left; background: #f9f9f9; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+                <h2 style="color: #2c3e50; margin-bottom: 5px;">${content.header.main_title}</h2>
+                <p style="font-size: 1.1em; color: #7f8c8d;">${content.header.sub_title} (${content.header.translation})</p>
+                <hr>
+                <div style="background: #eef2f3; padding: 10px; border-left: 5px solid #3498db;">
+                    <p>👦: ${content.illustration_text.child}</p>
+                    <p>👩: ${content.illustration_text.mother}</p>
+                </div>
+            </div>
+        `;
+
+        // Masukkan setiap bagian grammar
+        content.grammar_sections.forEach(sec => {
+            html += `
+                <div style="text-align: left; border: 1px solid #ddd; padding: 15px; border-radius: 8px; margin-bottom: 15px; background: white;">
+                    <h3 style="background: #3498db; color: white; display: inline-block; padding: 2px 10px; border-radius: 4px;">
+                        ${sec.pattern_title}
+                    </h3>
+                    <p><b>Formula:</b> <code>${sec.description_box.formula}</code></p>
+                    <p style="color: #34495e;">${sec.description_box.explanation_en}</p>
+                    <ul style="list-style-type: none; padding-left: 0;">
+                        ${sec.examples.map(ex => `
+                            <li style="margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px dashed #eee;">
+                                <span style="font-weight: bold; color: #e67e22;">•</span> ${ex.jp}
+                                <br><small style="color: #95a5a6; margin-left: 15px;">${ex.en}</small>
+                            </li>
+                        `).join('')}
+                    </ul>
+                </div>
+            `;
+        });
+
+        // Masukkan ke container dan sembunyikan tombol skor
+        const container = document.getElementById('question-container');
+        container.innerHTML = html;
+        
+        // Cari tombol "Selesai & Cek Skor" dan sembunyikan
+        const submitBtn = document.querySelector('.submit-btn');
+        if (submitBtn) submitBtn.style.display = 'none';
+
+    } catch (error) {
+        console.error("Error:", error);
+        alert("Gagal memuat materi: " + error.message);
+    }
+}
+        
+        
     async function startExam(path, label) {
     // Menentukan folder gambar berdasarkan path json
     imageFolderPath = path.replace('.json', '/');
