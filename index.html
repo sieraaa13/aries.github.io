@@ -415,58 +415,69 @@ function openLevelFiles(levelData) {
 }
 
     async function startExam(path, label) {
-        imageFolderPath = path.replace('.json', '/');
-        document.getElementById('file-screen').classList.add('hidden');
-        document.getElementById('exam-screen').style.display = 'flex';
-        document.getElementById('chat-icon').style.display = 'block';
-        document.getElementById('exam-title-display').innerText = label;
-        document.getElementById('folder-screen').classList.add('hidden'); // TAMBAHKAN INI
+    // Menentukan folder gambar berdasarkan path json
+    imageFolderPath = path.replace('.json', '/');
+    
+    // Mengatur tampilan layar
     document.getElementById('file-screen').classList.add('hidden');
+    document.getElementById('folder-screen').classList.add('hidden'); 
     document.getElementById('exam-screen').style.display = 'flex';
+    document.getElementById('chat-icon').style.display = 'block';
+    document.getElementById('exam-title-display').innerText = label;
     
     updateWidgetVisibility();
-        const area = document.getElementById('questions-area');
-        area.innerHTML = 'Memuat data soal...';
+    
+    const area = document.getElementById('questions-area');
+    area.innerHTML = 'Memuat data soal...';
 
-        try {
-            const res = await fetch(`assets/${path}`);
-            const data = await res.json();
-            area.innerHTML = ''; 
-            currentQuestions = [];
-            
-            Object.keys(data).forEach(cat => {
-                if (Array.isArray(data[cat])) {
-                    data[cat].forEach((item) => {
-                        if (item.questions && Array.isArray(item.questions)) {
-                            item.questions.forEach((subQ) => {
-                                const qIndex = currentQuestions.length;
-                                currentQuestions.push({ 
-                                    ...subQ, 
-                                    categoryGroup: cat, 
-                                    embeddedText: item.text || null,
-                                    sectionTitle: item.section_title || null,
-                                    image: item.image || subQ.image || null,
-                                    originalIndex: qIndex
-                                });
-                                renderSingleQuestion(currentQuestions[qIndex], qIndex, area);
-                            });
-                        } else if (item.q) {
+    try {
+        // Cek apakah path sudah mengandung 'assets/'
+        const finalPath = path.startsWith('assets/') ? path : `assets/${path}`;
+        
+        const res = await fetch(finalPath);
+        
+        // Proteksi jika file tidak ada
+        if (!res.ok) throw new Error(`File tidak ditemukan di: ${finalPath}`);
+
+        const data = await res.json();
+        area.innerHTML = ''; 
+        currentQuestions = [];
+        
+        Object.keys(data).forEach(cat => {
+            if (Array.isArray(data[cat])) {
+                data[cat].forEach((item) => {
+                    if (item.questions && Array.isArray(item.questions)) {
+                        item.questions.forEach((subQ) => {
                             const qIndex = currentQuestions.length;
-                            currentQuestions.push({ ...item, categoryGroup: cat, originalIndex: qIndex });
+                            currentQuestions.push({ 
+                                ...subQ, 
+                                categoryGroup: cat, 
+                                embeddedText: item.text || null,
+                                sectionTitle: item.section_title || null,
+                                image: item.image || subQ.image || null,
+                                originalIndex: qIndex
+                            });
                             renderSingleQuestion(currentQuestions[qIndex], qIndex, area);
-                        }
-                    });
-                }
-            });
-            totalSoal = currentQuestions.length;
-            currentAnswers = new Array(totalSoal).fill(null);
-            isFinished = false;
-            updateStatus();
-        } catch (e) { 
-            area.innerHTML = `<p style='color:red;'>Gagal memuat: ${e.message}</p>`;
-        }
-    }
+                        });
+                    } else if (item.q) {
+                        const qIndex = currentQuestions.length;
+                        currentQuestions.push({ ...item, categoryGroup: cat, originalIndex: qIndex });
+                        renderSingleQuestion(currentQuestions[qIndex], qIndex, area);
+                    }
+                });
+            }
+        });
+        
+        totalSoal = currentQuestions.length;
+        currentAnswers = new Array(totalSoal).fill(null);
+        isFinished = false;
+        updateStatus();
 
+    } catch (e) { 
+        area.innerHTML = `<p style='color:red;'>Gagal memuat: ${e.message}</p>`;
+        console.error("Detail Error:", e);
+    }
+} // <--- PASTIKAN KURUNG INI ADA
     function renderSingleQuestion(q, i, container) {
         const card = document.createElement('div');
         card.className = 'question-card';
