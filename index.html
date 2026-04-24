@@ -162,7 +162,7 @@
     <div id="exam-screen">
         <div id="exam-content">
             <div style="display:flex; justify-content:space-between; align-items: center; max-width: 800px; margin: auto; padding-bottom: 10px;">
-                <button onclick="location.reload()" style="padding: 8px 15px; cursor:pointer;">⬅ Keluar</button>
+                <button onclick="closeExam()" style="padding: 8px 15px; cursor:pointer;">⬅ Keluar</button>
                 <b id="progress-indicator">Progres: 0 / 0</b>
             </div>
             
@@ -325,6 +325,30 @@ function checkAutoLogin() {
     updateWidgetVisibility(); // Pastikan panggil ini
 }
 
+function closeExam() {
+    // 1. Sembunyikan layar ujian dan icon chat
+    document.getElementById('exam-screen').style.display = 'none';
+    document.getElementById('chat-icon').style.display = 'none';
+    
+    // 2. Tutup sidebar chat jika sedang terbuka
+    closesiera(); 
+
+    // 3. Tampilkan kembali layar daftar file (file-screen)
+    document.getElementById('file-screen').classList.remove('hidden');
+
+    // 4. Reset variabel kuis agar bersih saat masuk ke soal lain
+    currentQuestions = [];
+    currentAnswers = [];
+    document.getElementById('questions-area').innerHTML = '';
+    
+    // 5. Pastikan tombol selesai muncul kembali (jika sebelumnya sudah selesai)
+    document.getElementById('submit-btn').style.display = 'inline-block';
+    document.getElementById('result-box').style.display = 'none';
+    
+    // 6. Update widget user agar tetap sinkron
+    updateWidgetVisibility();
+}
+        
 function createFileItem(label, path, levelName, container) {
     const item = document.createElement('div');
     item.className = 'file-item';
