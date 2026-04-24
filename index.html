@@ -349,13 +349,13 @@ function closeExam() {
     updateWidgetVisibility();
 }
         
-function createFileItem(label, path, levelName, container) {
+function createFileItem(label, path, levelName, container, type = "quiz") {
     const item = document.createElement('div');
     item.className = 'file-item';
     
-    // Ikon file
+    // Ikon dinamis: 📖 untuk materi, 📄 untuk ujian
     const icon = document.createElement('span');
-    icon.innerText = '📄 ';
+    icon.innerText = type === 'grammar' ? '📖 ' : '📄 ';
     
     const text = document.createElement('span');
     text.innerText = label;
@@ -363,14 +363,15 @@ function createFileItem(label, path, levelName, container) {
     item.appendChild(icon);
     item.appendChild(text);
     
-    // Fungsi saat file soal diklik
     item.onclick = () => {
-        // Ganti dengan fungsi yang kamu gunakan untuk membuka soal (misal: startExam atau loadQuiz)
-        if (typeof startExam === "function") {
+        if (type === "grammar") {
+            // Jika filenya materi grammar, panggil fungsi khusus bacaan
+            showGrammarMaterial(path); 
+        } else if (typeof startExam === "function") {
+            // Jika filenya ujian, panggil fungsi ujian biasa
             startExam(path, label, levelName);
         } else {
             console.log("Membuka file:", path);
-            alert("Membuka: " + label);
         }
     };
     
@@ -386,7 +387,7 @@ function openLevelFiles(levelData) {
     container.innerHTML = '';
     document.getElementById('folder-title').innerText = levelData.name;
 
-    // JIKA FORMAT JLPT (punya years)
+    // 1. JIKA FORMAT JLPT (Ujian)
     if (levelData.years) {
         levelData.years.forEach(y => {
             const divider = document.createElement('div');
@@ -395,11 +396,12 @@ function openLevelFiles(levelData) {
             container.appendChild(divider);
 
             y.exams.forEach(ex => {
-                createFileItem(ex.label, ex.path, levelData.name, container);
+                // Tambahkan parameter "quiz" agar masuk ke mode ujian
+                createFileItem(ex.label, ex.path, levelData.name, container, "quiz");
             });
         });
     } 
-    // JIKA FORMAT SOUMATOME (punya weeks)
+    // 2. JIKA FORMAT SOUMATOME (Materi/Grammar)
     else if (levelData.weeks) {
         levelData.weeks.forEach(w => {
             const divider = document.createElement('div');
@@ -408,7 +410,8 @@ function openLevelFiles(levelData) {
             container.appendChild(divider);
 
             w.days.forEach(d => {
-                createFileItem(d.label, d.path, levelData.name, container);
+                // Tambahkan parameter "grammar" agar masuk ke mode bacaan
+                createFileItem(d.label, d.path, levelData.name, container, "grammar");
             });
         });
     }
