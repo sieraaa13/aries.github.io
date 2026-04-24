@@ -2,83 +2,73 @@
   "levels": [
     {
       "name": "Soumatome N3 Grammar",
-      "weeks": [
+      "week": 1,
+      "day": 1,
+      "header": {
+        "main_title": "がんばらなくちゃ！",
+        "sub_title": "ぼくにもやらせて",
+        "translation": "Let me do it"
+      },
+      "illustration_text": {
+        "child": "ぼくにもやらせて。",
+        "mother": "けがをされると困るからダメよ。"
+      },
+      "grammar_sections": [
         {
-          "week_number": 1,
-          "days": [
+          "pattern_title": "書かれている",
+          "description_box": {
+            "formula": "Vれる <受身形>",
+            "explanation": "主語を表さないで事実を述べるとき、よく受身形を使う。",
+            "explanation_en": "When you mention a fact without a subject, the passive form is often used."
+          },
+          "examples": [
             {
-              "label": "Day 1: Let me do it",
-              "content": {
-                "header": {
-                  "main_title": "がんばらなくちゃ！",
-                  "sub_title": "ぼくにもやらせて",
-                  "translation": "Let me do it"
-                },
-                "illustration_text": {
-                  "child": "ぼくにもやらせて。",
-                  "mother": "けがをされると困るからダメよ。"
-                },
-                "grammar_sections": [
-                  {
-                    "pattern_title": "書かれている",
-                    "description_box": {
-                      "formula": "Vれる <受身形>",
-                      "explanation": "主語を表さないで事実を述べるとき、よく受身形を使う。",
-                      "explanation_en": "When you mention a fact without a subject, the passive form is often used."
-                    },
-                    "examples": [
-                      {
-                        "jp": "この本には、くわしい説明は書かれていません。",
-                        "note": "(=〈筆者が〉書いていない)",
-                        "en": "There is no detailed explanation in this book."
-                      },
-                      {
-                        "jp": "入学式は、このホールで行われます。",
-                        "note": "(=〈学校が〉行う)",
-                        "en": "The entrance ceremony will take place in this hall."
-                      },
-                      {
-                        "jp": "これは、世界でいちばん大きいダイヤモンドだと言われています。",
-                        "note": "(=〈だれかが〉言っている)",
-                        "en": "This is believed to be the biggest diamond in the world."
-                      },
-                      {
-                        "jp": "昔は、その考えが正しいと思われていた。",
-                        "note": "(=〈昔の人は〉思っていた)",
-                        "en": "Such an idea used to be considered correct."
-                      }
-                    ]
-                  },
-                  {
-                    "pattern_title": "赤ちゃんに泣かれた",
-                    "description_box": {
-                      "formula": "(Nに) Vれる",
-                      "explanation": "そのことによって、困る状態になったことを表す。",
-                      "explanation_en": "Showing a difficult situation as a result of something.",
-                      "common_usage": "Vれてしまった"
-                    },
-                    "examples": [
-                      {
-                        "jp": "友達의 赤ちゃんを抱っこしたら、泣かれてしまった。",
-                        "en": "When I held my friend's baby, it cried."
-                      },
-                      {
-                        "jp": "雨に降られて、服がぬれてしまった。",
-                        "en": "My clothes got soaked in the rain."
-                      },
-                      {
-                        "jp": "父に死なれて、大学を続けられなくなりました。",
-                        "en": "I couldn't continue my university education after my father died."
-                      }
-                    ]
-                  }
-                ],
-                "footer": "14 ■ Week 1: I have to stick at it"
-              }
+              "jp": "この本には、くわしい説明は書かれていません。",
+              "note": "(=〈筆者が〉書いていない)",
+              "en": "There is no detailed explanation in this book."
+            },
+            {
+              "jp": "入学式は、このホールで行われます。",
+              "note": "(=〈学校が〉行う)",
+              "en": "The entrance ceremony will take place in this hall."
+            },
+            {
+              "jp": "これは、世界でいちばん大きいダイヤモンドだと言われています。",
+              "note": "(=〈だれかが〉言っている)",
+              "en": "This is believed to be the biggest diamond in the world."
+            },
+            {
+              "jp": "昔は、その考えが正しいと思われていた。",
+              "note": "(=〈昔の人は〉思っていた)",
+              "en": "Such an idea used to be considered correct."
+            }
+          ]
+        },
+        {
+          "pattern_title": "赤ちゃんに泣かれた",
+          "description_box": {
+            "formula": "(Nに) Vれる",
+            "explanation": "そのことによって、困る状態になったことを表す。",
+            "explanation_en": "Showing a difficult situation as a result of something.",
+            "common_usage": "Vれてしまった"
+          },
+          "examples": [
+            {
+              "jp": "友達の赤ちゃんを抱っこしたら、泣かれてしまった。",
+              "en": "When I held my friend's baby, it cried."
+            },
+            {
+              "jp": "雨に降られて、服がぬれてしまった。",
+              "en": "My clothes got soaked in the rain."
+            },
+            {
+              "jp": "父に死なれて, 大学を続けられなくなりました。",
+              "en": "I couldn't continue my university education after my father died."
             }
           ]
         }
-      ]
+      ],
+      "footer": "14 ■ Week 1: I have to stick at it"
     }
   ]
 }
