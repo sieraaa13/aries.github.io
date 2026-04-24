@@ -328,19 +328,39 @@ function checkAutoLogin() {
 function openLevelFiles(levelData) {
     document.getElementById('folder-screen').classList.add('hidden');
     document.getElementById('file-screen').classList.remove('hidden');
-    updateWidgetVisibility(); // Pastikan panggil ini
-        const container = document.getElementById('file-container');
-        container.innerHTML = '';
+    updateWidgetVisibility();
+    
+    const container = document.getElementById('file-container');
+    container.innerHTML = '';
+    document.getElementById('folder-title').innerText = levelData.name;
+
+    // JIKA FORMAT JLPT (punya years)
+    if (levelData.years) {
         levelData.years.forEach(y => {
+            const divider = document.createElement('div');
+            divider.className = 'year-divider';
+            divider.innerText = `Tahun ${y.year}`;
+            container.appendChild(divider);
+
             y.exams.forEach(ex => {
-                const item = document.createElement('div');
-                item.className = 'file-item';
-                item.innerText = `📄 ${levelData.name} - ${ex.label}`;
-                item.onclick = () => startExam(ex.path, ex.label);
-                container.appendChild(item);
+                createFileItem(ex.label, ex.path, levelData.name, container);
+            });
+        });
+    } 
+    // JIKA FORMAT SOUMATOME (punya weeks)
+    else if (levelData.weeks) {
+        levelData.weeks.forEach(w => {
+            const divider = document.createElement('div');
+            divider.className = 'year-divider';
+            divider.innerText = `Minggu ${w.week_number}`;
+            container.appendChild(divider);
+
+            w.days.forEach(d => {
+                createFileItem(d.label, d.path, levelData.name, container);
             });
         });
     }
+}
 
     async function startExam(path, label) {
         imageFolderPath = path.replace('.json', '/');
