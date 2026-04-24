@@ -9,7 +9,8 @@
           "days": [
             { 
               "label": "Day 1: がんばらなくちゃ！", 
-              "path": "n3/soumatoume.json" 
+              "path": "n3/soumatome.json",
+              "type": "grammar" 
             }
           ]
         }
