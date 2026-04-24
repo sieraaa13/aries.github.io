@@ -204,69 +204,53 @@
 </div> ```
 
     <script>
+// --- 1. VARIABEL GLOBAL ---
+const BACKEND_URL = "https://web-backend-l5p7.onrender.com/siera-chat"; 
+let currentUsername = ""; 
+let currentQuestions = [];
+let currentAnswers = [];
+let totalSoal = 0;
+let totalBenar = 0;
+let isFinished = false;
+let chatHistory = [];
+let myRadarChart = null;
+let imageFolderPath = "";
+let lastActiveIndex = null;
+
+// --- 2. FUNGSI AUTH & UI ---
 function updateWidgetVisibility() {
     const widget = document.getElementById('user-info-widget');
     const folderScreen = document.getElementById('folder-screen');
-    
-    // Tabel hanya muncul jika user sudah login DAN folder-screen sedang tidak tersembunyi
     if (currentUsername !== "" && !folderScreen.classList.contains('hidden')) {
         widget.classList.remove('hidden');
     } else {
         widget.classList.add('hidden');
     }
 }
-        
-     // 1. GABUNGKAN SEMUA VARIABEL GLOBAL DI ATAS
-    const BACKEND_URL = "https://web-backend-l5p7.onrender.com/siera-chat"; 
-    let currentUsername = ""; 
-    let currentQuestions = [];
-    let currentAnswers = [];
-    let totalSoal = 0;
-    let totalBenar = 0;
-    let isFinished = false;
-    let chatHistory = [];
-    let myRadarChart = null;
-    let imageFolderPath = "";
-    let lastActiveIndex = null;
-    // 2. FUNGSI LOGIN
-    function loginUser() {
+
+function loginUser() {
     const input = document.getElementById('username-input');
     const name = input.value.trim();
-
     if (name !== "") {
         currentUsername = name;
-        
-        // Simpan data ke localStorage (masa berlaku 12 jam sesuai keinginanmu sebelumnya)
-        const userData = {
-            username: name,
-            loginTime: new Date().getTime()
-        };
+        const userData = { username: name, loginTime: new Date().getTime() };
         localStorage.setItem('siera_user', JSON.stringify(userData));
-
-        // Update tampilan tabel
         document.getElementById('display-id-user').innerText = name;
-        
-        // Sembunyikan input login dan tampilkan widget
         document.getElementById('login-container').classList.add('hidden');
         updateWidgetVisibility();
-        
-        console.log("Login berhasil sebagai:", name);
     } else {
         alert("Silakan masukkan nama terlebih dahulu.");
     }
 }
+
 function checkAutoLogin() {
     const savedData = localStorage.getItem('siera_user');
     if (savedData) {
         const userData = JSON.parse(savedData);
         const now = new Date().getTime();
-        const twelveHours = 12 * 60 * 60 * 1000;
-
-        if (now - userData.loginTime < twelveHours) {
+        if (now - userData.loginTime < 12 * 60 * 60 * 1000) {
             currentUsername = userData.username;
             document.getElementById('display-id-user').innerText = currentUsername;
-            
-            // Sembunyikan login container karena sudah login
             document.getElementById('login-container').classList.add('hidden');
             updateWidgetVisibility();
         } else {
@@ -274,36 +258,25 @@ function checkAutoLogin() {
         }
     }
 }
-        
-        async function loadLevels() {
+
+// --- 3. FUNGSI NAVIGATION & LOAD DATA ---
+async function loadLevels() {
     const container = document.querySelector('.folder-grid');
     container.innerHTML = 'Memuat data...';
-
     let combinedLevels = [];
-
-    // 1. Ambil data JLPT secara mandiri
     try {
         const resJLPT = await fetch('assets/manifest_jlpt.json');
         if (resJLPT.ok) {
             const dataJLPT = await resJLPT.json();
             if (dataJLPT.levels) combinedLevels = [...combinedLevels, ...dataJLPT.levels];
         }
-    } catch (e) {
-        console.error("File JLPT bermasalah:", e);
-    }
-
-    // 2. Ambil data Soumatome secara mandiri
-    try {
         const resSoumatome = await fetch('assets/manifest_soumatome.json');
         if (resSoumatome.ok) {
             const dataSoumatome = await resSoumatome.json();
             if (dataSoumatome.levels) combinedLevels = [...combinedLevels, ...dataSoumatome.levels];
         }
-    } catch (e) {
-        console.error("File Soumatome bermasalah:", e);
-    }
+    } catch (e) { console.error("Gagal load manifest:", e); }
 
-    // 3. Tampilkan apa yang berhasil didapat
     if (combinedLevels.length > 0) {
         container.innerHTML = '';
         combinedLevels.forEach(lvl => {
@@ -315,430 +288,169 @@ function checkAutoLogin() {
             container.appendChild(card);
         });
     } else {
-        container.innerHTML = 'Gagal memuat semua data materi.';
+        container.innerHTML = 'Gagal memuat materi.';
     }
 }
 
-    function showFolders() {
-    document.getElementById('file-screen').classList.add('hidden');
-    document.getElementById('folder-screen').classList.remove('hidden');
-    updateWidgetVisibility(); // Pastikan panggil ini
-}
-
-function closeExam() {
-    // 1. Sembunyikan layar ujian dan icon chat
-    document.getElementById('exam-screen').style.display = 'none';
-    document.getElementById('chat-icon').style.display = 'none';
-    
-    // 2. Tutup sidebar chat jika sedang terbuka
-    closesiera(); 
-
-    // 3. Tampilkan kembali layar daftar file (file-screen)
-    document.getElementById('file-screen').classList.remove('hidden');
-
-    // 4. Reset variabel kuis agar bersih saat masuk ke soal lain
-    currentQuestions = [];
-    currentAnswers = [];
-    document.getElementById('questions-area').innerHTML = '';
-    
-    // 5. Pastikan tombol selesai muncul kembali (jika sebelumnya sudah selesai)
-    document.getElementById('submit-btn').style.display = 'inline-block';
-    document.getElementById('result-box').style.display = 'none';
-    
-    // 6. Update widget user agar tetap sinkron
-    updateWidgetVisibility();
-}
-        
-function createFileItem(label, path, levelName, container, type = "quiz") {
-    const item = document.createElement('div');
-    item.className = 'file-item';
-    
-    // Ikon dinamis: 📖 untuk materi, 📄 untuk ujian
-    const icon = document.createElement('span');
-    icon.innerText = type === 'grammar' ? '📖 ' : '📄 ';
-    
-    const text = document.createElement('span');
-    text.innerText = label;
-    
-    item.appendChild(icon);
-    item.appendChild(text);
-    
-    item.onclick = () => {
-        if (type === "grammar") {
-            // Jika filenya materi grammar, panggil fungsi khusus bacaan
-            showGrammarMaterial(path); 
-        } else if (typeof startExam === "function") {
-            // Jika filenya ujian, panggil fungsi ujian biasa
-            startExam(path, label, levelName);
-        } else {
-            console.log("Membuka file:", path);
-        }
-    };
-    
-    container.appendChild(item);
-}
-        
 function openLevelFiles(levelData) {
     document.getElementById('folder-screen').classList.add('hidden');
     document.getElementById('file-screen').classList.remove('hidden');
     updateWidgetVisibility();
-    
     const container = document.getElementById('file-container');
     container.innerHTML = '';
     document.getElementById('folder-title').innerText = levelData.name;
 
-    // 1. JIKA FORMAT JLPT (Ujian)
     if (levelData.years) {
         levelData.years.forEach(y => {
             const divider = document.createElement('div');
             divider.className = 'year-divider';
             divider.innerText = `Tahun ${y.year}`;
             container.appendChild(divider);
-
-            y.exams.forEach(ex => {
-                // Tambahkan parameter "quiz" agar masuk ke mode ujian
-                createFileItem(ex.label, ex.path, levelData.name, container, "quiz");
-            });
+            y.exams.forEach(ex => createFileItem(ex.label, ex.path, levelData.name, container, "quiz"));
         });
-    } 
-    // 2. JIKA FORMAT SOUMATOME (Materi/Grammar)
-    else if (levelData.weeks) {
+    } else if (levelData.weeks) {
         levelData.weeks.forEach(w => {
             const divider = document.createElement('div');
             divider.className = 'year-divider';
             divider.innerText = `Minggu ${w.week_number}`;
             container.appendChild(divider);
-
-            w.days.forEach(d => {
-                // Tambahkan parameter "grammar" agar masuk ke mode bacaan
-                createFileItem(d.label, d.path, levelData.name, container, "grammar");
-            });
+            w.days.forEach(d => createFileItem(d.label, d.path, levelData.name, container, "grammar"));
         });
     }
 }
 
-  async function showGrammarMaterial(path) {
+function createFileItem(label, path, levelName, container, type = "quiz") {
+    const item = document.createElement('div');
+    item.className = 'file-item';
+    item.innerHTML = `<span>${type === 'grammar' ? '📖 ' : '📄 '}</span><span>${label}</span>`;
+    item.onclick = () => {
+        if (type === "grammar") {
+            showGrammarMaterial(path);
+        } else {
+            startExam(path, label);
+        }
+    };
+    container.appendChild(item);
+}
+
+// --- 4. TAMPILAN MATERI GRAMMAR (📖) ---
+async function showGrammarMaterial(path) {
     try {
-        const response = await fetch(`assets/${path}`);
-        if (!response.ok) throw new Error("Gagal mengambil file materi");
-        
+        const finalPath = path.startsWith('assets/') ? path : `assets/${path}`;
+        const response = await fetch(finalPath);
+        if (!response.ok) throw new Error("File tidak ditemukan");
         const data = await response.json();
-        // Karena struktur JSON kamu memiliki array "levels" di paling luar
-        const content = data.levels[0]; 
+        const content = data.levels[0];
 
-        // Sembunyikan daftar file, tampilkan layar ujian (kita pinjam layarnya)
         document.getElementById('file-screen').classList.add('hidden');
-        document.getElementById('exam-screen').classList.remove('hidden');
+        document.getElementById('exam-screen').style.display = 'flex';
+        document.getElementById('exam-title-display').innerText = content.name;
 
-        // Ganti judul header
-        document.getElementById('exam-title').innerText = content.name;
-
-        // Siapkan HTML untuk konten materi
         let html = `
             <div style="text-align: left; background: #f9f9f9; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
-                <h2 style="color: #2c3e50; margin-bottom: 5px;">${content.header.main_title}</h2>
-                <p style="font-size: 1.1em; color: #7f8c8d;">${content.header.sub_title} (${content.header.translation})</p>
-                <hr>
-                <div style="background: #eef2f3; padding: 10px; border-left: 5px solid #3498db;">
+                <h2 style="color: #2c3e50;">${content.header.main_title}</h2>
+                <p>${content.header.sub_title} (${content.header.translation})</p>
+                <div style="background: #eef2f3; padding: 10px; border-left: 5px solid #3498db; margin-top:10px;">
                     <p>👦: ${content.illustration_text.child}</p>
                     <p>👩: ${content.illustration_text.mother}</p>
                 </div>
             </div>
         `;
 
-        // Masukkan setiap bagian grammar
         content.grammar_sections.forEach(sec => {
             html += `
                 <div style="text-align: left; border: 1px solid #ddd; padding: 15px; border-radius: 8px; margin-bottom: 15px; background: white;">
-                    <h3 style="background: #3498db; color: white; display: inline-block; padding: 2px 10px; border-radius: 4px;">
-                        ${sec.pattern_title}
-                    </h3>
+                    <h3 style="background: #3498db; color: white; display: inline-block; padding: 2px 10px; border-radius: 4px;">${sec.pattern_title}</h3>
                     <p><b>Formula:</b> <code>${sec.description_box.formula}</code></p>
-                    <p style="color: #34495e;">${sec.description_box.explanation_en}</p>
-                    <ul style="list-style-type: none; padding-left: 0;">
-                        ${sec.examples.map(ex => `
-                            <li style="margin-bottom: 10px; padding-bottom: 5px; border-bottom: 1px dashed #eee;">
-                                <span style="font-weight: bold; color: #e67e22;">•</span> ${ex.jp}
-                                <br><small style="color: #95a5a6; margin-left: 15px;">${ex.en}</small>
-                            </li>
-                        `).join('')}
+                    <p>${sec.description_box.explanation_en}</p>
+                    <ul style="list-style: none; padding-left: 0;">
+                        ${sec.examples.map(ex => `<li style="border-bottom: 1px dashed #eee; padding: 5px 0;">• ${ex.jp}<br><small color="#95a5a6">${ex.en}</small></li>`).join('')}
                     </ul>
                 </div>
             `;
         });
 
-        // Masukkan ke container dan sembunyikan tombol skor
-        const container = document.getElementById('question-container');
-        container.innerHTML = html;
-        
-        // Cari tombol "Selesai & Cek Skor" dan sembunyikan
-        const submitBtn = document.querySelector('.submit-btn');
-        if (submitBtn) submitBtn.style.display = 'none';
-
-    } catch (error) {
-        console.error("Error:", error);
-        alert("Gagal memuat materi: " + error.message);
-    }
+        document.getElementById('questions-area').innerHTML = html;
+        document.getElementById('submit-btn').style.display = 'none'; // Sembunyikan tombol skor
+    } catch (error) { alert("Error: " + error.message); }
 }
-        
-        
-    async function startExam(path, label) {
-    // Menentukan folder gambar berdasarkan path json
+
+// --- 5. SISTEM UJIAN (📄) ---
+async function startExam(path, label) {
     imageFolderPath = path.replace('.json', '/');
-    
-    // Mengatur tampilan layar
     document.getElementById('file-screen').classList.add('hidden');
-    document.getElementById('folder-screen').classList.add('hidden'); 
     document.getElementById('exam-screen').style.display = 'flex';
-    document.getElementById('chat-icon').style.display = 'block';
     document.getElementById('exam-title-display').innerText = label;
-    
-    updateWidgetVisibility();
-    
+    document.getElementById('submit-btn').style.display = 'inline-block'; // Munculkan tombol skor
+
     const area = document.getElementById('questions-area');
     area.innerHTML = 'Memuat data soal...';
 
     try {
-            // Logika ini sangat penting:
-            // Jika path di manifest tidak ada kata 'assets/', kodingan akan otomatis menambahkannya.
-            const finalPath = path.startsWith('assets/') ? path : `assets/${path}`;
-            
-            const res = await fetch(finalPath);
-            
-            if (!res.ok) throw new Error(`File tidak ditemukan di jalur: ${finalPath}`);
-
-            const data = await res.json();
-        area.innerHTML = ''; 
+        const finalPath = path.startsWith('assets/') ? path : `assets/${path}`;
+        const res = await fetch(finalPath);
+        if (!res.ok) throw new Error("File tidak ditemukan");
+        const data = await res.json();
+        area.innerHTML = '';
         currentQuestions = [];
-        
+
         Object.keys(data).forEach(cat => {
             if (Array.isArray(data[cat])) {
-                data[cat].forEach((item) => {
-                    if (item.questions && Array.isArray(item.questions)) {
-                        item.questions.forEach((subQ) => {
+                data[cat].forEach(item => {
+                    if (item.questions) {
+                        item.questions.forEach(subQ => {
                             const qIndex = currentQuestions.length;
-                            currentQuestions.push({ 
-                                ...subQ, 
-                                categoryGroup: cat, 
-                                embeddedText: item.text || null,
-                                sectionTitle: item.section_title || null,
-                                image: item.image || subQ.image || null,
-                                originalIndex: qIndex
-                            });
+                            currentQuestions.push({ ...subQ, categoryGroup: cat, embeddedText: item.text, sectionTitle: item.section_title, image: item.image || subQ.image, originalIndex: qIndex });
                             renderSingleQuestion(currentQuestions[qIndex], qIndex, area);
                         });
-                    } else if (item.q) {
-                        const qIndex = currentQuestions.length;
-                        currentQuestions.push({ ...item, categoryGroup: cat, originalIndex: qIndex });
-                        renderSingleQuestion(currentQuestions[qIndex], qIndex, area);
                     }
                 });
             }
         });
-        
         totalSoal = currentQuestions.length;
         currentAnswers = new Array(totalSoal).fill(null);
         isFinished = false;
-        updateStatus();
+    } catch (e) { area.innerHTML = `<p style='color:red;'>Gagal memuat: ${e.message}</p>`; }
+}
 
-    } catch (e) { 
-        area.innerHTML = `<p style='color:red;'>Gagal memuat: ${e.message}</p>`;
-        console.error("Detail Error:", e);
+function renderSingleQuestion(q, i, container) {
+    const card = document.createElement('div');
+    card.className = 'question-card';
+    card.id = `question-card-${q.originalIndex}`;
+    let html = q.image ? `<img src="assets/${imageFolderPath}${q.image}" style="width:100%;">` : '';
+    html += `<p><b>${i+1}. ${q.q}</b></p>`;
+    if(q.options) {
+        q.options.forEach((opt, oIdx) => {
+            html += `<div class="option-item" id="q${q.originalIndex}-o${oIdx}" onclick="pickOption(${q.originalIndex}, ${oIdx})">${oIdx+1}. ${opt}</div>`;
+        });
     }
-} // <--- PASTIKAN KURUNG INI ADA
-    function renderSingleQuestion(q, i, container) {
-        const card = document.createElement('div');
-        card.className = 'question-card';
-        card.id = `question-card-${q.originalIndex}`; 
-        
-        let htmlContent = '';
-        if (q.image) {
-            htmlContent += `<div class="q-image-container"><img src="assets/${imageFolderPath}${q.image}" class="q-image" alt="Soal ${i+1}"></div>`;
-        }
-        if (q.embeddedText && !q.image) {
-            htmlContent += `<div class="reading-block"><small style="color:var(--primary)"><b>${q.sectionTitle || 'BACAAN'}</b></small><div style="white-space: pre-wrap; margin-top:5px;">${q.embeddedText}</div></div>`;
-        }
-        let opts = '';
-        if(q.options) {
-            q.options.forEach((opt, o) => {
-                opts += `<div class="option-item" id="q${q.originalIndex}-o${o}" onclick="pickOption(${q.originalIndex}, ${o})">${o+1}. ${opt}</div>`;
-            });
-        }
-        htmlContent += `<small style="color:var(--accent)">[${q.categoryGroup.toUpperCase()} - No. ${i+1}]</small><p style="font-size: 17px; margin-top: 10px;"><b>${q.q}</b></p><div class="options-list">${opts}</div>`;
-        card.innerHTML = htmlContent;
-        container.appendChild(card);
-    }
+    card.innerHTML = html;
+    container.appendChild(card);
+}
 
-    function pickOption(originalQIdx, oIdx) {
+function pickOption(qIdx, oIdx) {
     if (isFinished) return;
-    
-    // PENTING: Update index soal terakhir yang diklik
-    lastActiveIndex = originalQIdx; 
-    
-    currentAnswers[originalQIdx] = oIdx;
-    document.querySelectorAll(`[id^="q${originalQIdx}-o"]`).forEach(el => el.classList.remove('selected'));
-    document.getElementById(`q${originalQIdx}-o${oIdx}`).classList.add('selected');
-    updateStatus();
+    currentAnswers[qIdx] = oIdx;
+    document.querySelectorAll(`[id^="q${qIdx}-o"]`).forEach(el => el.classList.remove('selected'));
+    document.getElementById(`q${qIdx}-o${oIdx}`).classList.add('selected');
 }
 
-    function updateStatus() {
-        const answered = currentAnswers.filter(a => a !== null).length;
-        const progressEl = document.getElementById('progress-indicator');
-        if(progressEl) progressEl.innerText = `Progres: ${answered} / ${totalSoal}`;
-    }
-
-    // --- REVISI UTAMA PADA FUNGSI SENDMESSAGE (SINKRON DENGAN BACKEND) ---
-    async function sendMessage(overrideMsg = null, isAuto = false) {
-    const input = document.getElementById('user-input');
-    const msg = overrideMsg || (input ? input.value.trim() : ""); 
-    if(!msg) return;
-
-    let activeUser = currentUsername;
-    if (!activeUser) {
-        const savedData = localStorage.getItem('siera_user');
-        if (savedData) {
-            const userData = JSON.parse(savedData);
-            activeUser = userData.username;
-        }
-    }
-    
-    const userDisplay = activeUser || "User Tamu";
-    let contextSoal = "";
-
-    // HANYA IDENTITAS: Biarkan Backend yang mengatur cara bicara
-    const systemIdentity = `\n(User: ${userDisplay}. JANGAN sebut nama ini kecuali ditanya.)`;
-
-    const match = msg.match(/(\d+)/); 
-    let targetIndex = null;
-    if (match) {
-        targetIndex = parseInt(match[1]) - 1;
-    } else if (lastActiveIndex !== null && msg.toLowerCase().includes("ini")) {
-        targetIndex = lastActiveIndex; 
-    }
-
-    if (targetIndex !== null && currentQuestions[targetIndex]) {
-        const qData = currentQuestions[targetIndex];
-        // Data soal dikirim tanpa kunci jawaban agar AI di Backend yang memutuskan boleh/tidaknya memberi jawaban
-        contextSoal = `\n\n[KONTEKS SOAL NO ${targetIndex + 1}]:
-Pertanyaan: "${qData.q}"
-Pilihan: ${qData.options ? qData.options.join(", ") : "Tidak ada"}
-Kategori: ${qData.categoryGroup}`;
-        
-        if (qData.embeddedText) contextSoal += `\nBacaan: ${qData.embeddedText}`;
-    }
-
-    if(!isAuto) addsieraMessage(`<strong>Kamu:</strong> ${msg}`); 
-    if(input) input.value = '';
-
-    const loadingId = "load-" + Date.now();
-    addsieraMessage(`<div id="${loadingId}"><img src="assets/kon.gif" style="width: 60px;"></div>`);
-
-    try {
-        const res = await fetch(BACKEND_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ 
-                username: userDisplay, 
-                userQuery: msg + systemIdentity + contextSoal, 
-                history: chatHistory,
-                status: isFinished ? "POST_EXAM" : "DURING_EXAM"
-            })
-        });
-
-        const data = await res.json();
-        const loader = document.getElementById(loadingId);
-        if(loader) loader.remove();
-        
-        addsieraMessage(`<strong>siera:</strong> ${data.reply}`);
-        
-        chatHistory.push({ role: "user", content: msg });
-        chatHistory.push({ role: "assistant", content: data.reply });
-        if(chatHistory.length > 10) chatHistory = chatHistory.slice(-10);
-
-    } catch (e) { 
-        const loader = document.getElementById(loadingId);
-        if(loader) loader.innerHTML = "<span style='color:red;'>Gagal koneksi...</span>";
-    }
+// --- 6. FUNGSI CHAT & LAINNYA ---
+function showFolders() {
+    document.getElementById('file-screen').classList.add('hidden');
+    document.getElementById('exam-screen').style.display = 'none';
+    document.getElementById('folder-screen').classList.remove('hidden');
+    updateWidgetVisibility();
 }
-    function addsieraMessage(t) { 
-        const b = document.getElementById('siera-msg'); 
-        const p = document.createElement('p'); p.innerHTML = t; 
-        if(b) { b.appendChild(p); b.scrollTop = b.scrollHeight; }
-    }
 
-    function opensiera() { 
-        document.getElementById('chat-sidebar').classList.add('active'); 
-        document.body.classList.add('chat-open'); 
-    }
+function closeExam() {
+    document.getElementById('exam-screen').style.display = 'none';
+    document.getElementById('file-screen').classList.remove('hidden');
+}
 
-    function closesiera() { 
-        document.getElementById('chat-sidebar').classList.remove('active'); 
-        document.body.classList.remove('chat-open'); 
-    }
-
-    function searchQuestions() {
-        const searchTerm = document.getElementById('search-input').value.toLowerCase();
-        currentQuestions.forEach((q) => {
-            const card = document.getElementById(`question-card-${q.originalIndex}`);
-            if (!card) return;
-            const content = (q.q + (q.embeddedText || "") + q.categoryGroup).toLowerCase();
-            card.style.display = content.includes(searchTerm) ? 'block' : 'none';
-        });
-    }
-
-    function showResults() {
-        if (currentAnswers.includes(null) && !confirm("Ada soal belum dijawab. Yakin?")) return;
-        isFinished = true;
-        totalBenar = 0;
-        const mainStats = { "Kanji": {c:0, t:0}, "Bunpou": {c:0, t:0}, "Dokkai": {c:0, t:0} };
-
-        currentQuestions.forEach((q, i) => {
-            const isCorrect = currentAnswers[i] === q.correct;
-            if (isCorrect) totalBenar++;
-            let catKey = q.categoryGroup.toLowerCase().includes('bunpou') ? "Bunpou" : 
-                         q.categoryGroup.toLowerCase().includes('dokkai') ? "Dokkai" : "Kanji";
-            mainStats[catKey].t++;
-            if(isCorrect) mainStats[catKey].c++;
-            
-            document.querySelectorAll(`[id^="q${i}-o"]`).forEach((el, oIdx) => {
-                el.classList.remove('selected');
-                if (oIdx === q.correct) el.classList.add('correct');
-                else if (oIdx === currentAnswers[i]) el.classList.add('wrong');
-            });
-        });
-
-        document.getElementById('result-box').style.display = 'block';
-        document.getElementById('submit-btn').style.display = 'none';
-        document.getElementById('final-score').innerText = `Skor Akhir: ${totalBenar} / ${totalSoal}`;
-        
-        drawChart(Object.keys(mainStats), Object.keys(mainStats).map(l => mainStats[l].t ? Math.round((mainStats[l].c / mainStats[l].t) * 100) : 0));
-        opensiera();
-        // Mengirim pesan otomatis setelah selesai ujian
-        sendMessage(`Sistem: Ujian Selesai. Saya benar ${totalBenar} dari ${totalSoal} soal. Berikan evaluasi.`, true);
-    }
-
-    function drawChart(labels, dataPoin) {
-        const ctx = document.getElementById('scoreChart').getContext('2d');
-        if (myRadarChart) myRadarChart.destroy();
-        myRadarChart = new Chart(ctx, {
-            type: 'radar',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Penguasaan %',
-                    data: dataPoin,
-                    backgroundColor: 'rgba(52, 152, 219, 0.2)',
-                    borderColor: '#3498db',
-                    borderWidth: 2
-                }]
-            },
-            options: { scales: { r: { min: 0, max: 100 } } }
-        });
-    }
-
-    window.onload = () => {
-    loadLevels();       // Fungsi kamu yang sudah ada
-    checkAutoLogin();   // Fungsi cek akun 12 jam
+window.onload = () => {
+    loadLevels();
+    checkAutoLogin();
 };
 </script>
 </body>
