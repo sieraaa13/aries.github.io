@@ -377,32 +377,41 @@ async function showGrammarMaterial(path) {
 
 // --- 5. SISTEM UJIAN (📄) ---
 async function startExam(path, label) {
+    // Pengaturan path gambar dan UI
     imageFolderPath = path.replace('.json', '/');
     document.getElementById('file-screen').classList.add('hidden');
-    document.getElementById('exam-screen').style.display = 'flex';
+    const examScreen = document.getElementById('exam-screen');
+    examScreen.style.display = 'flex';
     document.getElementById('exam-title-display').innerText = label;
     document.getElementById('submit-btn').style.display = 'inline-block';
 
     const area = document.getElementById('questions-area');
     area.innerHTML = 'Memuat data soal...';
-    window.scrollTo(0, 0); // Reset scroll ke paling atas
+    
+    // Reset posisi layar ke paling atas agar soal nomor 1 langsung terlihat
+    window.scrollTo(0, 0);
 
     try {
         const finalPath = path.startsWith('assets/') ? path : `assets/${path}`;
         const res = await fetch(finalPath);
-        if (!res.ok) throw new Error("File tidak ditemukan");
+        
+        if (!res.ok) throw new Error("File tidak ditemukan atau path salah");
+        
         const data = await res.json();
         
+        // Bersihkan area soal dan reset array penampung
         area.innerHTML = '';
         currentQuestions = [];
 
-        // --- REVISI: Tentukan urutan kategori secara manual agar tidak acak ---
+        // Menentukan urutan kategori secara manual agar Kanji muncul sebelum Dokkai
         const order = ["kanji", "bunpou", "dokkai"];
         
         order.forEach(cat => {
+            // Pastikan kategori ada di dalam file JSON dan berbentuk array
             if (data[cat] && Array.isArray(data[cat])) {
                 data[cat].forEach(item => {
-                    // 1. FORMAT DOKKAI (Ada sub-questions)
+                    
+                    // A. LOGIKA UNTUK FORMAT DOKKAI (Soal di dalam array 'questions')
                     if (item.questions && Array.isArray(item.questions)) {
                         item.questions.forEach(subQ => {
                             const qIndex = currentQuestions.length;
@@ -414,10 +423,12 @@ async function startExam(path, label) {
                                 image: item.image || subQ.image || null, 
                                 originalIndex: qIndex 
                             });
+                            // Render soal ke HTML
                             renderSingleQuestion(currentQuestions[qIndex], qIndex, area);
                         });
                     } 
-                    // 2. FORMAT KANJI/BUNPOU (Soal langsung)
+                    
+                    // B. LOGIKA UNTUK FORMAT KANJI/BUNPOU (Soal langsung di objek utama)
                     else if (item.q) {
                         const qIndex = currentQuestions.length;
                         currentQuestions.push({ 
@@ -425,18 +436,25 @@ async function startExam(path, label) {
                             categoryGroup: cat, 
                             originalIndex: qIndex 
                         });
+                        // Render soal ke HTML
                         renderSingleQuestion(currentQuestions[qIndex], qIndex, area);
                     }
                 });
             }
         });
 
+        // Inisialisasi variabel pendukung ujian
         totalSoal = currentQuestions.length;
         currentAnswers = new Array(totalSoal).fill(null);
         isFinished = false;
-        updateStatus(); // Update indikator progres jika ada
+
+        // Jika tidak ada soal yang berhasil dimuat
+        if (totalSoal === 0) {
+            area.innerHTML = "<p style='color:orange;'>Tidak ada soal yang ditemukan dalam file ini.</p>";
+        }
 
     } catch (e) { 
+        console.error("Detail Error:", e);
         area.innerHTML = `<p style='color:red;'>Gagal memuat: ${e.message}</p>`; 
     }
 }
