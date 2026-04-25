@@ -605,91 +605,68 @@ function openLevelFiles(levelData) {
     }
 
     // --- REVISI UTAMA PADA FUNGSI SENDMESSAGE (SINKRON DENGAN BACKEND) ---
-    async function sendMessage(overrideMsg = null, isAuto = false) {
+    // --- FUNGSI SENDMESSAGE (VERSI BERSIH & SINKRON) ---
+async function sendMessage(overrideMsg = null, isAuto = false) {
     const input = document.getElementById('user-input');
     const msg = overrideMsg || (input ? input.value.trim() : ""); 
     if(!msg) return;
 
-    // AMBIL ULANG DARI LOCALSTORAGE AGAR FRESH
+    // 1. Ambil identitas user (Hanya dideklarasikan SATU KALI di sini)
     const savedData = localStorage.getItem('siera_user');
-    const activeUser = savedData ? JSON.parse(savedData).username : "User Tamu";
+    const userName = savedData ? JSON.parse(savedData).username : (currentUsername || "User Tamu");
     
-    // Kirim instruksi yang lebih jelas ke siera
-    const identityPrompt = `\n[SISTEM: Pengguna yang bicara saat ini bernama ${activeUser}. Gunakan nama ini jika dia bertanya tentang identitasnya.]`;
+    // 2. Siapkan instruksi identitas agar Siera tahu siapa kamu
+    const identityPrompt = `\n(Konteks: Nama pengguna adalah ${userName}. Gunakan nama ini jika dia bertanya tentang dirinya.)`;
 
-    let activeUser = currentUsername;
-    if (!activeUser) {
-        const savedData = localStorage.getItem('siera_user');
-        if (savedData) {
-            const userData = JSON.parse(savedData);
-            activeUser = userData.username;
-        }
-    }
-    
-    const userDisplay = activeUser || "User Tamu";
     let contextSoal = "";
-
-    // HANYA IDENTITAS: Biarkan Backend yang mengatur cara bicara
-   async function sendMessage(overrideMsg = null, isAuto = false) {
-        const input = document.getElementById('user-input');
-        const msg = overrideMsg || (input ? input.value.trim() : ""); 
-        if(!msg) return;
-
-        // AMBIL NAMA DARI LOCALSTORAGE ATAU VARIABEL GLOBAL
-        const savedData = localStorage.getItem('siera_user');
-        const activeUserName = savedData ? JSON.parse(savedData).username : (currentUsername || "User Tamu");
-        
-        // Buat instruksi agar siera tahu siapa kamu
-        const identityPrompt = `\n(Konteks: Nama pengguna adalah ${activeUserName}. Sapa atau gunakan nama ini jika dia bertanya siapa dirinya.)`;
-
-        let contextSoal = "";
-        // Logika mencari konteks soal berdasarkan nomor
-        const match = msg.match(/(\d+)/); 
-        let targetIndex = null;
-        if (match) {
-            targetIndex = parseInt(match[1]) - 1;
-        } else if (lastActiveIndex !== null && msg.toLowerCase().includes("ini")) {
-            targetIndex = lastActiveIndex; 
-        }
-
-        if (targetIndex !== null && currentQuestions[targetIndex]) {
-            const qData = currentQuestions[targetIndex];
-            contextSoal = `\n\n[KONTEKS SOAL NO ${targetIndex + 1}]:\nQ: "${qData.q}"\nCat: ${qData.categoryGroup}`;
-        }
-
-        if(!isAuto) addsieraMessage(`<strong>Kamu:</strong> ${msg}`); 
-        if(input) input.value = '';
-
-        const loadingId = "load-" + Date.now();
-        addsieraMessage(`<div id="${loadingId}"><img src="assets/kon.gif" style="width: 60px;"></div>`);
-
-        try {
-            const res = await fetch(BACKEND_URL, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ 
-                    username: activeUserName, 
-                    userQuery: msg + identityPrompt + contextSoal, 
-                    history: chatHistory,
-                    status: isFinished ? "POST_EXAM" : "DURING_EXAM"
-                })
-            });
-
-            const data = await res.json();
-            const loader = document.getElementById(loadingId);
-            if(loader) loader.remove();
-            
-            addsieraMessage(`<strong>siera:</strong> ${data.reply}`);
-            
-            chatHistory.push({ role: "user", content: msg });
-            chatHistory.push({ role: "assistant", content: data.reply });
-            if(chatHistory.length > 10) chatHistory = chatHistory.slice(-10);
-
-        } catch (e) { 
-            const loader = document.getElementById(loadingId);
-            if(loader) loader.innerHTML = "<span style='color:red;'>Gagal koneksi...</span>";
-        }
+    // Logika deteksi soal otomatis (fitur "No. ini")
+    const match = msg.match(/(\d+)/); 
+    let targetIndex = null;
+    if (match) {
+        targetIndex = parseInt(match[1]) - 1;
+    } else if (lastActiveIndex !== null && msg.toLowerCase().includes("ini")) {
+        targetIndex = lastActiveIndex; 
     }
+
+    if (targetIndex !== null && currentQuestions[targetIndex]) {
+        const qData = currentQuestions[targetIndex];
+        contextSoal = `\n\n[KONTEKS SOAL NO ${targetIndex + 1}]:\nQ: "${qData.q}"\nCat: ${qData.categoryGroup}`;
+    }
+
+    // Tampilkan pesan di UI
+    if(!isAuto) addsieraMessage(`<strong>Kamu:</strong> ${msg}`); 
+    if(input) input.value = '';
+
+    const loadingId = "load-" + Date.now();
+    addsieraMessage(`<div id="${loadingId}"><img src="assets/kon.gif" style="width: 60px;"></div>`);
+
+    try {
+        const res = await fetch(BACKEND_URL, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ 
+                username: userName, 
+                userQuery: msg + identityPrompt + contextSoal, 
+                history: chatHistory,
+                status: isFinished ? "POST_EXAM" : "DURING_EXAM"
+            })
+        });
+
+        const data = await res.json();
+        const loader = document.getElementById(loadingId);
+        if(loader) loader.remove();
+        
+        addsieraMessage(`<strong>siera:</strong> ${data.reply}`);
+        
+        chatHistory.push({ role: "user", content: msg });
+        chatHistory.push({ role: "assistant", content: data.reply });
+        if(chatHistory.length > 10) chatHistory = chatHistory.slice(-10);
+
+    } catch (e) { 
+        const loader = document.getElementById(loadingId);
+        if(loader) loader.innerHTML = "<span style='color:red;'>Gagal koneksi...</span>";
+    }
+}
     function addsieraMessage(t) { 
         const b = document.getElementById('siera-msg'); 
         const p = document.createElement('p'); p.innerHTML = t; 
