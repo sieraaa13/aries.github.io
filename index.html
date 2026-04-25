@@ -46,7 +46,18 @@
     font-weight: bold;
     transition: 0.3s;
 }
+#user-info-widget {
+    position: fixed;
+    top: 15px;
+    right: 20px;
+    z-index: 2000;
+}
 
+#user-info-widget button:hover {
+    background: #c0392b;
+    transform: scale(1.05);
+}
+        
 .login-btn:hover {
     background: var(--primary);
 }
@@ -133,21 +144,23 @@
     </style>
 </head>
 <body>
-<div id="user-info-widget" class="hidden">
-    <table style="margin: 20px auto; background: white; border-collapse: collapse; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1); font-size: 14px;">
-        <tr style="background: var(--primary); color: white;">
-            <th style="padding: 8px 20px;">Sesi Aktif</th>
-        </tr>
-        <tr>
-            <td id="display-id-user" style="padding: 10px 20px; font-weight: bold; color: var(--accent); text-align: center;">-</td>
-        </tr>
-    </table>
-</div>
     <div id="login-container">
-    <input type="text" id="username-input" placeholder="Siapa namamu?">
-    <button class="login-btn" onclick="loginUser()">Masuk</button>
-</div>
-    
+        <input type="text" id="username-input" placeholder="Siapa namamu?">
+        <button class="login-btn" onclick="loginUser()">Masuk</button>
+    </div>
+
+    <div id="user-info-widget" class="hidden">
+        <div style="display: flex; align-items: center; gap: 12px; background: white; padding: 5px 15px; border-radius: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 1px solid var(--accent);">
+            <div style="text-align: left;">
+                <small style="display: block; font-size: 10px; color: #7f8c8d; font-weight: bold; text-transform: uppercase;">Sesi Aktif</small>
+                <strong id="display-id-user" style="color: var(--primary); font-size: 14px;">-</strong>
+            </div>
+            <button onclick="logoutUser()" style="background: #e74c3c; color: white; border: none; padding: 6px 12px; border-radius: 20px; cursor: pointer; font-size: 12px; font-weight: bold; transition: 0.3s;">
+                Keluar
+            </button>
+        </div>
+    </div>
+
     <div id="folder-screen">
         <h1>Materi JLPT</h1>
         <div class="folder-grid" id="level-container">Memuat data...</div>
@@ -201,7 +214,7 @@
         <input type="text" id="user-input" placeholder="Tanya siera..." onkeypress="if(event.key === 'Enter') sendMessage()">
         <button id="send-btn" style="background:var(--accent); color:white; border:none; padding:0 15px; border-radius:15px; cursor:pointer;" onclick="sendMessage()">Kirim</button>
     </div>
-</div> ```
+</div> 
 
     <script>
 function updateWidgetVisibility() {
@@ -255,6 +268,30 @@ function updateWidgetVisibility() {
         alert("Silakan masukkan nama terlebih dahulu.");
     }
 }
+
+function logoutUser() {
+    if (confirm("Apakah kamu yakin ingin keluar dan mengganti akun?")) {
+        // 1. Hapus data dari localStorage
+        localStorage.removeItem('siera_user');
+
+        // 2. Reset variabel global
+        currentUsername = "";
+        chatHistory = []; 
+
+        // 3. Update tampilan UI
+        document.getElementById('login-container').classList.remove('hidden');
+        document.getElementById('username-input').value = "";
+        
+        // Sembunyikan widget info sendiri
+        updateWidgetVisibility();
+        
+        // Kembali ke layar folder utama agar user baru mulai dari awal
+        showFolders();
+
+        console.log("Logout berhasil.");
+    }
+}
+        
 function checkAutoLogin() {
     const savedData = localStorage.getItem('siera_user');
     if (savedData) {
