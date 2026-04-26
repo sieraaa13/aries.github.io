@@ -150,16 +150,21 @@
     </div>
 
     <div id="user-info-widget" class="hidden">
-        <div style="display: flex; align-items: center; gap: 12px; background: white; padding: 5px 15px; border-radius: 30px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 1px solid var(--accent);">
+    <div style="display: flex; flex-direction: column; gap: 8px; background: white; padding: 12px 15px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 1px solid var(--accent);">
+        <div style="display: flex; align-items: center; gap: 12px;">
             <div style="text-align: left;">
                 <small style="display: block; font-size: 10px; color: #7f8c8d; font-weight: bold; text-transform: uppercase;">Sesi Aktif</small>
                 <strong id="display-id-user" style="color: var(--primary); font-size: 14px;">-</strong>
             </div>
-            <button onclick="logoutUser()" style="background: #e74c3c; color: white; border: none; padding: 6px 12px; border-radius: 20px; cursor: pointer; font-size: 12px; font-weight: bold; transition: 0.3s;">
+            <button onclick="logoutUser()" style="background: #e74c3c; color: white; border: none; padding: 6px 12px; border-radius: 20px; cursor: pointer; font-size: 12px; font-weight: bold;">
                 Keluar
             </button>
         </div>
+        <button onclick="showExamLogs()" style="background: var(--primary); color: white; border: none; padding: 8px; border-radius: 10px; cursor: pointer; font-size: 11px; font-weight: bold; display: flex; align-items: center; justify-content: center; gap: 5px;">
+            📜 Lihat Log Ujian
+        </button>
     </div>
+</div>
 
     <div id="folder-screen">
         <h1>Materi JLPT</h1>
@@ -217,20 +222,14 @@
 </div> 
 
     <script>
-function updateWidgetVisibility() {
-    const widget = document.getElementById('user-info-widget');
-    const folderScreen = document.getElementById('folder-screen');
+    // ==========================================
+    // 1. GLOBAL VARIABLES & CONFIGURATION
+    // ==========================================
+    const BASE_URL = "https://web-backend-l5p7.onrender.com"; 
+    const CHAT_URL = `${BASE_URL}/siera-chat`;
+    const SAVE_EXAM_URL = `${BASE_URL}/save-exam`;
+    const HISTORY_URL = `${BASE_URL}/exam-history`; 
     
-    // Tabel hanya muncul jika user sudah login DAN folder-screen sedang tidak tersembunyi
-    if (currentUsername !== "" && !folderScreen.classList.contains('hidden')) {
-        widget.classList.remove('hidden');
-    } else {
-        widget.classList.add('hidden');
-    }
-}
-        
-     // 1. GABUNGKAN SEMUA VARIABEL GLOBAL DI ATAS
-    const BACKEND_URL = "https://web-backend-l5p7.onrender.com/siera-chat"; 
     let currentUsername = ""; 
     let currentQuestions = [];
     let currentAnswers = [];
@@ -241,365 +240,265 @@ function updateWidgetVisibility() {
     let myRadarChart = null;
     let imageFolderPath = "";
     let lastActiveIndex = null;
-    // 2. FUNGSI LOGIN
+    let currentExamLabel = ""; 
+
+    // ==========================================
+    // 2. AUTHENTICATION & UI VISIBILITY
+    // ==========================================
+    function updateWidgetVisibility() {
+        const widget = document.getElementById('user-info-widget');
+        const folderScreen = document.getElementById('folder-screen');
+        
+        if (currentUsername !== "" && !folderScreen.classList.contains('hidden')) {
+            widget.classList.remove('hidden');
+        } else {
+            widget.classList.add('hidden');
+        }
+    }
+
     function loginUser() {
-    const input = document.getElementById('username-input');
-    const name = input.value.trim();
-
-    if (name !== "") {
-        currentUsername = name;
-        
-        // Simpan data ke localStorage (masa berlaku 12 jam sesuai keinginanmu sebelumnya)
-        const userData = {
-            username: name,
-            loginTime: new Date().getTime()
-        };
-        localStorage.setItem('siera_user', JSON.stringify(userData));
-
-        // Update tampilan tabel
-        document.getElementById('display-id-user').innerText = name;
-        
-        // Sembunyikan input login dan tampilkan widget
-        document.getElementById('login-container').classList.add('hidden');
-        updateWidgetVisibility();
-        
-        console.log("Login berhasil sebagai:", name);
-    } else {
-        alert("Silakan masukkan nama terlebih dahulu.");
-    }
-}
-
-function logoutUser() {
-    if (confirm("Apakah kamu yakin ingin keluar dan mengganti akun?")) {
-        // 1. Hapus data dari localStorage
-        localStorage.removeItem('siera_user');
-
-        // 2. Reset variabel global
-        currentUsername = "";
-        chatHistory = []; 
-
-        // 3. Update tampilan UI
-        document.getElementById('login-container').classList.remove('hidden');
-        document.getElementById('username-input').value = "";
-        
-        // Sembunyikan widget info sendiri
-        updateWidgetVisibility();
-        
-        // Kembali ke layar folder utama agar user baru mulai dari awal
-        showFolders();
-
-        console.log("Logout berhasil.");
-    }
-}
-        
-function checkAutoLogin() {
-    const savedData = localStorage.getItem('siera_user');
-    if (savedData) {
-        const userData = JSON.parse(savedData);
-        const now = new Date().getTime();
-        const twelveHours = 12 * 60 * 60 * 1000;
-
-        if (now - userData.loginTime < twelveHours) {
-            currentUsername = userData.username;
-            document.getElementById('display-id-user').innerText = currentUsername;
-            
-            // Sembunyikan login container karena sudah login
+        const input = document.getElementById('username-input');
+        const name = input.value.trim();
+        if (name !== "") {
+            currentUsername = name;
+            const userData = { username: name, loginTime: new Date().getTime() };
+            localStorage.setItem('siera_user', JSON.stringify(userData));
+            document.getElementById('display-id-user').innerText = name;
             document.getElementById('login-container').classList.add('hidden');
             updateWidgetVisibility();
+            console.log("Login berhasil:", name);
         } else {
+            alert("Silakan masukkan nama terlebih dahulu.");
+        }
+    }
+
+    function logoutUser() {
+        if (confirm("Apakah kamu yakin ingin keluar dan mengganti akun?")) {
             localStorage.removeItem('siera_user');
+            currentUsername = "";
+            chatHistory = []; 
+            document.getElementById('login-container').classList.remove('hidden');
+            document.getElementById('username-input').value = "";
+            updateWidgetVisibility();
+            showFolders();
         }
     }
-}
-        
-        async function loadLevels() {
-    const container = document.querySelector('.folder-grid');
-    container.innerHTML = 'Memuat data...';
 
-    let combinedLevels = [];
-
-    // 1. Ambil data JLPT secara mandiri
-    try {
-        const resJLPT = await fetch('assets/manifest_jlpt.json');
-        if (resJLPT.ok) {
-            const dataJLPT = await resJLPT.json();
-            if (dataJLPT.levels) combinedLevels = [...combinedLevels, ...dataJLPT.levels];
+    function checkAutoLogin() {
+        const savedData = localStorage.getItem('siera_user');
+        if (savedData) {
+            const userData = JSON.parse(savedData);
+            const now = new Date().getTime();
+            const twelveHours = 12 * 60 * 60 * 1000;
+            if (now - userData.loginTime < twelveHours) {
+                currentUsername = userData.username;
+                document.getElementById('display-id-user').innerText = currentUsername;
+                document.getElementById('login-container').classList.add('hidden');
+                updateWidgetVisibility();
+            } else {
+                localStorage.removeItem('siera_user');
+            }
         }
-    } catch (e) {
-        console.error("File JLPT bermasalah:", e);
     }
 
-    // 2. Ambil data Soumatome secara mandiri
-    try {
-        const resSoumatome = await fetch('assets/manifest_soumatome.json');
-        if (resSoumatome.ok) {
-            const dataSoumatome = await resSoumatome.json();
-            if (dataSoumatome.levels) combinedLevels = [...combinedLevels, ...dataSoumatome.levels];
+    // ==========================================
+    // 3. NAVIGATION & MANIFEST LOADING
+    // ==========================================
+    async function loadLevels() {
+        const container = document.querySelector('.folder-grid');
+        container.innerHTML = 'Memuat data...';
+        let combinedLevels = [];
+
+        try {
+            const resJLPT = await fetch('assets/manifest_jlpt.json');
+            if (resJLPT.ok) {
+                const dataJLPT = await resJLPT.json();
+                if (dataJLPT.levels) combinedLevels = [...combinedLevels, ...dataJLPT.levels];
+            }
+        } catch (e) { console.error("File JLPT bermasalah:", e); }
+
+        try {
+            const resSoumatome = await fetch('assets/manifest_soumatome.json');
+            if (resSoumatome.ok) {
+                const dataSoumatome = await resSoumatome.json();
+                if (dataSoumatome.levels) combinedLevels = [...combinedLevels, ...dataSoumatome.levels];
+            }
+        } catch (e) { console.error("File Soumatome bermasalah:", e); }
+
+        if (combinedLevels.length > 0) {
+            container.innerHTML = '';
+            combinedLevels.forEach(lvl => {
+                const card = document.createElement('div');
+                card.className = 'folder-card';
+                const icon = lvl.name.toLowerCase().includes('soumatome') ? '📚' : '📁';
+                card.innerHTML = `${icon}<br>${lvl.name}`;
+                card.onclick = () => openLevelFiles(lvl);
+                container.appendChild(card);
+            });
+        } else {
+            container.innerHTML = 'Gagal memuat materi.';
         }
-    } catch (e) {
-        console.error("File Soumatome bermasalah:", e);
     }
-
-    // 3. Tampilkan apa yang berhasil didapat
-    if (combinedLevels.length > 0) {
-        container.innerHTML = '';
-        combinedLevels.forEach(lvl => {
-            const card = document.createElement('div');
-            card.className = 'folder-card';
-            const icon = lvl.name.toLowerCase().includes('soumatome') ? '📚' : '📁';
-            card.innerHTML = `${icon}<br>${lvl.name}`;
-            card.onclick = () => openLevelFiles(lvl);
-            container.appendChild(card);
-        });
-    } else {
-        container.innerHTML = 'Gagal memuat semua data materi.';
-    }
-}
 
     function showFolders() {
-    document.getElementById('file-screen').classList.add('hidden');
-    document.getElementById('folder-screen').classList.remove('hidden');
-    updateWidgetVisibility(); // Pastikan panggil ini
-}
-
-function closeExam() {
-    // 1. Sembunyikan layar ujian dan icon chat
-    document.getElementById('exam-screen').style.display = 'none';
-    document.getElementById('chat-icon').style.display = 'none';
-    
-    // 2. Tutup sidebar chat jika sedang terbuka
-    closesiera(); 
-
-    // 3. Tampilkan kembali layar daftar file (file-screen)
-    document.getElementById('file-screen').classList.remove('hidden');
-
-    // 4. Reset variabel kuis agar bersih saat masuk ke soal lain
-    currentQuestions = [];
-    currentAnswers = [];
-    document.getElementById('questions-area').innerHTML = '';
-    
-    // 5. Pastikan tombol selesai muncul kembali (jika sebelumnya sudah selesai)
-    document.getElementById('submit-btn').style.display = 'inline-block';
-    document.getElementById('result-box').style.display = 'none';
-    
-    // 6. Update widget user agar tetap sinkron
-    updateWidgetVisibility();
-}
-        
-function createFileItem(label, path, levelName, container, type = "quiz") {
-    const item = document.createElement('div');
-    item.className = 'file-item';
-    
-    // Ikon dinamis: 📖 untuk materi, 📄 untuk ujian
-    const icon = document.createElement('span');
-    icon.innerText = type === 'grammar' ? '📖 ' : '📄 ';
-    
-    const text = document.createElement('span');
-    text.innerText = label;
-    
-    item.appendChild(icon);
-    item.appendChild(text);
-    
-    item.onclick = () => {
-        if (type === "grammar") {
-            // Jika filenya materi grammar, panggil fungsi khusus bacaan
-            showGrammarMaterial(path); 
-        } else if (typeof startExam === "function") {
-            // Jika filenya ujian, panggil fungsi ujian biasa
-            startExam(path, label, levelName);
-        } else {
-            console.log("Membuka file:", path);
-        }
-    };
-    
-    container.appendChild(item);
-}
-        
-function openLevelFiles(levelData) {
-    document.getElementById('folder-screen').classList.add('hidden');
-    document.getElementById('file-screen').classList.remove('hidden');
-    updateWidgetVisibility();
-    
-    const container = document.getElementById('file-container');
-    container.innerHTML = '';
-    document.getElementById('folder-title').innerText = levelData.name;
-
-    // 1. JIKA FORMAT JLPT (Ujian)
-    if (levelData.years) {
-        levelData.years.forEach(y => {
-            const divider = document.createElement('div');
-            divider.className = 'year-divider';
-            divider.innerText = `Tahun ${y.year}`;
-            container.appendChild(divider);
-
-            y.exams.forEach(ex => {
-                // Tambahkan parameter "quiz" agar masuk ke mode ujian
-                createFileItem(ex.label, ex.path, levelData.name, container, "quiz");
-            });
-        });
-    } 
-    // 2. JIKA FORMAT SOUMATOME (Materi/Grammar)
-    else if (levelData.weeks) {
-        levelData.weeks.forEach(w => {
-            const divider = document.createElement('div');
-            divider.className = 'year-divider';
-            divider.innerText = `Minggu ${w.week_number}`;
-            container.appendChild(divider);
-
-            w.days.forEach(d => {
-                // Tambahkan parameter "grammar" agar masuk ke mode bacaan
-                createFileItem(d.label, d.path, levelData.name, container, "grammar");
-            });
-        });
-    }
-}
-
-  async function showGrammarMaterial(path) {
-    try {
-        // Mengambil data dari folder assets
-        const response = await fetch(`assets/${path}`);
-        if (!response.ok) throw new Error("Gagal mengambil file materi");
-        
-        const data = await response.json();
-        // Mengakses index [0] karena struktur JSON Soumatome kamu biasanya dibungkus array "levels"
-        const content = data.levels[0]; 
-
-        // 1. Pengaturan Tampilan Layar
         document.getElementById('file-screen').classList.add('hidden');
-        document.getElementById('exam-screen').style.display = 'flex';
-        document.getElementById('chat-icon').style.display = 'block';
+        document.getElementById('folder-screen').classList.remove('hidden');
+        updateWidgetVisibility();
+    }
 
-        // 2. Update Judul Header (Gunakan ID yang benar: exam-title-display)
-        const titleEl = document.getElementById('exam-title-display');
-        if(titleEl) titleEl.innerText = content.header.main_title;
+    function openLevelFiles(levelData) {
+        document.getElementById('folder-screen').classList.add('hidden');
+        document.getElementById('file-screen').classList.remove('hidden');
+        updateWidgetVisibility();
+        
+        const container = document.getElementById('file-container');
+        container.innerHTML = '';
+        document.getElementById('folder-title').innerText = levelData.name;
 
-        const progressEl = document.getElementById('progress-indicator');
-        if(progressEl) progressEl.innerText = "Mode Belajar Materi";
+        if (levelData.years) {
+            levelData.years.forEach(y => {
+                const divider = document.createElement('div');
+                divider.className = 'year-divider';
+                divider.innerText = `Tahun ${y.year}`;
+                container.appendChild(divider);
+                y.exams.forEach(ex => createFileItem(ex.label, ex.path, levelData.name, container, "quiz"));
+            });
+        } else if (levelData.weeks) {
+            levelData.weeks.forEach(w => {
+                const divider = document.createElement('div');
+                divider.className = 'year-divider';
+                divider.innerText = `Minggu ${w.week_number}`;
+                container.appendChild(divider);
+                w.days.forEach(d => createFileItem(d.label, d.path, levelData.name, container, "grammar"));
+            });
+        }
+    }
 
-        // 3. Siapkan HTML Header Materi
-        let html = `
-            <div style="text-align: left; background: #f9f9f9; padding: 20px; border-radius: 12px; margin: 0 auto 25px auto; max-width: 800px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
-                <h2 style="color: #2c3e50; margin-top: 0;">${content.header.main_title}</h2>
-                <p style="font-size: 1.1em; color: #3498db; font-weight: bold;">
-                    ${content.header.sub_title} <span style="color: #7f8c8d; font-weight: normal;">(${content.header.translation})</span>
-                </p>
-                <hr style="border: 0; border-top: 1px solid #eee; margin: 15px 0;">
-                <div style="background: #fffbe6; padding: 15px; border-left: 5px solid #f1c40f; border-radius: 4px;">
-                    <p style="margin: 5px 0;"><strong>👦:</strong> ${content.illustration_text.child}</p>
-                    <p style="margin: 5px 0;"><strong>👩:</strong> ${content.illustration_text.mother}</p>
-                </div>
-            </div>
-        `;
+    function createFileItem(label, path, levelName, container, type) {
+        const item = document.createElement('div');
+        item.className = 'file-item';
+        const icon = type === 'grammar' ? '📖 ' : '📄 ';
+        item.innerHTML = `<span>${icon}${label}</span>`;
+        item.onclick = () => {
+            if (type === "grammar") showGrammarMaterial(path);
+            else startExam(path, label);
+        };
+        container.appendChild(item);
+    }
 
-        // 4. LOOP SECTION: Mengambil setiap pola grammar
-        content.grammar_sections.forEach(sec => {
-            html += `
-                <div style="text-align: left; border: 1px solid #e0e0e0; padding: 20px; border-radius: 10px; margin: 0 auto 20px auto; background: white; max-width: 800px;">
-                    <h3 style="background: #3498db; color: white; display: inline-block; padding: 5px 15px; border-radius: 20px; font-size: 16px; margin-top: 0;">
-                        ${sec.pattern_title}
-                    </h3>
-                    
-                    <div style="background: #f8f9fa; padding: 12px; border-radius: 6px; margin: 15px 0; border: 1px dashed #cbd5e0;">
-                        <p style="margin: 0; font-family: monospace; color: #2c3e50;"><strong>Formula:</strong> ${sec.description_box.formula}</p>
-                        <p style="margin: 8px 0 0 0; color: #4a5568; font-size: 14px;">${sec.description_box.explanation_en}</p>
+    // ==========================================
+    // 4. SOUMATOME MATERIAL MODE
+    // ==========================================
+    async function showGrammarMaterial(path) {
+        try {
+            const response = await fetch(`assets/${path}`);
+            if (!response.ok) throw new Error("Gagal mengambil file materi");
+            const data = await response.json();
+            const content = data.levels[0]; 
+
+            document.getElementById('file-screen').classList.add('hidden');
+            document.getElementById('exam-screen').style.display = 'flex';
+            document.getElementById('chat-icon').style.display = 'block';
+            document.getElementById('exam-title-display').innerText = content.header.main_title;
+            document.getElementById('progress-indicator').innerText = "Mode Belajar Materi";
+
+            let html = `
+                <div style="text-align: left; background: #f9f9f9; padding: 20px; border-radius: 12px; margin-bottom: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                    <h2 style="color: #2c3e50; margin-top: 0;">${content.header.main_title}</h2>
+                    <p style="font-size: 1.1em; color: #3498db; font-weight: bold;">
+                        ${content.header.sub_title} <span style="color: #7f8c8d; font-weight: normal;">(${content.header.translation})</span>
+                    </p>
+                    <div style="background: #fffbe6; padding: 15px; border-left: 5px solid #f1c40f; border-radius: 4px;">
+                        <p><strong>👦:</strong> ${content.illustration_text.child}</p>
+                        <p><strong>👩:</strong> ${content.illustration_text.mother}</p>
                     </div>
+                </div>
+            `;
 
-                    <div style="margin-top: 15px;">
-                        <p style="font-weight: bold; color: #2d3748; margin-bottom: 10px;">Contoh Kalimat:</p>
-                        <ul style="list-style-type: none; padding-left: 0;">
+            content.grammar_sections.forEach(sec => {
+                html += `
+                    <div style="text-align: left; border: 1px solid #e0e0e0; padding: 20px; border-radius: 10px; margin-bottom: 20px; background: white;">
+                        <h3 style="background: #3498db; color: white; display: inline-block; padding: 5px 15px; border-radius: 20px; font-size: 16px;">${sec.pattern_title}</h3>
+                        <div style="background: #f8f9fa; padding: 12px; border-radius: 6px; margin: 15px 0; border: 1px dashed #cbd5e0;">
+                            <p><strong>Formula:</strong> ${sec.description_box.formula}</p>
+                            <p>${sec.description_box.explanation_en}</p>
+                        </div>
+                        <p><b>Contoh Kalimat:</b></p>
+                        <ul style="list-style: none; padding: 0;">
                             ${sec.examples.map(ex => `
                                 <li style="margin-bottom: 12px; padding: 10px; background: #fdfdfd; border-radius: 6px; border-left: 3px solid #3498db;">
-                                    <div style="font-size: 16px; color: #2d3748;">${ex.jp}</div>
-                                    <div style="font-size: 13px; color: #718096; margin-top: 4px;">${ex.en}</div>
+                                    <div>${ex.jp}</div><div style="font-size: 13px; color: #718096;">${ex.en}</div>
                                 </li>
                             `).join('')}
                         </ul>
                     </div>
-                </div>
-            `;
-        });
+                `;
+            });
 
-        // 5. Masukkan ke Container (Gunakan ID yang benar: questions-area)
-        const container = document.getElementById('questions-area');
-        if(container) {
+            const container = document.getElementById('questions-area');
             container.innerHTML = html;
-        }
-
-        // 6. Sembunyikan tombol skor karena ini bukan ujian
-        const submitBtn = document.getElementById('submit-btn');
-        if (submitBtn) submitBtn.style.display = 'none';
-
-    } catch (error) {
-        console.error("Detail Error:", error);
-        alert("Gagal memuat materi. Cek console untuk detail.");
+            document.getElementById('submit-btn').style.display = 'none';
+        } catch (error) { alert("Gagal memuat materi."); }
     }
-}
-        
-        
+
+    // ==========================================
+    // 5. EXAM ENGINE
+    // ==========================================
     async function startExam(path, label) {
-    // Menentukan folder gambar berdasarkan path json
-    imageFolderPath = path.replace('.json', '/');
-    
-    // Mengatur tampilan layar
-    document.getElementById('file-screen').classList.add('hidden');
-    document.getElementById('folder-screen').classList.add('hidden'); 
-    document.getElementById('exam-screen').style.display = 'flex';
-    document.getElementById('chat-icon').style.display = 'block';
-    document.getElementById('exam-title-display').innerText = label;
-    
-    updateWidgetVisibility();
-    
-    const area = document.getElementById('questions-area');
-    area.innerHTML = 'Memuat data soal...';
+        currentExamLabel = label;
+        imageFolderPath = path.replace('.json', '/');
+        document.getElementById('file-screen').classList.add('hidden');
+        document.getElementById('folder-screen').classList.add('hidden'); 
+        document.getElementById('exam-screen').style.display = 'flex';
+        document.getElementById('chat-icon').style.display = 'block';
+        document.getElementById('exam-title-display').innerText = label;
+        
+        updateWidgetVisibility();
+        const area = document.getElementById('questions-area');
+        area.innerHTML = 'Memuat data soal...';
 
-    try {
-            // Logika ini sangat penting:
-            // Jika path di manifest tidak ada kata 'assets/', kodingan akan otomatis menambahkannya.
+        try {
             const finalPath = path.startsWith('assets/') ? path : `assets/${path}`;
-            
             const res = await fetch(finalPath);
-            
-            if (!res.ok) throw new Error(`File tidak ditemukan di jalur: ${finalPath}`);
-
+            if (!res.ok) throw new Error("File tidak ditemukan");
             const data = await res.json();
-        area.innerHTML = ''; 
-        currentQuestions = [];
-        
-        Object.keys(data).forEach(cat => {
-            if (Array.isArray(data[cat])) {
-                data[cat].forEach((item) => {
-                    if (item.questions && Array.isArray(item.questions)) {
-                        item.questions.forEach((subQ) => {
-                            const qIndex = currentQuestions.length;
-                            currentQuestions.push({ 
-                                ...subQ, 
-                                categoryGroup: cat, 
-                                embeddedText: item.text || null,
-                                sectionTitle: item.section_title || null,
-                                image: item.image || subQ.image || null,
-                                originalIndex: qIndex
+            
+            area.innerHTML = ''; 
+            currentQuestions = [];
+            
+            Object.keys(data).forEach(cat => {
+                if (Array.isArray(data[cat])) {
+                    data[cat].forEach((item) => {
+                        if (item.questions) {
+                            item.questions.forEach((subQ) => {
+                                const qIndex = currentQuestions.length;
+                                currentQuestions.push({ 
+                                    ...subQ, 
+                                    categoryGroup: cat, 
+                                    embeddedText: item.text || null,
+                                    sectionTitle: item.section_title || null,
+                                    image: item.image || subQ.image || null,
+                                    originalIndex: qIndex
+                                });
+                                renderSingleQuestion(currentQuestions[qIndex], qIndex, area);
                             });
+                        } else if (item.q) {
+                            const qIndex = currentQuestions.length;
+                            currentQuestions.push({ ...item, categoryGroup: cat, originalIndex: qIndex });
                             renderSingleQuestion(currentQuestions[qIndex], qIndex, area);
-                        });
-                    } else if (item.q) {
-                        const qIndex = currentQuestions.length;
-                        currentQuestions.push({ ...item, categoryGroup: cat, originalIndex: qIndex });
-                        renderSingleQuestion(currentQuestions[qIndex], qIndex, area);
-                    }
-                });
-            }
-        });
-        
-        totalSoal = currentQuestions.length;
-        currentAnswers = new Array(totalSoal).fill(null);
-        isFinished = false;
-        updateStatus();
-
-    } catch (e) { 
-        area.innerHTML = `<p style='color:red;'>Gagal memuat: ${e.message}</p>`;
-        console.error("Detail Error:", e);
+                        }
+                    });
+                }
+            });
+            
+            totalSoal = currentQuestions.length;
+            currentAnswers = new Array(totalSoal).fill(null);
+            isFinished = false;
+            document.getElementById('submit-btn').style.display = 'inline-block';
+            updateStatus();
+        } catch (e) { area.innerHTML = `<p style='color:red;'>Gagal memuat kuis.</p>`; }
     }
-} // <--- PASTIKAN KURUNG INI ADA
+
     function renderSingleQuestion(q, i, container) {
         const card = document.createElement('div');
         card.className = 'question-card';
@@ -607,130 +506,42 @@ function openLevelFiles(levelData) {
         
         let htmlContent = '';
         if (q.image) {
-            htmlContent += `<div class="q-image-container"><img src="assets/${imageFolderPath}${q.image}" class="q-image" alt="Soal ${i+1}"></div>`;
+            htmlContent += `<div class="q-image-container"><img src="assets/${imageFolderPath}${q.image}" class="q-image"></div>`;
         }
         if (q.embeddedText && !q.image) {
             htmlContent += `<div class="reading-block"><small style="color:var(--primary)"><b>${q.sectionTitle || 'BACAAN'}</b></small><div style="white-space: pre-wrap; margin-top:5px;">${q.embeddedText}</div></div>`;
         }
+        
         let opts = '';
         if(q.options) {
             q.options.forEach((opt, o) => {
                 opts += `<div class="option-item" id="q${q.originalIndex}-o${o}" onclick="pickOption(${q.originalIndex}, ${o})">${o+1}. ${opt}</div>`;
             });
         }
+        
         htmlContent += `<small style="color:var(--accent)">[${q.categoryGroup.toUpperCase()} - No. ${i+1}]</small><p style="font-size: 17px; margin-top: 10px;"><b>${q.q}</b></p><div class="options-list">${opts}</div>`;
         card.innerHTML = htmlContent;
         container.appendChild(card);
     }
 
     function pickOption(originalQIdx, oIdx) {
-    if (isFinished) return;
-    
-    // PENTING: Update index soal terakhir yang diklik
-    lastActiveIndex = originalQIdx; 
-    
-    currentAnswers[originalQIdx] = oIdx;
-    document.querySelectorAll(`[id^="q${originalQIdx}-o"]`).forEach(el => el.classList.remove('selected'));
-    document.getElementById(`q${originalQIdx}-o${oIdx}`).classList.add('selected');
-    updateStatus();
-}
+        if (isFinished) return;
+        lastActiveIndex = originalQIdx; 
+        currentAnswers[originalQIdx] = oIdx;
+        document.querySelectorAll(`[id^="q${originalQIdx}-o"]`).forEach(el => el.classList.remove('selected'));
+        document.getElementById(`q${originalQIdx}-o${oIdx}`).classList.add('selected');
+        updateStatus();
+    }
 
     function updateStatus() {
         const answered = currentAnswers.filter(a => a !== null).length;
-        const progressEl = document.getElementById('progress-indicator');
-        if(progressEl) progressEl.innerText = `Progres: ${answered} / ${totalSoal}`;
+        document.getElementById('progress-indicator').innerText = `Progres: ${answered} / ${totalSoal}`;
     }
 
-    // --- REVISI UTAMA PADA FUNGSI SENDMESSAGE (SINKRON DENGAN BACKEND) ---
-    // --- FUNGSI SENDMESSAGE (VERSI BERSIH & SINKRON) ---
-async function sendMessage(overrideMsg = null, isAuto = false) {
-    const input = document.getElementById('user-input');
-    const msg = overrideMsg || (input ? input.value.trim() : ""); 
-    if(!msg) return;
-
-    // 1. Ambil identitas user (Hanya dideklarasikan SATU KALI di sini)
-    const savedData = localStorage.getItem('siera_user');
-    const userName = savedData ? JSON.parse(savedData).username : (currentUsername || "User Tamu");
-    
-    // 2. Siapkan instruksi identitas agar Siera tahu siapa kamu
-    const identityPrompt = `\n(Konteks: Nama pengguna adalah ${userName}. Gunakan nama ini jika dia bertanya tentang dirinya.)`;
-
-    let contextSoal = "";
-    // Logika deteksi soal otomatis (fitur "No. ini")
-    const match = msg.match(/(\d+)/); 
-    let targetIndex = null;
-    if (match) {
-        targetIndex = parseInt(match[1]) - 1;
-    } else if (lastActiveIndex !== null && msg.toLowerCase().includes("ini")) {
-        targetIndex = lastActiveIndex; 
-    }
-
-    if (targetIndex !== null && currentQuestions[targetIndex]) {
-        const qData = currentQuestions[targetIndex];
-        contextSoal = `\n\n[KONTEKS SOAL NO ${targetIndex + 1}]:\nQ: "${qData.q}"\nCat: ${qData.categoryGroup}`;
-    }
-
-    // Tampilkan pesan di UI
-    if(!isAuto) addsieraMessage(`<strong>Kamu:</strong> ${msg}`); 
-    if(input) input.value = '';
-
-    const loadingId = "load-" + Date.now();
-    addsieraMessage(`<div id="${loadingId}"><img src="assets/kon.gif" style="width: 60px;"></div>`);
-
-    try {
-        const res = await fetch(BACKEND_URL, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ 
-                username: userName, 
-                userQuery: msg + identityPrompt + contextSoal, 
-                history: chatHistory,
-                status: isFinished ? "POST_EXAM" : "DURING_EXAM"
-            })
-        });
-
-        const data = await res.json();
-        const loader = document.getElementById(loadingId);
-        if(loader) loader.remove();
-        
-        addsieraMessage(`<strong>siera:</strong> ${data.reply}`);
-        
-        chatHistory.push({ role: "user", content: msg });
-        chatHistory.push({ role: "assistant", content: data.reply });
-        if(chatHistory.length > 10) chatHistory = chatHistory.slice(-10);
-
-    } catch (e) { 
-        const loader = document.getElementById(loadingId);
-        if(loader) loader.innerHTML = "<span style='color:red;'>Gagal koneksi...</span>";
-    }
-}
-    function addsieraMessage(t) { 
-        const b = document.getElementById('siera-msg'); 
-        const p = document.createElement('p'); p.innerHTML = t; 
-        if(b) { b.appendChild(p); b.scrollTop = b.scrollHeight; }
-    }
-
-    function opensiera() { 
-        document.getElementById('chat-sidebar').classList.add('active'); 
-        document.body.classList.add('chat-open'); 
-    }
-
-    function closesiera() { 
-        document.getElementById('chat-sidebar').classList.remove('active'); 
-        document.body.classList.remove('chat-open'); 
-    }
-
-    function searchQuestions() {
-        const searchTerm = document.getElementById('search-input').value.toLowerCase();
-        currentQuestions.forEach((q) => {
-            const card = document.getElementById(`question-card-${q.originalIndex}`);
-            if (!card) return;
-            const content = (q.q + (q.embeddedText || "") + q.categoryGroup).toLowerCase();
-            card.style.display = content.includes(searchTerm) ? 'block' : 'none';
-        });
-    }
-
-    function showResults() {
+    // ==========================================
+    // 6. RESULTS & DATABASE SYNC
+    // ==========================================
+    async function showResults() {
         if (currentAnswers.includes(null) && !confirm("Ada soal belum dijawab. Yakin?")) return;
         isFinished = true;
         totalBenar = 0;
@@ -756,9 +567,140 @@ async function sendMessage(overrideMsg = null, isAuto = false) {
         document.getElementById('final-score').innerText = `Skor Akhir: ${totalBenar} / ${totalSoal}`;
         
         drawChart(Object.keys(mainStats), Object.keys(mainStats).map(l => mainStats[l].t ? Math.round((mainStats[l].c / mainStats[l].t) * 100) : 0));
+        
+        saveExamToCloud(mainStats);
         opensiera();
-        // Mengirim pesan otomatis setelah selesai ujian
         sendMessage(`Sistem: Ujian Selesai. Saya benar ${totalBenar} dari ${totalSoal} soal. Berikan evaluasi.`, true);
+    }
+
+    async function saveExamToCloud(stats) {
+        if (!currentUsername) return;
+        try {
+            await fetch(SAVE_EXAM_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    username: currentUsername,
+                    exam_name: currentExamLabel,
+                    score: `${totalBenar}/${totalSoal}`,
+                    stats: stats,
+                    date: new Date().toISOString()
+                })
+            });
+        } catch (e) { console.error("Gagal simpan skor:", e); }
+    }
+
+    async function viewExamHistory() {
+        if (!currentUsername) return alert("Login dulu!");
+        const container = document.getElementById('file-container');
+        container.innerHTML = 'Memuat riwayat...';
+        
+        document.getElementById('folder-screen').classList.add('hidden');
+        document.getElementById('file-screen').classList.remove('hidden');
+        document.getElementById('folder-title').innerText = "Riwayat Ujian";
+
+        try {
+            const res = await fetch(`${HISTORY_URL}?username=${currentUsername}`);
+            const data = await res.json();
+            container.innerHTML = data.length ? '' : 'Belum ada riwayat.';
+            
+            data.reverse().forEach(log => {
+                const item = document.createElement('div');
+                item.className = 'file-item';
+                item.style.flexDirection = 'column';
+                item.style.alignItems = 'flex-start';
+                item.innerHTML = `
+                    <div style="font-weight:bold; color:var(--primary);">📊 ${log.exam_name}</div>
+                    <div style="font-size: 0.85em; color: #666;">
+                        Skor: <b>${log.score}</b> | ${new Date(log.date).toLocaleDateString()}
+                    </div>
+                `;
+                container.appendChild(item);
+            });
+        } catch (e) { container.innerHTML = 'Gagal memuat riwayat.'; }
+    }
+
+    // ==========================================
+    // 7. CHAT SYSTEM (SIERA)
+    // ==========================================
+    async function sendMessage(overrideMsg = null, isAuto = false) {
+        const input = document.getElementById('user-input');
+        const msg = overrideMsg || (input ? input.value.trim() : ""); 
+        if(!msg) return;
+
+        const userName = currentUsername || "User";
+        const identityPrompt = `\n(Konteks: Nama pengguna adalah ${userName})`;
+
+        let contextSoal = "";
+        const match = msg.match(/(\d+)/); 
+        let targetIndex = null;
+        if (match) targetIndex = parseInt(match[1]) - 1;
+        else if (lastActiveIndex !== null && msg.toLowerCase().includes("ini")) targetIndex = lastActiveIndex;
+
+        if (targetIndex !== null && currentQuestions[targetIndex]) {
+            const qData = currentQuestions[targetIndex];
+            contextSoal = `\n\n[KONTEKS SOAL NO ${targetIndex + 1}]:\nQ: "${qData.q}"\nCat: ${qData.categoryGroup}`;
+        }
+
+        if(!isAuto) addsieraMessage(`<strong>Kamu:</strong> ${msg}`); 
+        if(input) input.value = '';
+
+        const loadingId = "load-" + Date.now();
+        addsieraMessage(`<div id="${loadingId}"><img src="assets/kon.gif" style="width: 60px;"></div>`);
+
+        try {
+            const res = await fetch(CHAT_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ 
+                    username: userName, 
+                    userQuery: msg + identityPrompt + contextSoal, 
+                    history: chatHistory,
+                    status: isFinished ? "POST_EXAM" : "DURING_EXAM"
+                })
+            });
+
+            const data = await res.json();
+            const loader = document.getElementById(loadingId);
+            if(loader) loader.remove();
+            
+            addsieraMessage(`<strong>siera:</strong> ${data.reply}`);
+            chatHistory.push({ role: "user", content: msg }, { role: "assistant", content: data.reply });
+            if(chatHistory.length > 10) chatHistory = chatHistory.slice(-10);
+
+        } catch (e) { 
+            const loader = document.getElementById(loadingId);
+            if(loader) loader.innerHTML = "<span style='color:red;'>Gagal koneksi...</span>";
+        }
+    }
+
+    function addsieraMessage(t) { 
+        const b = document.getElementById('siera-msg'); 
+        const p = document.createElement('p'); p.innerHTML = t; 
+        if(b) { b.appendChild(p); b.scrollTop = b.scrollHeight; }
+    }
+
+    function opensiera() { 
+        document.getElementById('chat-sidebar').classList.add('active'); 
+        document.body.classList.add('chat-open'); 
+    }
+
+    function closesiera() { 
+        document.getElementById('chat-sidebar').classList.remove('active'); 
+        document.body.classList.remove('chat-open'); 
+    }
+
+    // ==========================================
+    // 8. OTHER UTILITIES
+    // ==========================================
+    function searchQuestions() {
+        const searchTerm = document.getElementById('search-input').value.toLowerCase();
+        currentQuestions.forEach((q) => {
+            const card = document.getElementById(`question-card-${q.originalIndex}`);
+            if (!card) return;
+            const content = (q.q + (q.embeddedText || "") + q.categoryGroup).toLowerCase();
+            card.style.display = content.includes(searchTerm) ? 'block' : 'none';
+        });
     }
 
     function drawChart(labels, dataPoin) {
@@ -780,10 +722,22 @@ async function sendMessage(overrideMsg = null, isAuto = false) {
         });
     }
 
+    function closeExam() {
+        document.getElementById('exam-screen').style.display = 'none';
+        document.getElementById('chat-icon').style.display = 'none';
+        closesiera(); 
+        document.getElementById('file-screen').classList.remove('hidden');
+        currentQuestions = [];
+        currentAnswers = [];
+        document.getElementById('questions-area').innerHTML = '';
+        document.getElementById('result-box').style.display = 'none';
+        updateWidgetVisibility();
+    }
+
     window.onload = () => {
-    loadLevels();       // Fungsi kamu yang sudah ada
-    checkAutoLogin();   // Fungsi cek akun 12 jam
-};
+        loadLevels();
+        checkAutoLogin();
+    };
 </script>
 </body>
 </html>
