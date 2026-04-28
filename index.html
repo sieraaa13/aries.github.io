@@ -221,9 +221,9 @@
     </div>
 </div> 
 
-   <script>
+  <script>
     // ==========================================
-    // 1. GLOBAL VARIABLES & CONFIGURATION
+    // 1. GLOBAL CONFIGURATION & STATE
     // ==========================================
     const BASE_URL = "https://web-backend-l5p7.onrender.com"; 
     const CHAT_URL = `${BASE_URL}/siera-chat`;
@@ -243,12 +243,13 @@
     let currentExamLabel = ""; 
 
     // ==========================================
-    // 2. AUTHENTICATION & UI VISIBILITY
+    // 2. AUTHENTICATION & WIDGET UI
     // ==========================================
     function updateWidgetVisibility() {
         const widget = document.getElementById('user-info-widget');
         const folderScreen = document.getElementById('folder-screen');
         
+        // Widget hanya muncul di halaman utama (Folder Screen) jika sudah login
         if (currentUsername !== "" && !folderScreen.classList.contains('hidden')) {
             widget.classList.remove('hidden');
         } else {
@@ -266,7 +267,7 @@
             document.getElementById('display-id-user').innerText = name;
             document.getElementById('login-container').classList.add('hidden');
             updateWidgetVisibility();
-            console.log("Login berhasil:", name);
+            console.log("Login sukses:", name);
         } else {
             alert("Silakan masukkan nama terlebih dahulu.");
         }
@@ -277,10 +278,7 @@
             localStorage.removeItem('siera_user');
             currentUsername = "";
             chatHistory = []; 
-            document.getElementById('login-container').classList.remove('hidden');
-            document.getElementById('username-input').value = "";
-            updateWidgetVisibility();
-            showFolders();
+            location.reload(); // Reset semua state
         }
     }
 
@@ -302,28 +300,27 @@
     }
 
     // ==========================================
-    // 3. NAVIGATION & MANIFEST LOADING
+    // 3. NAVIGATION & MANIFEST LOADER
     // ==========================================
     async function loadLevels() {
         const container = document.querySelector('.folder-grid');
-        container.innerHTML = 'Memuat data...';
+        container.innerHTML = 'Memuat data materi...';
         let combinedLevels = [];
 
         try {
+            // Load JLPT Manifest
             const resJLPT = await fetch('assets/manifest_jlpt.json');
             if (resJLPT.ok) {
                 const dataJLPT = await resJLPT.json();
                 if (dataJLPT.levels) combinedLevels = [...combinedLevels, ...dataJLPT.levels];
             }
-        } catch (e) { console.error("File JLPT bermasalah:", e); }
-
-        try {
-            const resSoumatome = await fetch('assets/manifest_soumatome.json');
-            if (resSoumatome.ok) {
-                const dataSoumatome = await resSoumatome.json();
-                if (dataSoumatome.levels) combinedLevels = [...combinedLevels, ...dataSoumatome.levels];
+            // Load Soumatome Manifest
+            const resSou = await fetch('assets/manifest_soumatome.json');
+            if (resSou.ok) {
+                const dataSou = await resSou.json();
+                if (dataSou.levels) combinedLevels = [...combinedLevels, ...dataSou.levels];
             }
-        } catch (e) { console.error("File Soumatome bermasalah:", e); }
+        } catch (e) { console.error("Gagal load manifest:", e); }
 
         if (combinedLevels.length > 0) {
             container.innerHTML = '';
@@ -355,26 +352,29 @@
         container.innerHTML = '';
         document.getElementById('folder-title').innerText = levelData.name;
 
+        // Render struktur JLPT (Tahun -> Exam)
         if (levelData.years) {
             levelData.years.forEach(y => {
                 const divider = document.createElement('div');
                 divider.className = 'year-divider';
                 divider.innerText = `Tahun ${y.year}`;
                 container.appendChild(divider);
-                y.exams.forEach(ex => createFileItem(ex.label, ex.path, levelData.name, container, "quiz"));
+                y.exams.forEach(ex => createFileItem(ex.label, ex.path, container, "quiz"));
             });
-        } else if (levelData.weeks) {
+        } 
+        // Render struktur Soumatome (Minggu -> Hari)
+        else if (levelData.weeks) {
             levelData.weeks.forEach(w => {
                 const divider = document.createElement('div');
                 divider.className = 'year-divider';
                 divider.innerText = `Minggu ${w.week_number}`;
                 container.appendChild(divider);
-                w.days.forEach(d => createFileItem(d.label, d.path, levelData.name, container, "grammar"));
+                w.days.forEach(d => createFileItem(d.label, d.path, container, "grammar"));
             });
         }
     }
 
-    function createFileItem(label, path, levelName, container, type) {
+    function createFileItem(label, path, container, type) {
         const item = document.createElement('div');
         item.className = 'file-item';
         const icon = type === 'grammar' ? '📖 ' : '📄 ';
@@ -387,12 +387,11 @@
     }
 
     // ==========================================
-    // 4. SOUMATOME MATERIAL MODE
+    // 4. FULL SOUMATOME MATERIAL MODE
     // ==========================================
     async function showGrammarMaterial(path) {
         try {
             const response = await fetch(`assets/${path}`);
-            if (!response.ok) throw new Error("Gagal mengambil file materi");
             const data = await response.json();
             const content = data.levels[0]; 
 
@@ -402,6 +401,7 @@
             document.getElementById('exam-title-display').innerText = content.header.main_title;
             document.getElementById('progress-indicator').innerText = "Mode Belajar Materi";
 
+            // Full UI dengan desain awal (Header, Ilustrasi, Box Kuning)
             let html = `
                 <div style="text-align: left; background: #f9f9f9; padding: 20px; border-radius: 12px; margin-bottom: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
                     <h2 style="color: #2c3e50; margin-top: 0;">${content.header.main_title}</h2>
@@ -409,8 +409,8 @@
                         ${content.header.sub_title} <span style="color: #7f8c8d; font-weight: normal;">(${content.header.translation})</span>
                     </p>
                     <div style="background: #fffbe6; padding: 15px; border-left: 5px solid #f1c40f; border-radius: 4px;">
-                        <p><strong>👦:</strong> ${content.illustration_text.child}</p>
-                        <p><strong>👩:</strong> ${content.illustration_text.mother}</p>
+                        <p><strong>👦 (Child):</strong> ${content.illustration_text.child}</p>
+                        <p><strong>👩 (Mother):</strong> ${content.illustration_text.mother}</p>
                     </div>
                 </div>
             `;
@@ -435,14 +435,15 @@
                 `;
             });
 
-            const container = document.getElementById('questions-area');
-            container.innerHTML = html;
+            const area = document.getElementById('questions-area');
+            area.innerHTML = html;
             document.getElementById('submit-btn').style.display = 'none';
+            document.getElementById('result-box').style.display = 'none';
         } catch (error) { alert("Gagal memuat materi."); }
     }
 
     // ==========================================
-    // 5. EXAM ENGINE
+    // 5. FULL EXAM ENGINE (QUIZ)
     // ==========================================
     async function startExam(path, label) {
         currentExamLabel = label;
@@ -453,14 +454,12 @@
         document.getElementById('chat-icon').style.display = 'block';
         document.getElementById('exam-title-display').innerText = label;
         
-        updateWidgetVisibility();
         const area = document.getElementById('questions-area');
-        area.innerHTML = 'Memuat data soal...';
+        area.innerHTML = 'Memuat data kuis...';
 
         try {
-            const finalPath = path.startsWith('assets/') ? path : `assets/${path}`;
+            const finalPath = `assets/${path}`;
             const res = await fetch(finalPath);
-            if (!res.ok) throw new Error("File tidak ditemukan");
             const data = await res.json();
             
             area.innerHTML = ''; 
@@ -471,21 +470,21 @@
                     data[cat].forEach((item) => {
                         if (item.questions) {
                             item.questions.forEach((subQ) => {
-                                const qIndex = currentQuestions.length;
+                                const qIdx = currentQuestions.length;
                                 currentQuestions.push({ 
                                     ...subQ, 
                                     categoryGroup: cat, 
                                     embeddedText: item.text || null,
                                     sectionTitle: item.section_title || null,
                                     image: item.image || subQ.image || null,
-                                    originalIndex: qIndex
+                                    originalIndex: qIdx
                                 });
-                                renderSingleQuestion(currentQuestions[qIndex], qIndex, area);
+                                renderSingleQuestion(currentQuestions[qIdx], qIdx, area);
                             });
                         } else if (item.q) {
-                            const qIndex = currentQuestions.length;
-                            currentQuestions.push({ ...item, categoryGroup: cat, originalIndex: qIndex });
-                            renderSingleQuestion(currentQuestions[qIndex], qIndex, area);
+                            const qIdx = currentQuestions.length;
+                            currentQuestions.push({ ...item, categoryGroup: cat, originalIndex: qIdx });
+                            renderSingleQuestion(currentQuestions[qIdx], qIdx, area);
                         }
                     });
                 }
@@ -495,8 +494,9 @@
             currentAnswers = new Array(totalSoal).fill(null);
             isFinished = false;
             document.getElementById('submit-btn').style.display = 'inline-block';
+            document.getElementById('result-box').style.display = 'none';
             updateStatus();
-        } catch (e) { area.innerHTML = `<p style='color:red;'>Gagal memuat kuis.</p>`; }
+        } catch (e) { area.innerHTML = `<p style='color:red;'>Gagal memuat file kuis.</p>`; }
     }
 
     function renderSingleQuestion(q, i, container) {
@@ -504,32 +504,36 @@
         card.className = 'question-card';
         card.id = `question-card-${q.originalIndex}`; 
         
-        let htmlContent = '';
+        let content = '';
+        // Cek Gambar
         if (q.image) {
-            htmlContent += `<div class="q-image-container"><img src="assets/${imageFolderPath}${q.image}" class="q-image"></div>`;
+            content += `<div class="q-image-container"><img src="assets/${imageFolderPath}${q.image}" class="q-image"></div>`;
         }
+        // Cek Reading Text
         if (q.embeddedText && !q.image) {
-            htmlContent += `<div class="reading-block"><small style="color:var(--primary)"><b>${q.sectionTitle || 'BACAAN'}</b></small><div style="white-space: pre-wrap; margin-top:5px;">${q.embeddedText}</div></div>`;
+            content += `<div class="reading-block"><small style="color:var(--primary)"><b>${q.sectionTitle || 'BACAAN'}</b></small><div style="white-space: pre-wrap; margin-top:5px;">${q.embeddedText}</div></div>`;
         }
         
+        // Render Opsi
         let opts = '';
         if(q.options) {
-            q.options.forEach((opt, o) => {
-                opts += `<div class="option-item" id="q${q.originalIndex}-o${o}" onclick="pickOption(${q.originalIndex}, ${o})">${o+1}. ${opt}</div>`;
+            q.options.forEach((opt, oIdx) => {
+                opts += `<div class="option-item" id="q${q.originalIndex}-o${oIdx}" onclick="pickOption(${q.originalIndex}, ${oIdx})">${oIdx+1}. ${opt}</div>`;
             });
         }
         
-        htmlContent += `<small style="color:var(--accent)">[${q.categoryGroup.toUpperCase()} - No. ${i+1}]</small><p style="font-size: 17px; margin-top: 10px;"><b>${q.q}</b></p><div class="options-list">${opts}</div>`;
-        card.innerHTML = htmlContent;
+        content += `<small style="color:var(--accent)">[${q.categoryGroup.toUpperCase()} - No. ${i+1}]</small><p style="font-size: 17px; margin-top: 10px;"><b>${q.q}</b></p><div class="options-list">${opts}</div>`;
+        card.innerHTML = content;
         container.appendChild(card);
     }
 
-    function pickOption(originalQIdx, oIdx) {
+    function pickOption(originalIdx, oIdx) {
         if (isFinished) return;
-        lastActiveIndex = originalQIdx; 
-        currentAnswers[originalQIdx] = oIdx;
-        document.querySelectorAll(`[id^="q${originalQIdx}-o"]`).forEach(el => el.classList.remove('selected'));
-        document.getElementById(`q${originalQIdx}-o${oIdx}`).classList.add('selected');
+        lastActiveIndex = originalIdx; 
+        currentAnswers[originalIdx] = oIdx;
+        document.querySelectorAll(`[id^="q${originalIdx}-o"]`).forEach(el => el.classList.remove('selected'));
+        const target = document.getElementById(`q${originalIdx}-o${oIdx}`);
+        if(target) target.classList.add('selected');
         updateStatus();
     }
 
@@ -539,10 +543,10 @@
     }
 
     // ==========================================
-    // 6. RESULTS & DATABASE SYNC
+    // 6. RESULTS, RADAR CHART, & CLOUD SYNC
     // ==========================================
     async function showResults() {
-        if (currentAnswers.includes(null) && !confirm("Ada soal belum dijawab. Yakin?")) return;
+        if (currentAnswers.includes(null) && !confirm("Masih ada soal kosong. Selesaikan saja?")) return;
         isFinished = true;
         totalBenar = 0;
         const mainStats = { "Kanji": {c:0, t:0}, "Bunpou": {c:0, t:0}, "Dokkai": {c:0, t:0} };
@@ -551,11 +555,13 @@
             const correctAns = q.correct !== undefined ? q.correct : q.a;
             const isCorrect = currentAnswers[i] === correctAns;
             if (isCorrect) totalBenar++;
+            
             let catKey = q.categoryGroup.toLowerCase().includes('bunpou') ? "Bunpou" : 
                          q.categoryGroup.toLowerCase().includes('dokkai') ? "Dokkai" : "Kanji";
             mainStats[catKey].t++;
             if(isCorrect) mainStats[catKey].c++;
             
+            // Visual feedback (Benar/Salah)
             document.querySelectorAll(`[id^="q${i}-o"]`).forEach((el, oIdx) => {
                 el.classList.remove('selected');
                 if (oIdx === correctAns) el.classList.add('correct');
@@ -567,11 +573,34 @@
         document.getElementById('submit-btn').style.display = 'none';
         document.getElementById('final-score').innerText = `Skor Akhir: ${totalBenar} / ${totalSoal}`;
         
-        drawChart(Object.keys(mainStats), Object.keys(mainStats).map(l => mainStats[l].t ? Math.round((mainStats[l].c / mainStats[l].t) * 100) : 0));
+        // Gambar Radar Chart
+        const radarLabels = Object.keys(mainStats);
+        const radarData = radarLabels.map(l => mainStats[l].t ? Math.round((mainStats[l].c / mainStats[l].t) * 100) : 0);
+        drawChart(radarLabels, radarData);
         
+        // Simpan ke Cloud & Auto-Chat Siera
         saveExamToCloud(mainStats);
         opensiera();
-        sendMessage(`Sistem: Ujian Selesai. Saya benar ${totalBenar} dari ${totalSoal} soal. Berikan evaluasi.`, true);
+        sendMessage(`Sistem: Ujian Selesai. Hasil saya ${totalBenar}/${totalSoal}. Berikan evaluasi performa saya.`, true);
+    }
+
+    function drawChart(labels, dataPoints) {
+        const ctx = document.getElementById('scoreChart').getContext('2d');
+        if (myRadarChart) myRadarChart.destroy();
+        myRadarChart = new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Penguasaan %',
+                    data: dataPoints,
+                    backgroundColor: 'rgba(52, 152, 219, 0.2)',
+                    borderColor: '#3498db',
+                    borderWidth: 2
+                }]
+            },
+            options: { scales: { r: { min: 0, max: 100, ticks: { display: false } } } }
+        });
     }
 
     async function saveExamToCloud(stats) {
@@ -584,17 +613,16 @@
                     username: currentUsername,
                     exam_name: currentExamLabel,
                     score: `${totalBenar}/${totalSoal}`,
-                    stats: stats,
-                    date: new Date().toISOString()
+                    stats: stats
                 })
             });
-        } catch (e) { console.error("Gagal simpan skor:", e); }
+        } catch (e) { console.error("Cloud Sync Gagal:", e); }
     }
 
     async function viewExamHistory() {
-        if (!currentUsername) return alert("Login dulu!");
+        if (!currentUsername) return alert("Login dulu untuk lihat riwayat!");
         const container = document.getElementById('file-container');
-        container.innerHTML = 'Memuat riwayat...';
+        container.innerHTML = 'Memuat riwayat belajar...';
         
         document.getElementById('folder-screen').classList.add('hidden');
         document.getElementById('file-screen').classList.remove('hidden');
@@ -603,9 +631,9 @@
         try {
             const res = await fetch(`${HISTORY_URL}?username=${currentUsername}`);
             const data = await res.json();
-            container.innerHTML = data.length ? '' : 'Belum ada riwayat.';
+            container.innerHTML = data.length ? '' : 'Belum ada data ujian yang tersimpan.';
             
-            data.reverse().forEach(log => {
+            data.forEach(log => {
                 const item = document.createElement('div');
                 item.className = 'file-item';
                 item.style.flexDirection = 'column';
@@ -613,7 +641,7 @@
                 item.innerHTML = `
                     <div style="font-weight:bold; color:var(--primary);">📊 ${log.exam_name}</div>
                     <div style="font-size: 0.85em; color: #666;">
-                        Skor: <b>${log.score}</b> | ${new Date(log.date).toLocaleDateString()}
+                        Skor: <b>${log.score}</b> | Tanggal: ${new Date(log.date).toLocaleDateString()}
                     </div>
                 `;
                 container.appendChild(item);
@@ -622,7 +650,7 @@
     }
 
     // ==========================================
-    // 7. CHAT SYSTEM (SIERA)
+    // 7. SIERA CHAT SYSTEM (STABLE VERSION)
     // ==========================================
     async function sendMessage(overrideMsg = null, isAuto = false) {
         const input = document.getElementById('user-input');
@@ -631,7 +659,7 @@
 
         const userName = currentUsername || "User Tamu";
         
-        // Deteksi soal
+        // Deteksi Konteks Nomor Soal
         const match = msg.match(/(\d+)/); 
         let targetIndex = null;
         if (match) {
@@ -642,13 +670,13 @@
 
         let qContext = null;
         if (targetIndex !== null && currentQuestions[targetIndex]) {
-            const qData = currentQuestions[targetIndex];
+            const q = currentQuestions[targetIndex];
             qContext = {
                 nomor: targetIndex + 1,
-                pertanyaan: qData.q,
-                pilihan: qData.options || [],
-                kunci_jawaban: qData.correct !== undefined ? qData.correct : qData.a,
-                bacaan: qData.embeddedText || ""
+                pertanyaan: q.q,
+                pilihan: q.options || [],
+                kunci_jawaban: q.correct !== undefined ? q.correct : q.a,
+                bacaan: q.embeddedText || ""
             };
         }
 
@@ -656,7 +684,7 @@
         if (input) input.value = '';
 
         const loadingId = "load-" + Date.now();
-        addsieraMessage(`<div id="${loadingId}"><img src="assets/kon.gif" style="width: 60px;"></div>`);
+        addsieraMessage(`<div id="${loadingId}"><img src="assets/kon.gif" style="width: 45px;"></div>`);
 
         try {
             const res = await fetch(CHAT_URL, {
@@ -667,11 +695,13 @@
                     userQuery: msg,
                     status: isFinished ? "POST_EXAM" : "DURING_EXAM",
                     history: chatHistory,
-                    currentQuestionContext: qContext ? [qContext] : [] 
+                    currentQuestionContext: qContext ? [qContext] : [] // Format Array untuk Backend
                 })
             });
 
+            if (!res.ok) throw new Error("Server error");
             const data = await res.json();
+            
             const loader = document.getElementById(loadingId);
             if (loader) loader.remove();
             
@@ -681,9 +711,8 @@
             if (chatHistory.length > 6) chatHistory.splice(0, 2);
 
         } catch (e) { 
-            console.error("Chat Error:", e);
             const loader = document.getElementById(loadingId);
-            if (loader) loader.innerHTML = "<span style='color:red;'>Koneksi terputus.</span>";
+            if (loader) loader.innerHTML = "<span style='color:red;'>Otak siera terputus sebentar. Coba lagi ya!</span>";
         }
     }
 
@@ -704,7 +733,7 @@
     }
 
     // ==========================================
-    // 8. OTHER UTILITIES
+    // 8. UTILITIES (SEARCH & WINDOW LOAD)
     // ==========================================
     function searchQuestions() {
         const searchTerm = document.getElementById('search-input').value.toLowerCase();
@@ -716,25 +745,6 @@
         });
     }
 
-    function drawChart(labels, dataPoin) {
-        const ctx = document.getElementById('scoreChart').getContext('2d');
-        if (myRadarChart) myRadarChart.destroy();
-        myRadarChart = new Chart(ctx, {
-            type: 'radar',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Penguasaan %',
-                    data: dataPoin,
-                    backgroundColor: 'rgba(52, 152, 219, 0.2)',
-                    borderColor: '#3498db',
-                    borderWidth: 2
-                }]
-            },
-            options: { scales: { r: { min: 0, max: 100 } } }
-        });
-    }
-
     function closeExam() {
         document.getElementById('exam-screen').style.display = 'none';
         document.getElementById('chat-icon').style.display = 'none';
@@ -743,13 +753,12 @@
         currentQuestions = [];
         currentAnswers = [];
         document.getElementById('questions-area').innerHTML = '';
-        document.getElementById('result-box').style.display = 'none';
         updateWidgetVisibility();
     }
 
     window.onload = () => {
-        loadLevels();
         checkAutoLogin();
+        loadLevels();
     };
 </script>
 </body>
