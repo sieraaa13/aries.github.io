@@ -391,77 +391,89 @@
     // ==========================================
     async function showGrammarMaterial(path) {
     try {
-        // 1. Indikasi Loading (Opsional tapi bagus untuk UX)
         const area = document.getElementById('questions-area');
         area.innerHTML = '<div style="padding: 20px; text-align: center;">Memuat materi...</div>';
 
-        // 2. Fetch data dengan path relatif
-        // Jika path dari manifest adalah "n3/soumatome.json", maka fetch ke "assets/n3/soumatome.json"
-        console.log("Fetching dari path:", `assets/${path}`);
         const response = await fetch(`assets/${path}`);
-        
-        if (!response.ok) {
-            throw new Error(`Gagal mengambil file (Status: ${response.status}). Pastikan path benar.`);
-        }
+        if (!response.ok) throw new Error(`Status: ${response.status}`);
 
         const data = await response.json();
         
-        // 3. Ambil level pertama (sesuai struktur JSON kamu: { "levels": [...] })
-        const content = data.levels && data.levels[0];
-        
-        if (!content) {
-            throw new Error("Struktur JSON tidak valid: Properti 'levels' tidak ditemukan.");
-        }
+        // FIX: ambil semua levels, bukan cuma [0]
+        const allLevels = data.levels;
+        if (!allLevels || allLevels.length === 0) throw new Error("Levels kosong.");
 
-        // 4. Update UI Screens
         document.getElementById('file-screen').classList.add('hidden');
-        document.getElementById('folder-screen').classList.add('hidden');
         document.getElementById('exam-screen').style.display = 'flex';
         document.getElementById('chat-icon').style.display = 'block';
-
-        // Update Header
-        document.getElementById('exam-title-display').innerText = content.name || "Grammar Material";
+        document.getElementById('exam-title-display').innerText = allLevels[0].name || "Grammar Material";
         document.getElementById('progress-indicator').innerText = "Mode Belajar";
+        document.getElementById('submit-btn').style.display = 'none';
+        document.getElementById('result-box').style.display = 'none';
 
-        // 5. Build HTML Content
-        let html = `
-            <div style="text-align: left; background: #f9f9f9; padding: 20px; border-radius: 12px; margin-bottom: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
-                <h2 style="color: #2c3e50; margin-top: 0;">${content.header.main_title}</h2>
-                <p style="font-size: 1.1em; color: #3498db; font-weight: bold;">
-                    ${content.header.sub_title} <span style="color: #7f8c8d; font-weight: normal;">(${content.header.translation})</span>
-                </p>
-                <div style="background: #fffbe6; padding: 15px; border-left: 5px solid #f1c40f; border-radius: 4px;">
-                    <p style="margin: 5px 0;"><strong>👦 (Child):</strong> ${content.illustration_text.child}</p>
-                    <p style="margin: 5px 0;"><strong>👩 (Mother):</strong> ${content.illustration_text.mother}</p>
+        let html = '';
+
+        // Loop semua level/day dalam file
+        allLevels.forEach(content => {
+            html += `
+            <div style="border: 2px solid #3498db; border-radius: 16px; padding: 20px; margin-bottom: 30px; background: #fff;">
+                
+                <!-- Header Card -->
+                <div style="background: linear-gradient(135deg, #3498db, #2ecc71); border-radius: 10px; padding: 15px; margin-bottom: 15px; color: white;">
+                    <h2 style="margin: 0 0 5px 0;">${content.header.main_title}</h2>
+                    <p style="margin: 0; font-size: 1.1em; opacity: 0.9;">
+                        ${content.header.sub_title} 
+                        <span style="font-size: 0.85em; opacity: 0.8;">(${content.header.translation})</span>
+                    </p>
                 </div>
-            </div>
-        `;
 
-        // Loop melalui grammar_sections
-        if (content.grammar_sections && Array.isArray(content.grammar_sections)) {
-            content.grammar_sections.forEach(sec => {
-                html += `
-                    <div style="text-align: left; border: 1px solid #e0e0e0; padding: 20px; border-radius: 10px; margin-bottom: 20px; background: white;">
-                        <h3 style="background: #3498db; color: white; display: inline-block; padding: 5px 15px; border-radius: 20px; font-size: 16px; margin-top:0;">
+                <!-- Ilustrasi -->
+                <div style="background: #fffbe6; padding: 12px 15px; border-left: 5px solid #f1c40f; border-radius: 6px; margin-bottom: 15px;">
+                    <p style="margin: 4px 0;">👦 ${content.illustration_text.child}</p>
+                    <p style="margin: 4px 0;">👩 ${content.illustration_text.mother}</p>
+                </div>
+            `;
+
+            // Grammar Sections
+            if (content.grammar_sections && content.grammar_sections.length > 0) {
+                content.grammar_sections.forEach(sec => {
+                    html += `
+                    <div style="border: 1px solid #e0e0e0; border-radius: 10px; padding: 15px; margin-bottom: 15px; background: #fafafa;">
+                        <h3 style="background: #3498db; color: white; display: inline-block; padding: 4px 14px; border-radius: 20px; font-size: 15px; margin: 0 0 12px 0;">
                             ${sec.pattern_title}
                         </h3>
-                        <div style="background: #f8f9fa; padding: 12px; border-radius: 6px; margin: 15px 0; border: 1px dashed #cbd5e0;">
-                            <p style="margin: 5px 0;"><strong>Formula:</strong> <code>${sec.description_box.formula}</code></p>
-                            <p style="margin: 5px 0; font-size: 0.95em; color: #4a5568;">${sec.description_box.explanation_en}</p>
+                        <div style="background: #f0f4f8; padding: 10px 14px; border-radius: 6px; margin-bottom: 12px; border: 1px dashed #90cdf4;">
+                            <p style="margin: 4px 0;"><strong>Formula:</strong> <code>${sec.description_box.formula}</code></p>
+                            <p style="margin: 4px 0; font-size: 0.9em; color: #4a5568;">${sec.description_box.explanation_en}</p>
                         </div>
-                        <p><b>Contoh Kalimat:</b></p>
-                        <ul style="list-style: none; padding: 0;">
+                        <p style="margin: 8px 0 6px 0;"><strong>Contoh:</strong></p>
+                        <ul style="list-style: none; padding: 0; margin: 0;">
                             ${sec.examples.map(ex => `
-                                <li style="margin-bottom: 12px; padding: 10px; background: #fdfdfd; border-radius: 6px; border-left: 3px solid #3498db; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-                                    <div style="font-size: 1.1em; margin-bottom: 4px;">${ex.jp}</div>
-                                    <div style="font-size: 0.9em; color: #718096; font-style: italic;">${ex.en}</div>
+                                <li style="padding: 10px; margin-bottom: 8px; background: white; border-radius: 8px; border-left: 3px solid #3498db; box-shadow: 0 1px 3px rgba(0,0,0,0.06);">
+                                    <div style="font-size: 1.05em; margin-bottom: 3px;">${ex.jp}</div>
+                                    <div style="font-size: 0.88em; color: #718096; font-style: italic;">${ex.en}</div>
                                 </li>
                             `).join('')}
                         </ul>
                     </div>
-                `;
-            });
-        }
+                    `;
+                });
+            }
+
+            html += `</div>`; // tutup card level
+        });
+
+        area.innerHTML = html;
+        document.querySelector('.main-content').scrollTop = 0;
+        updateWidgetVisibility();
+
+    } catch (error) {
+        console.error("Error showGrammarMaterial:", error);
+        alert("Gagal memuat materi: " + error.message);
+        document.getElementById('file-screen').classList.remove('hidden');
+        document.getElementById('exam-screen').style.display = 'none';
+    }
+}
 
         // 6. Tampilkan ke Area Pertanyaan
         area.innerHTML = html;
