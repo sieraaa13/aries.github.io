@@ -389,7 +389,10 @@
     // ==========================================
     // 4. FULL SOUMATOME MATERIAL MODE
     // ==========================================
-    async function showGrammarMaterial(path) {
+    // ==========================================
+// 4. FULL SOUMATOME MATERIAL MODE
+// ==========================================
+async function showGrammarMaterial(path) {
     try {
         const area = document.getElementById('questions-area');
         area.innerHTML = '<div style="padding: 20px; text-align: center;">Memuat materi...</div>';
@@ -398,8 +401,6 @@
         if (!response.ok) throw new Error(`Status: ${response.status}`);
 
         const data = await response.json();
-        
-        // FIX: ambil semua levels, bukan cuma [0]
         const allLevels = data.levels;
         if (!allLevels || allLevels.length === 0) throw new Error("Levels kosong.");
 
@@ -412,29 +413,22 @@
         document.getElementById('result-box').style.display = 'none';
 
         let html = '';
-
-        // Loop semua level/day dalam file
         allLevels.forEach(content => {
             html += `
             <div style="border: 2px solid #3498db; border-radius: 16px; padding: 20px; margin-bottom: 30px; background: #fff;">
-                
-                <!-- Header Card -->
                 <div style="background: linear-gradient(135deg, #3498db, #2ecc71); border-radius: 10px; padding: 15px; margin-bottom: 15px; color: white;">
                     <h2 style="margin: 0 0 5px 0;">${content.header.main_title}</h2>
                     <p style="margin: 0; font-size: 1.1em; opacity: 0.9;">
-                        ${content.header.sub_title} 
+                        ${content.header.sub_title}
                         <span style="font-size: 0.85em; opacity: 0.8;">(${content.header.translation})</span>
                     </p>
                 </div>
-
-                <!-- Ilustrasi -->
                 <div style="background: #fffbe6; padding: 12px 15px; border-left: 5px solid #f1c40f; border-radius: 6px; margin-bottom: 15px;">
                     <p style="margin: 4px 0;">👦 ${content.illustration_text.child}</p>
                     <p style="margin: 4px 0;">👩 ${content.illustration_text.mother}</p>
                 </div>
             `;
 
-            // Grammar Sections
             if (content.grammar_sections && content.grammar_sections.length > 0) {
                 content.grammar_sections.forEach(sec => {
                     html += `
@@ -459,8 +453,7 @@
                     `;
                 });
             }
-
-            html += `</div>`; // tutup card level
+            html += `</div>`;
         });
 
         area.innerHTML = html;
@@ -470,28 +463,6 @@
     } catch (error) {
         console.error("Error showGrammarMaterial:", error);
         alert("Gagal memuat materi: " + error.message);
-        document.getElementById('file-screen').classList.remove('hidden');
-        document.getElementById('exam-screen').style.display = 'none';
-    }
-}
-
-        // 6. Tampilkan ke Area Pertanyaan
-        area.innerHTML = html;
-        
-        // Sembunyikan tombol submit karena ini mode materi, bukan kuis
-        document.getElementById('submit-btn').style.display = 'none';
-        document.getElementById('result-box').style.display = 'none';
-        
-        // Scroll ke atas agar user tidak bingung
-        document.querySelector('.main-content').scrollTop = 0;
-
-        updateWidgetVisibility();
-
-    } catch (error) {
-        console.error("Error pada showGrammarMaterial:", error);
-        alert("Terjadi kesalahan: " + error.message);
-        
-        // Kembalikan tampilan jika gagal
         document.getElementById('file-screen').classList.remove('hidden');
         document.getElementById('exam-screen').style.display = 'none';
     }
