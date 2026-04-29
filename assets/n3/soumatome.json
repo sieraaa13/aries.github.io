@@ -6,7 +6,7 @@
       "day": 1,
       "header": {
         "main_title": "がんばらなくちゃ！",
-        "sub_title": "ぼkにもやらせて",
+        "sub_title": "ぼくにもやらせて",
         "translation": "Let me do it"
       },
       "illustration_text": {
@@ -18,17 +18,29 @@
           "pattern_title": "書かれている",
           "description_box": {
             "formula": "Vれる <受身形>",
-            "explanation": "主語を表さないで事実を述べるとき、よく受身形を使う。",
-            "explanation_en": "When you mention a fact without a subject, the passive form is often used."
+            "explanation": "Materi: Kalimat Pasif (V-reru / 受身形).",
+            "explanation_en": "Materi ini menjelaskan penggunaan bentuk pasif ketika kita ingin menyatakan sebuah fakta atau peristiwa tanpa harus menyebutkan subjeknya secara spesifik. Poin Utama: Bentuk pasif sering digunakan untuk menyatakan fakta umum."
           },
           "examples": [
             {
               "jp": "この本には、くわしい説明は書かれていません。",
-              "en": "There is no detailed explanation in this book."
+              "en": "Di buku ini, tidak tertulis penjelasan yang detail.",
+              "explanation": "Makna: Penulis tidak menuliskan penjelasan yang detail."
             },
             {
               "jp": "入学式は、このホールで行われます。",
-              "en": "The entrance ceremony will take place in this hall."
+              "en": "Upacara penerimaan siswa baru diadakan di aula ini.",
+              "explanation": "Pihak sekolah mengadakan upacara tersebut di aula ini."
+            },
+            {
+              "jp": "これは、世界でいちばん大きいダイヤモンドだと言われています。",
+              "en": "Ini dikatakan sebagai berlian terbesar di dunia.",
+              "explanation": "Orang-orang (siapa saja) mengatakan bahwa ini adalah berlian terbesar."
+            },
+            {
+              "jp": "昔は、その考えが正しいと思われていた。",
+              "en": "Dahulu, pemikiran itu dianggap (oleh orang-orang) benar.",
+              "explanation": "Orang-orang zaman dulu berpikir bahwa pemikiran tersebut benar."
             }
           ]
         }
