@@ -415,24 +415,33 @@
             `;
 
             content.grammar_sections.forEach(sec => {
-                html += `
-                    <div style="text-align: left; border: 1px solid #e0e0e0; padding: 20px; border-radius: 10px; margin-bottom: 20px; background: white;">
-                        <h3 style="background: #3498db; color: white; display: inline-block; padding: 5px 15px; border-radius: 20px; font-size: 16px;">${sec.pattern_title}</h3>
-                        <div style="background: #f8f9fa; padding: 12px; border-radius: 6px; margin: 15px 0; border: 1px dashed #cbd5e0;">
-                            <p><strong>Formula:</strong> ${sec.description_box.formula}</p>
-                            <p>${sec.description_box.explanation_en}</p>
-                        </div>
-                        <p><b>Contoh Kalimat:</b></p>
-                        <ul style="list-style: none; padding: 0;">
-                            ${sec.examples.map(ex => `
-                                <li style="margin-bottom: 12px; padding: 10px; background: #fdfdfd; border-radius: 6px; border-left: 3px solid #3498db;">
-                                    <div>${ex.jp}</div><div style="font-size: 13px; color: #718096;">${ex.en}</div>
-                                </li>
-                            `).join('')}
-                        </ul>
-                    </div>
-                `;
-            });
+    html += `
+        <div style="text-align: left; border: 1px solid #e0e0e0; padding: 20px; border-radius: 10px; margin-bottom: 20px; background: white;">
+            <h3 style="background: #3498db; color: white; display: inline-block; padding: 5px 15px; border-radius: 20px; font-size: 16px; margin-top:0;">
+                ${sec.pattern_title}
+            </h3>
+            <div style="background: #f8f9fa; padding: 12px; border-radius: 6px; margin: 15px 0; border: 1px dashed #cbd5e0;">
+                <p style="margin: 5px 0;"><strong>Formula:</strong> <code>${sec.description_box.formula}</code></p>
+                <p style="margin: 5px 0; font-size: 0.95em; color: #4a5568;">${sec.description_box.explanation_en}</p>
+            </div>
+            <p><b>Contoh Kalimat:</b></p>
+            <ul style="list-style: none; padding: 0;">
+                ${sec.examples.map(ex => `
+                    <li style="margin-bottom: 12px; padding: 10px; background: #fdfdfd; border-radius: 6px; border-left: 3px solid #3498db; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                        <div style="font-size: 1.1em; margin-bottom: 4px;">${ex.jp}</div>
+                        <div style="font-size: 0.9em; color: #718096; font-style: italic;">${ex.en}</div>
+                        
+                        ${ex.explanation ? `
+                            <div style="margin-top: 8px; font-size: 0.85em; color: #27ae60; background: #ebfef2; padding: 5px 10px; border-radius: 4px; border-left: 2px solid #2ecc71;">
+                                <strong>💡 Penjelasan:</strong> ${ex.explanation}
+                            </div>
+                        ` : ''}
+                    </li>
+                `).join('')}
+            </ul>
+        </div>
+    `;
+});
 
             const area = document.getElementById('questions-area');
             area.innerHTML = html;
