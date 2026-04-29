@@ -389,84 +389,58 @@
     // ==========================================
     // 4. FULL SOUMATOME MATERIAL MODE
     // ==========================================
-    // ==========================================
-// 4. FULL SOUMATOME MATERIAL MODE
-// ==========================================
-async function showGrammarMaterial(path) {
-    try {
-        const area = document.getElementById('questions-area');
-        area.innerHTML = '<div style="padding: 20px; text-align: center;">Memuat materi...</div>';
+    async function showGrammarMaterial(path) {
+        try {
+            const response = await fetch(`assets/${path}`);
+            const data = await response.json();
+            const content = data.levels[0]; 
 
-        const response = await fetch(`assets/${path}`);
-        if (!response.ok) throw new Error(`Status: ${response.status}`);
+            document.getElementById('file-screen').classList.add('hidden');
+            document.getElementById('exam-screen').style.display = 'flex';
+            document.getElementById('chat-icon').style.display = 'block';
+            document.getElementById('exam-title-display').innerText = content.header.main_title;
+            document.getElementById('progress-indicator').innerText = "Mode Belajar Materi";
 
-        const data = await response.json();
-        const allLevels = data.levels;
-        if (!allLevels || allLevels.length === 0) throw new Error("Levels kosong.");
-
-        document.getElementById('file-screen').classList.add('hidden');
-        document.getElementById('exam-screen').style.display = 'flex';
-        document.getElementById('chat-icon').style.display = 'block';
-        document.getElementById('exam-title-display').innerText = allLevels[0].name || "Grammar Material";
-        document.getElementById('progress-indicator').innerText = "Mode Belajar";
-        document.getElementById('submit-btn').style.display = 'none';
-        document.getElementById('result-box').style.display = 'none';
-
-        let html = '';
-        allLevels.forEach(content => {
-            html += `
-            <div style="border: 2px solid #3498db; border-radius: 16px; padding: 20px; margin-bottom: 30px; background: #fff;">
-                <div style="background: linear-gradient(135deg, #3498db, #2ecc71); border-radius: 10px; padding: 15px; margin-bottom: 15px; color: white;">
-                    <h2 style="margin: 0 0 5px 0;">${content.header.main_title}</h2>
-                    <p style="margin: 0; font-size: 1.1em; opacity: 0.9;">
-                        ${content.header.sub_title}
-                        <span style="font-size: 0.85em; opacity: 0.8;">(${content.header.translation})</span>
+            let html = `
+                <div style="text-align: left; background: #f9f9f9; padding: 20px; border-radius: 12px; margin-bottom: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                    <h2 style="color: #2c3e50; margin-top: 0;">${content.header.main_title}</h2>
+                    <p style="font-size: 1.1em; color: #3498db; font-weight: bold;">
+                        ${content.header.sub_title} <span style="color: #7f8c8d; font-weight: normal;">(${content.header.translation})</span>
                     </p>
-                </div>
-                <div style="background: #fffbe6; padding: 12px 15px; border-left: 5px solid #f1c40f; border-radius: 6px; margin-bottom: 15px;">
-                    <p style="margin: 4px 0;">👦 ${content.illustration_text.child}</p>
-                    <p style="margin: 4px 0;">👩 ${content.illustration_text.mother}</p>
+                    <div style="background: #fffbe6; padding: 15px; border-left: 5px solid #f1c40f; border-radius: 4px;">
+                        <p><strong>👦 (Child):</strong> ${content.illustration_text.child}</p>
+                        <p><strong>👩 (Mother):</strong> ${content.illustration_text.mother}</p>
+                    </div>
                 </div>
             `;
 
-            if (content.grammar_sections && content.grammar_sections.length > 0) {
-                content.grammar_sections.forEach(sec => {
-                    html += `
-                    <div style="border: 1px solid #e0e0e0; border-radius: 10px; padding: 15px; margin-bottom: 15px; background: #fafafa;">
-                        <h3 style="background: #3498db; color: white; display: inline-block; padding: 4px 14px; border-radius: 20px; font-size: 15px; margin: 0 0 12px 0;">
-                            ${sec.pattern_title}
-                        </h3>
-                        <div style="background: #f0f4f8; padding: 10px 14px; border-radius: 6px; margin-bottom: 12px; border: 1px dashed #90cdf4;">
-                            <p style="margin: 4px 0;"><strong>Formula:</strong> <code>${sec.description_box.formula}</code></p>
-                            <p style="margin: 4px 0; font-size: 0.9em; color: #4a5568;">${sec.description_box.explanation_en}</p>
+            content.grammar_sections.forEach(sec => {
+                html += `
+                    <div style="text-align: left; border: 1px solid #e0e0e0; padding: 20px; border-radius: 10px; margin-bottom: 20px; background: white;">
+                        <h3 style="background: #3498db; color: white; display: inline-block; padding: 5px 15px; border-radius: 20px; font-size: 16px;">${sec.pattern_title}</h3>
+                        <div style="background: #f8f9fa; padding: 12px; border-radius: 6px; margin: 15px 0; border: 1px dashed #cbd5e0;">
+                            <p><strong>Formula:</strong> ${sec.description_box.formula}</p>
+                            <p>${sec.description_box.explanation_en}</p>
                         </div>
-                        <p style="margin: 8px 0 6px 0;"><strong>Contoh:</strong></p>
-                        <ul style="list-style: none; padding: 0; margin: 0;">
+                        <p><b>Contoh Kalimat:</b></p>
+                        <ul style="list-style: none; padding: 0;">
                             ${sec.examples.map(ex => `
-                                <li style="padding: 10px; margin-bottom: 8px; background: white; border-radius: 8px; border-left: 3px solid #3498db; box-shadow: 0 1px 3px rgba(0,0,0,0.06);">
-                                    <div style="font-size: 1.05em; margin-bottom: 3px;">${ex.jp}</div>
-                                    <div style="font-size: 0.88em; color: #718096; font-style: italic;">${ex.en}</div>
+                                <li style="margin-bottom: 12px; padding: 10px; background: #fdfdfd; border-radius: 6px; border-left: 3px solid #3498db;">
+                                    <div>${ex.jp}</div><div style="font-size: 13px; color: #718096;">${ex.en}</div>
                                 </li>
                             `).join('')}
                         </ul>
                     </div>
-                    `;
-                });
-            }
-            html += `</div>`;
-        });
+                `;
+            });
 
-        area.innerHTML = html;
-        document.querySelector('.main-content').scrollTop = 0;
-        updateWidgetVisibility();
-
-    } catch (error) {
-        console.error("Error showGrammarMaterial:", error);
-        alert("Gagal memuat materi: " + error.message);
-        document.getElementById('file-screen').classList.remove('hidden');
-        document.getElementById('exam-screen').style.display = 'none';
+            const area = document.getElementById('questions-area');
+            area.innerHTML = html;
+            document.getElementById('submit-btn').style.display = 'none';
+            document.getElementById('result-box').style.display = 'none';
+            updateWidgetVisibility();
+        } catch (error) { alert("Gagal memuat materi."); }
     }
-}
 
     // ==========================================
     // 5. FULL EXAM ENGINE (QUIZ)
