@@ -18,23 +18,3 @@
     }
   ]
 }
-{
-  "levels": [
-    {
-      "id": "n3_soumatome_grammar",
-      "name": "N3 Soumatome Grammar",
-      "weeks": [
-        {
-          "week_number": "1",
-          "days": [
-            { 
-              "label": "Day 1: がんばらなくちゃ！", 
-              "path": "n3/soumatome_1.json",
-              "type": "grammar" 
-            }
-          ]
-        }
-      ]
-    }
-  ]
-}
