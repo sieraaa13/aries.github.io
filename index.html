@@ -389,20 +389,52 @@
 
     // ==========================================
     // 4. FULL SOUMATOME MATERIAL MODE
-   // GANTI SELURUH FUNGSI showGrammarMaterial DENGAN KODE INI
-// TERMASUK RENSHUU (LATIHAN SOAL) DENGAN CHECKING JAWABAN
+  // ===== TAMBAHAN: Global variable untuk renshuu =====
+let renshuuAnswers = {};
 
-let renshuuAnswers = {}; // Simpan jawaban user
+// ===== FUNGSI BARU: Cek jawaban renshuu =====
+function checkRenshuuAnswers(secIndex, soalIndex, renshuuData) {
+    const userAnswer = renshuuAnswers[`${secIndex}-${soalIndex}`];
+    const soal = renshuuData;
+    const correctAnswer = soal.correct;
+    const resultDiv = document.getElementById(`result-${secIndex}-${soalIndex}`);
+    
+    // TAMPILKAN HASIL
+    if (userAnswer === undefined) {
+        resultDiv.style.display = 'block';
+        resultDiv.style.background = '#fff3cd';
+        resultDiv.style.color = '#856404';
+        resultDiv.style.borderLeft = '3px solid #ffc107';
+        resultDiv.innerHTML = '⚠️ Belum dijawab';
+    } else if (userAnswer === correctAnswer) {
+        resultDiv.style.display = 'block';
+        resultDiv.style.background = '#d4edda';
+        resultDiv.style.color = '#155724';
+        resultDiv.style.borderLeft = '3px solid #28a745';
+        resultDiv.innerHTML = `✓ Benar! ${soal.explanation}`;
+    } else {
+        resultDiv.style.display = 'block';
+        resultDiv.style.background = '#f8d7da';
+        resultDiv.style.color = '#721c24';
+        resultDiv.style.borderLeft = '3px solid #dc3545';
+        resultDiv.innerHTML = `✗ Salah. Jawaban yang benar adalah: <strong>${renshuuData.options[correctAnswer]}</strong>. ${soal.explanation}`;
+    }
+}
 
+// ===== UPDATE: Ganti fungsi showGrammarMaterial (JAGA FORMAT LAMA) =====
 async function showGrammarMaterial(path) {
     try {
+        const area = document.getElementById('questions-area');
+        area.innerHTML = '<div style="padding: 20px; text-align: center;">Memuat materi...</div>';
+
         const response = await fetch(`assets/${path}`);
         if (!response.ok) throw new Error(`Gagal fetch file (Status: ${response.status})`);
-        
+
         const data = await response.json();
         const content = data.levels[0];
         if (!content) throw new Error("Data levels kosong atau tidak ditemukan.");
 
+        // UPDATE UI
         document.getElementById('file-screen').classList.add('hidden');
         document.getElementById('exam-screen').style.display = 'flex';
         document.getElementById('chat-icon').style.display = 'block';
@@ -411,6 +443,10 @@ async function showGrammarMaterial(path) {
         document.getElementById('submit-btn').style.display = 'none';
         document.getElementById('result-box').style.display = 'none';
 
+        // RESET JAWABAN
+        renshuuAnswers = {};
+
+        // BUILD HTML (SAMA SEPERTI SEBELUMNYA)
         let html = `
             <div style="text-align: left; background: #f9f9f9; padding: 20px; border-radius: 12px; margin-bottom: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
                 <h2 style="color: #2c3e50; margin-top: 0;">${content.header.main_title}</h2>
@@ -424,20 +460,16 @@ async function showGrammarMaterial(path) {
             </div>
         `;
 
-        // RESET JAWABAN RENSHUU
-        renshuuAnswers = {};
-
-        // RENDER GRAMMAR SECTIONS DENGAN TABLE FORMAT + RENSHUU
+        // RENDER GRAMMAR SECTIONS (SAMA SEPERTI SEBELUMNYA + TAMBAH RENSHUU)
         if (content.grammar_sections && content.grammar_sections.length > 0) {
             content.grammar_sections.forEach((sec, secIndex) => {
-                const secId = `section-${secIndex}`;
                 html += `
-                <div style="text-align: left; border: 1px solid #e0e0e0; padding: 20px; border-radius: 10px; margin-bottom: 20px; background: white; position: relative;">
-                    <h3 style="background: #3498db; color: white; display: inline-block; padding: 8px 16px; border-radius: 20px; font-size: 16px; margin: 0 0 15px 0;">
+                <div style="text-align: left; border: 1px solid #e0e0e0; padding: 20px; border-radius: 10px; margin-bottom: 20px; background: white;">
+                    <h3 style="background: #3498db; color: white; display: inline-block; padding: 5px 15px; border-radius: 20px; font-size: 16px; margin-top:0;">
                         ${sec.pattern_title}
                     </h3>
                     
-                    <!-- TABLE FORMAT UNTUK FORMULA -->
+                    <!-- TABLE FORMAT UNTUK FORMULA (SAMA) -->
                     <table style="width: 100%; border-collapse: collapse; margin: 15px 0; border: 1px solid #ddd;">
                         <tr>
                             <td style="padding: 12px; background: #f0f4f8; border: 1px solid #ddd; font-weight: bold; width: 22%; vertical-align: top;">
@@ -451,37 +483,29 @@ async function showGrammarMaterial(path) {
                         </tr>
                     </table>
 
-                    <!-- PENJELASAN -->
-                    <div style="background: #f8f9fa; padding: 12px; border-radius: 6px; margin: 15px 0; border-left: 3px solid #3498db;">
-                        <p style="margin: 6px 0; font-size: 0.95em; color: #4a5568;">
-                            <strong>Indonesia:</strong> ${sec.description_box.explanation || ''}
-                        </p>
-                        <p style="margin: 6px 0; font-size: 0.95em; color: #4a5568;">
-                            <strong>English:</strong> ${sec.description_box.explanation_en || ''}
-                        </p>
+                    <!-- PENJELASAN (SAMA) -->
+                    <div style="background: #f8f9fa; padding: 12px; border-radius: 6px; margin: 15px 0; border: 1px dashed #cbd5e0;">
+                        <p style="margin: 5px 0;"><strong>Indonesia:</strong> ${sec.description_box.explanation}</p>
+                        <p style="margin: 5px 0; font-size: 0.95em; color: #4a5568;"><strong>English:</strong> ${sec.description_box.explanation_en}</p>
                     </div>
 
-                    <!-- CONTOH KALIMAT -->
-                    <p style="margin: 12px 0 8px 0; font-weight: bold; font-size: 15px;">Contoh Kalimat:</p>
-                    <ul style="list-style: none; padding: 0; margin: 0;">
+                    <!-- CONTOH KALIMAT (SAMA) -->
+                    <p><b>Contoh Kalimat:</b></p>
+                    <ul style="list-style: none; padding: 0;">
                         ${sec.examples.map(ex => `
-                            <li style="margin-bottom: 12px; padding: 12px; background: #fdfdfd; border-radius: 6px; border-left: 3px solid #3498db; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-                                <div style="font-size: 1.05em; margin-bottom: 6px; font-weight: 500;">${ex.jp}</div>
-                                <div style="font-size: 0.9em; color: #718096; margin-bottom: 4px;">🇮🇩 ${ex.en}</div>
-                                ${ex.explanation ? `
-                                    <div style="margin-top: 8px; font-size: 0.85em; color: #27ae60; background: #ebfef2; padding: 8px 10px; border-radius: 4px; border-left: 2px solid #2ecc71;">
-                                        <strong>💡 Penjelasan:</strong> ${ex.explanation}
-                                    </div>
-                                ` : ''}
+                            <li style="margin-bottom: 12px; padding: 10px; background: #fdfdfd; border-radius: 6px; border-left: 3px solid #3498db; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                                <div style="font-size: 1.1em; margin-bottom: 4px;">${ex.jp}</div>
+                                <div style="font-size: 0.9em; color: #718096; font-style: italic;">${ex.en}</div>
+                                ${ex.explanation ? `<div style="margin-top: 8px; font-size: 0.85em; color: #27ae60; background: #ebfef2; padding: 5px 10px; border-radius: 4px; border-left: 2px solid #2ecc71;"><strong>💡 Penjelasan:</strong> ${ex.explanation}</div>` : ''}
                             </li>
                         `).join('')}
                     </ul>
 
-                    <!-- RENSHUU (LATIHAN SOAL) -->
+                    <!-- RENSHUU (FITUR BARU - DITAMBAHKAN) -->
                     ${sec.renshuu && sec.renshuu.length > 0 ? `
                         <div style="margin-top: 20px; padding: 16px; background: #f0f7ff; border: 2px solid #3498db; border-radius: 10px;">
                             <p style="margin: 0 0 12px 0; font-weight: bold; font-size: 16px; color: #2c3e50;">
-                                📝 練習問題 (Renshuu - Latihan Soal)
+                                📝 練習問題 (Renshuu)
                             </p>
                             ${sec.renshuu.map((soal, soalIndex) => `
                                 <div style="margin-bottom: 16px; padding: 12px; background: white; border-radius: 8px; border-left: 3px solid #27ae60;">
@@ -495,23 +519,22 @@ async function showGrammarMaterial(path) {
                                                     type="radio" 
                                                     name="renshuu-${secIndex}-${soalIndex}" 
                                                     value="${optIndex}"
-                                                    onchange="renshuuAnswers['${secId}-${soalIndex}'] = ${optIndex}"
+                                                    onchange="renshuuAnswers['${secIndex}-${soalIndex}'] = ${optIndex}"
                                                     style="margin-right: 8px; cursor: pointer;"
                                                 >
                                                 <span style="font-size: 14px; color: #4a5568;">${opt}</span>
                                             </label>
                                         `).join('')}
                                     </div>
-                                    <div id="result-${secId}-${soalIndex}" style="margin-top: 8px; display: none; padding: 8px; border-radius: 6px; font-size: 13px;"></div>
+                                    <button onclick="checkRenshuuAnswers(${secIndex}, ${soalIndex}, ${JSON.stringify(soal).replace(/"/g, '&quot;')})" 
+                                            style="background: #27ae60; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-weight: bold; margin-top: 10px; font-size: 13px; transition: 0.2s;"
+                                            onmouseover="this.style.background='#229954'"
+                                            onmouseout="this.style.background='#27ae60'">
+                                        ✓ Cek Jawaban
+                                    </button>
+                                    <div id="result-${secIndex}-${soalIndex}" style="margin-top: 8px; display: none; padding: 8px; border-radius: 6px; font-size: 13px;"></div>
                                 </div>
                             `).join('')}
-                            
-                            <button onclick="checkRenshuuAnswers('${secId}', ${sec.renshuu.length}, ${JSON.stringify(sec.renshuu).replace(/"/g, '&quot;')})" 
-                                    style="background: #27ae60; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 12px; font-size: 14px; transition: 0.2s;"
-                                    onmouseover="this.style.background='#229954'"
-                                    onmouseout="this.style.background='#27ae60'">
-                                ✓ Cek Jawaban
-                            </button>
                         </div>
                     ` : ''}
                 </div>
@@ -519,10 +542,10 @@ async function showGrammarMaterial(path) {
             });
         }
 
-        const area = document.getElementById('questions-area');
+        // DISPLAY
         area.innerHTML = html;
         
-        // TRIGGER MATHJAX UNTUK RENDER FORMULA LATEX
+        // TRIGGER MATHJAX
         if (window.MathJax && window.MathJax.typesetPromise) {
             window.MathJax.typesetPromise().catch(err => console.error('MathJax error:', err));
         }
@@ -536,87 +559,6 @@ async function showGrammarMaterial(path) {
         document.getElementById('exam-screen').style.display = 'none';
     }
 }
-
-// ===== FUNCTION UNTUK CEK JAWABAN RENSHUU =====
-function checkRenshuuAnswers(secId, totalSoal, renshuuData) {
-    let allCorrect = true;
-    let correctCount = 0;
-
-    renshuuData.forEach((soal, index) => {
-        const userAnswer = renshuuAnswers[`${secId}-${index}`];
-        const correctAnswer = soal.correct;
-        const resultDiv = document.getElementById(`result-${secId}-${index}`);
-        
-        if (userAnswer === undefined) {
-            resultDiv.style.display = 'block';
-            resultDiv.style.background = '#fff3cd';
-            resultDiv.style.color = '#856404';
-            resultDiv.style.borderLeft = '3px solid #ffc107';
-            resultDiv.innerHTML = '⚠️ Belum dijawab';
-            allCorrect = false;
-        } else if (userAnswer === correctAnswer) {
-            resultDiv.style.display = 'block';
-            resultDiv.style.background = '#d4edda';
-            resultDiv.style.color = '#155724';
-            resultDiv.style.borderLeft = '3px solid #28a745';
-            resultDiv.innerHTML = '✓ Benar! ' + soal.explanation;
-            correctCount++;
-        } else {
-            resultDiv.style.display = 'block';
-            resultDiv.style.background = '#f8d7da';
-            resultDiv.style.color = '#721c24';
-            resultDiv.style.borderLeft = '3px solid #dc3545';
-            resultDiv.innerHTML = `✗ Salah. Jawaban yang benar adalah: <strong>${renshuuData[index].options[correctAnswer]}</strong>. ${soal.explanation}`;
-            allCorrect = false;
-        }
-    });
-
-    // TAMPILKAN RINGKASAN
-    const summaryDiv = document.createElement('div');
-    summaryDiv.style.cssText = `
-        position: fixed;
-        bottom: 20px;
-        right: 20px;
-        background: white;
-        border: 2px solid #3498db;
-        border-radius: 10px;
-        padding: 16px;
-        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-        z-index: 999;
-        font-size: 14px;
-        text-align: center;
-        min-width: 200px;
-    `;
-
-    if (allCorrect) {
-        summaryDiv.style.borderColor = '#27ae60';
-        summaryDiv.innerHTML = `
-            <p style="margin: 0 0 8px 0; color: #27ae60; font-weight: bold;">🎉 Sempurna!</p>
-            <p style="margin: 0; color: #2c3e50;">Semua jawaban benar! (${correctCount}/${totalSoal})</p>
-        `;
-    } else {
-        summaryDiv.style.borderColor = '#f39c12';
-        summaryDiv.innerHTML = `
-            <p style="margin: 0 0 8px 0; color: #f39c12; font-weight: bold;">📊 Hasil</p>
-            <p style="margin: 0; color: #2c3e50;">Benar: ${correctCount} / ${totalSoal}</p>
-        `;
-    }
-
-    // Hapus summary lama kalau ada
-    const oldSummary = document.getElementById('renshuu-summary');
-    if (oldSummary) oldSummary.remove();
-    summaryDiv.id = 'renshuu-summary';
-    document.body.appendChild(summaryDiv);
-
-    // Auto close setelah 5 detik
-    setTimeout(() => {
-        if (summaryDiv && summaryDiv.parentNode) {
-            summaryDiv.remove();
-        }
-    }, 5000);
-}
- 
-    // ==========================================
     // 5. FULL EXAM ENGINE (QUIZ)
     // ==========================================
     async function startExam(path, label) {
