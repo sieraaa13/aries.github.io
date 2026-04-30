@@ -468,8 +468,13 @@ ${content.illustration_text.mother ?
                 html += `
                 <div style="text-align: left; border: 1px solid #e0e0e0; padding: 20px; border-radius: 10px; margin-bottom: 20px; background: white;">
                     <h3 style="background: #3498db; color: white; display: inline-block; padding: 5px 15px; border-radius: 20px; font-size: 16px; margin-top:0;">
-                        ${sec.pattern_title}
-                    </h3>
+    ${sec.pattern_title}
+</h3>
+${sec.pattern_meaning ? `
+    <div style="margin: 6px 0 12px 0; font-size: 13px; color: #e67e22; background: #fff8f0; padding: 6px 12px; border-radius: 6px; border-left: 3px solid #e67e22; display: inline-block;">
+        📖 ${sec.pattern_meaning}
+    </div>
+` : ''}
                     
                     <!-- TABLE FORMAT UNTUK FORMULA (SAMA) -->
                     <table style="width: 100%; border-collapse: collapse; margin: 15px 0; border: 1px solid #ddd;">
