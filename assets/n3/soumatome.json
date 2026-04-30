@@ -1,0 +1,1306 @@
+{
+  "meta": {
+    "source": "Nihongo Soumatome N3 Bunpou",
+    "language": "id",
+    "total_weeks": 3
+  },
+  "levels": [
+
+    {
+      "name": "Soumatome N3 Grammar",
+      "week": 1,
+      "day": 1,
+      "header": {
+        "main_title": "がんばらなくちゃ！",
+        "sub_title": "ぼくにもやらせて",
+        "translation": "Biarkan aku juga melakukannya"
+      },
+      "illustration_text": {
+        "child": "ぼくにもやらせて。",
+        "mother": "けがをされると困るからダメよ。"
+      },
+      "grammar_sections": [
+        {
+          "pattern_title": "書かれている",
+          "description_box": {
+            "formula": "Vれる〈受身形〉",
+            "explanation": "Ketika menyebutkan fakta tanpa menunjukkan subjek, bentuk pasif sering digunakan.",
+            "explanation_en": "When you mention a fact without a subject, the passive form is often used."
+          },
+          "examples": [
+            {
+              "jp": "この本には、くわしい説明は書かれていません。",
+              "en": "Tidak ada penjelasan rinci dalam buku ini.",
+              "explanation": ""
+            },
+            {
+              "jp": "入学式は、このホールで行われます。",
+              "en": "Upacara penerimaan mahasiswa baru akan diadakan di aula ini.",
+              "explanation": ""
+            }
+          ]
+        },
+        {
+          "pattern_title": "赤ちゃんに泣かれた",
+          "description_box": {
+            "formula": "(Nに)Vれる",
+            "explanation": "Menunjukkan kondisi sulit atau tidak menyenangkan yang dialami akibat tindakan orang lain.",
+            "explanation_en": "Showing a difficult situation as a result of something."
+          },
+          "examples": [
+            {
+              "jp": "友達の赤ちゃんを抱っこしたら、泣かれてしまった。",
+              "en": "Ketika aku menggendong bayi temanku, bayinya menangis.",
+              "explanation": ""
+            },
+            {
+              "jp": "雨に降られて、服がぬれてしまった。",
+              "en": "Kehujanan, bajuku jadi basah kuyup.",
+              "explanation": ""
+            }
+          ]
+        },
+        {
+          "pattern_title": "早く帰らせてください",
+          "description_box": {
+            "formula": "$$ \\text{V(さ)せて} \\begin{cases} \\text{ください} \\\\ \\text{もらえますか} \\\\ \\text{もらえませんか} \\end{cases} $$",
+            "explanation": "Ekspresi yang digunakan untuk meminta izin kepada orang lain agar kita diperbolehkan melakukan sesuatu.",
+            "explanation_en": "Expression used when asking for permission from the other person."
+          },
+          "examples": [
+            {
+              "jp": "ちょっと気分が悪いので、早く帰らせてください。",
+              "en": "Karena kurang enak badan, tolong izinkan saya pulang lebih awal.",
+              "explanation": ""
+            },
+            {
+              "jp": "手を洗わせてください。",
+              "en": "Izinkan saya mencuci tangan.",
+              "explanation": ""
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "name": "Soumatome N3 Grammar",
+      "week": 1,
+      "day": 2,
+      "header": {
+        "main_title": "がんばらなくちゃ！",
+        "sub_title": "そこに置いといて",
+        "translation": "Taruh saja di sana"
+      },
+      "illustration_text": {
+        "child": "ああ、汚れちゃったよ。クリーニングに出さないと。",
+        "mother": "そこに置いといて。明日、出しとくから。"
+      },
+      "grammar_sections": [
+        {
+          "pattern_title": "もう寝ないと",
+          "description_box": {
+            "formula": "$$ \\begin{cases} \\text{Vないと} \\\\ \\text{Vなくちゃ} \\end{cases} $$",
+            "explanation": "Bentuk singkat percakapan dari 「Vなければならない」(harus melakukan V).",
+            "explanation_en": "A shortened conversational form of [V nakereba naranai (must+verb)]."
+          },
+          "examples": [
+            {
+              "jp": "明日は早く出かけるから、もう寝ないと。",
+              "en": "Karena besok harus pergi pagi-pagi, aku harus tidur sekarang.",
+              "explanation": ""
+            },
+            {
+              "jp": "田中さんにメールの返信をしなくちゃ。",
+              "en": "Aku harus membalas email Tanaka-san.",
+              "explanation": ""
+            }
+          ]
+        },
+        {
+          "pattern_title": "食べちゃった",
+          "description_box": {
+            "formula": "$$ \\text{V} \\xrightarrow{} \\text{ちゃう} $$",
+            "explanation": "Bentuk percakapan santai dari 「Vてしまう」.",
+            "explanation_en": "Casual conversational form of 'V te shimau'."
+          },
+          "examples": [
+            {
+              "jp": "「あれ？ここにあったチョコレートは？」「あ、食べちゃった。」",
+              "en": "\"Eh? Mana cokelat yang ada di sini?\" \"Ah, sudah kumakan.\"",
+              "explanation": ""
+            },
+            {
+              "jp": "試験が終わった！今日は飲んじゃおう！",
+              "en": "Ujian selesai! Hari ini ayo kita minum!",
+              "explanation": ""
+            }
+          ]
+        },
+        {
+          "pattern_title": "書いとく",
+          "description_box": {
+            "formula": "$$ \\text{V} \\xrightarrow{} \\text{とく} $$",
+            "explanation": "Bentuk percakapan santai dari 「Vておく」(melakukan sesuatu sebagai persiapan).",
+            "explanation_en": "Casual conversational form of 'V te oku'."
+          },
+          "examples": [
+            {
+              "jp": "テストで間違ったところを、ノートに書いとこう。",
+              "en": "Ayo catat di buku catatan bagian yang salah saat ujian.",
+              "explanation": ""
+            },
+            {
+              "jp": "これ洗濯しといて。",
+              "en": "Tolong cucikan ini terlebih dahulu.",
+              "explanation": ""
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "name": "Soumatome N3 Grammar",
+      "week": 1,
+      "day": 3,
+      "header": {
+        "main_title": "がんばらなくちゃ！",
+        "sub_title": "女らしい",
+        "translation": "Feminin / Seperti wanita"
+      },
+      "illustration_text": {
+        "child": "彼女、このごろ、急に女らしくなったね。",
+        "mother": "彼氏ができたみたいだよ。"
+      },
+      "grammar_sections": [
+        {
+          "pattern_title": "女みたいだ",
+          "description_box": {
+            "formula": "$$ \\text{N / V/A/na/N普} \\begin{cases} \\text{みたいだ。} \\\\ \\text{みたいに} \\\\ \\text{みたいなN} \\end{cases} $$",
+            "explanation": "Lebih bersifat percakapan dibandingkan 「〜ようだ」. Digunakan untuk menyatakan kemiripan atau perumpamaan.",
+            "explanation_en": "More colloquial than '~you da'. Used to express similarity or likeness."
+          },
+          "examples": [
+            {
+              "jp": "彼の話し方は、女みたいだ。",
+              "en": "Cara bicaranya seperti wanita.",
+              "explanation": ""
+            },
+            {
+              "jp": "リンさんみたいに日本語がうまくなりたい。",
+              "en": "Aku ingin mahir berbahasa Jepang seperti Lin-san.",
+              "explanation": ""
+            }
+          ]
+        },
+        {
+          "pattern_title": "春らしい",
+          "description_box": {
+            "formula": "Nらしい",
+            "explanation": "Membentuk kata sifat. Menunjukkan sifat, karakter, atau kesan yang khas dari sesuatu.",
+            "explanation_en": "Forms an adjective. Expresses a characteristic or typical quality."
+          },
+          "examples": [
+            {
+              "jp": "今日は、春らしい暖かい日でした。",
+              "en": "Hari ini adalah hari yang hangat, khas musim semi.",
+              "explanation": ""
+            },
+            {
+              "jp": "私は女性らしい洋服はあまり着ない。",
+              "en": "Saya jarang memakai baju yang terkesan feminin.",
+              "explanation": ""
+            }
+          ]
+        },
+        {
+          "pattern_title": "大人っぽい",
+          "description_box": {
+            "formula": "Nっぽい",
+            "explanation": "Menunjukkan kesan atau nuansa yang menyerupai N. Sering digunakan untuk hal-hal negatif.",
+            "explanation_en": "Indicates a feeling or impression resembling N. Often used for negative connotations."
+          },
+          "examples": [
+            {
+              "jp": "あの小学生は、大人っぽい。",
+              "en": "Murid SD itu tampak seperti orang dewasa.",
+              "explanation": ""
+            },
+            {
+              "jp": "この料理は油っぽくていやだ。",
+              "en": "Masakan ini terlalu berminyak dan tidak enak.",
+              "explanation": ""
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "name": "Soumatome N3 Grammar",
+      "week": 1,
+      "day": 4,
+      "header": {
+        "main_title": "がんばらなくちゃ！",
+        "sub_title": "できるようになった！",
+        "translation": "Sudah bisa melakukannya!"
+      },
+      "illustration_text": {
+        "child": "うまくできるようになった！",
+        "mother": "手を切らないように気を付けて！"
+      },
+      "grammar_sections": [
+        {
+          "pattern_title": "忘れ物をしないようにしましょう",
+          "description_box": {
+            "formula": "$$ \\begin{cases} \\text{Vる} \\\\ \\text{Vない} \\end{cases} \\text{ようにする} $$",
+            "explanation": "Menunjukkan kebiasaan, tekad, atau usaha yang dilakukan secara sadar.",
+            "explanation_en": "To show habits and intention (effort)."
+          },
+          "examples": [
+            {
+              "jp": "忘れ物をしないようにしましょう。",
+              "en": "Mari kita berusaha agar tidak ada barang yang tertinggal.",
+              "explanation": ""
+            },
+            {
+              "jp": "毎食後、歯をみがくようにしています。",
+              "en": "Saya selalu berusaha menyikat gigi setelah setiap makan.",
+              "explanation": ""
+            }
+          ]
+        },
+        {
+          "pattern_title": "聞こえるように話す",
+          "description_box": {
+            "formula": "$$ \\begin{cases} \\text{Vる} \\\\ \\text{Vない} \\\\ \\text{Vれる} \\end{cases} \\text{ように} $$",
+            "explanation": "Bermakna 'dengan tujuan agar kondisi tersebut tercapai'. Menyatakan tujuan dari suatu tindakan.",
+            "explanation_en": "To mean 'to aim for'. Used to express the purpose of an action."
+          },
+          "examples": [
+            {
+              "jp": "みんなに聞こえるようにもっと大きな声で話してください。",
+              "en": "Tolong bicaralah dengan suara lebih keras agar semua orang bisa mendengar.",
+              "explanation": ""
+            },
+            {
+              "jp": "忘れないように、手帳に書いておこう。",
+              "en": "Agar tidak lupa, ayo catat di buku agenda.",
+              "explanation": ""
+            }
+          ]
+        },
+        {
+          "pattern_title": "使えるようになった",
+          "description_box": {
+            "formula": "Vるようになる",
+            "explanation": "Menunjukkan perubahan keadaan atau kemampuan yang terjadi secara bertahap.",
+            "explanation_en": "Indicates a gradual change in state or ability."
+          },
+          "examples": [
+            {
+              "jp": "「このDVDプレーヤー、こわれているんだよね。」「いや、直してもらったから、使えるようになったよ。」",
+              "en": "\"DVD player ini rusak ya?\" \"Tidak, sudah diperbaiki, sekarang bisa dipakai.\"",
+              "explanation": ""
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "name": "Soumatome N3 Grammar",
+      "week": 1,
+      "day": 5,
+      "header": {
+        "main_title": "がんばらなくちゃ！",
+        "sub_title": "言ったように",
+        "translation": "Seperti yang sudah dikatakan"
+      },
+      "illustration_text": {
+        "child": "昨日も言ったように、明日テストをします。ちゃんと復習するように。",
+        "mother": "難しくありませんように。"
+      },
+      "grammar_sections": [
+        {
+          "pattern_title": "ご存じのように",
+          "description_box": {
+            "formula": "$$ \\begin{cases} \\text{Nの} \\\\ \\text{V普} \\end{cases} \\text{ように} $$",
+            "explanation": "Sering digunakan di awal kalimat sebagai pembuka penjelasan. Merujuk pada informasi yang sudah diketahui bersama.",
+            "explanation_en": "Used when introducing some explanations. Refers to known information."
+          },
+          "examples": [
+            {
+              "jp": "皆様ご存じのように、試験の内容が変わります。",
+              "en": "Seperti yang Anda semua ketahui, isi ujian akan berubah.",
+              "explanation": ""
+            },
+            {
+              "jp": "前にお話ししたように、来年から授業料が値上がりします。",
+              "en": "Seperti yang sudah saya sampaikan sebelumnya, biaya kuliah akan naik mulai tahun depan.",
+              "explanation": ""
+            }
+          ]
+        },
+        {
+          "pattern_title": "早く来るように。",
+          "description_box": {
+            "formula": "$$ \\begin{cases} \\text{Vる} \\\\ \\text{Vない} \\end{cases} \\text{ように。} $$",
+            "explanation": "Menyatakan perintah atau instruksi yang halus dan tidak langsung.",
+            "explanation_en": "To indicate a request or soft command."
+          },
+          "examples": [
+            {
+              "jp": "「明日はもっと早く来るように。」「わかりました。」",
+              "en": "\"Besok datanglah lebih awal.\" \"Baik.\"",
+              "explanation": ""
+            },
+            {
+              "jp": "ここで、たばこを吸わないように。",
+              "en": "Di sini, jangan merokok.",
+              "explanation": ""
+            }
+          ]
+        },
+        {
+          "pattern_title": "合格しますように。",
+          "description_box": {
+            "formula": "$$ \\begin{cases} \\text{Vます} \\\\ \\text{Vません} \\\\ \\text{Vれます} \\end{cases} \\text{ように。} $$",
+            "explanation": "Menyatakan harapan atau doa agar sesuatu terwujud.",
+            "explanation_en": "To indicate a hope or wish."
+          },
+          "examples": [
+            {
+              "jp": "合格しますように。",
+              "en": "Semoga lulus.",
+              "explanation": ""
+            },
+            {
+              "jp": "インフルエンザにかかりませんように。",
+              "en": "Semoga tidak terkena flu.",
+              "explanation": ""
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "name": "Soumatome N3 Grammar",
+      "week": 1,
+      "day": 6,
+      "header": {
+        "main_title": "がんばらなくちゃ！",
+        "sub_title": "話を聞こうとしない",
+        "translation": "Tidak mau mendengarkan pembicaraan"
+      },
+      "illustration_text": {
+        "child": "留学しようと思っているが、父は私の話を聞こうとしない。",
+        "mother": ""
+      },
+      "grammar_sections": [
+        {
+          "pattern_title": "やめようと思う",
+          "description_box": {
+            "formula": "Vようと思う",
+            "explanation": "Menyatakan niat atau rencana yang dimiliki oleh pembicara.",
+            "explanation_en": "To show one's will or plan."
+          },
+          "examples": [
+            {
+              "jp": "会社をやめようと思っている。",
+              "en": "Aku sedang berpikir untuk berhenti dari perusahaan.",
+              "explanation": ""
+            },
+            {
+              "jp": "来年、国に帰ろうと思っています。",
+              "en": "Saya berencana untuk pulang ke negara asal tahun depan.",
+              "explanation": ""
+            }
+          ]
+        },
+        {
+          "pattern_title": "電車に乗ろうとしたときに",
+          "description_box": {
+            "formula": "Vようとする",
+            "explanation": "Menunjukkan momen tepat saat seseorang akan memulai suatu tindakan.",
+            "explanation_en": "Indicates the moment just before starting an action."
+          },
+          "examples": [
+            {
+              "jp": "電車に乗ろうとしたときに、ドアが閉まって乗れなかった。",
+              "en": "Tepat saat akan naik kereta, pintunya tertutup dan aku tidak bisa masuk.",
+              "explanation": ""
+            },
+            {
+              "jp": "ポチは、ぼくが出かけようとすると、ほえる。",
+              "en": "Pochi menggonggong setiap kali aku akan pergi keluar.",
+              "explanation": ""
+            }
+          ]
+        },
+        {
+          "pattern_title": "食べようとしない",
+          "description_box": {
+            "formula": "Vようとしない",
+            "explanation": "Menunjukkan tidak adanya niat atau kemauan untuk melakukan tindakan tersebut.",
+            "explanation_en": "To indicate that there is no intention to do an action."
+          },
+          "examples": [
+            {
+              "jp": "「ポチ、どうしたんだろう。ご飯を食べようとしないんだよ。」",
+              "en": "\"Ada apa dengan Pochi? Dia tidak mau makan sama sekali.\"",
+              "explanation": ""
+            },
+            {
+              "jp": "彼は、自分のことは何も言おうとしない。",
+              "en": "Dia tidak mau mengatakan apa pun tentang dirinya sendiri.",
+              "explanation": ""
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "name": "Soumatome N3 Grammar",
+      "week": 2,
+      "day": 1,
+      "header": {
+        "main_title": "がんばってごらん！",
+        "sub_title": "うそばっかり！",
+        "translation": "Bohong melulu!"
+      },
+      "illustration_text": {
+        "child": "ぼくには君だけしかいない。君さえいれば何もいらない。",
+        "mother": "うそばっかり！"
+      },
+      "grammar_sections": [
+        {
+          "pattern_title": "女性ばかり",
+          "description_box": {
+            "formula": "$$ \\text{N / Vて} \\begin{cases} \\text{ばかり} \\\\ \\text{ばかりだ} \\\\ \\text{ばかりのN} \\\\ \\text{ばかりで} \\\\ \\text{Vてばかりいる(ー)} \\end{cases} $$",
+            "explanation": "Menyatakan bahwa sesuatu hanya terdiri dari satu hal, atau seseorang terus-menerus melakukan satu hal saja.",
+            "explanation_en": "Expresses that something consists only of one thing, or someone keeps doing only one thing."
+          },
+          "examples": [
+            {
+              "jp": "この店のお客さんは、女性ばかりですね。",
+              "en": "Pelanggan toko ini semuanya perempuan ya.",
+              "explanation": ""
+            },
+            {
+              "jp": "息子は仕事もしないで遊んでばかりいる。",
+              "en": "Anakku tidak bekerja dan hanya bermain saja.",
+              "explanation": ""
+            }
+          ]
+        },
+        {
+          "pattern_title": "会員だけしか",
+          "description_box": {
+            "formula": "Nだけしか Vない",
+            "explanation": "Menekankan makna 「〜だけ」(hanya). Digunakan untuk memperkuat batasan.",
+            "explanation_en": "To emphasize '~dake' (only)."
+          },
+          "examples": [
+            {
+              "jp": "このコンサートは、会員だけしか入れません。",
+              "en": "Konser ini hanya bisa dimasuki oleh anggota saja.",
+              "explanation": ""
+            },
+            {
+              "jp": "今日はお客様が一人だけしか来ませんでした。",
+              "en": "Hari ini hanya ada satu pelanggan yang datang.",
+              "explanation": ""
+            }
+          ]
+        },
+        {
+          "pattern_title": "ひらがなさえ",
+          "description_box": {
+            "formula": "$$ \\text{N} \\begin{cases} \\\\ \\text{Nに} \\\\ \\text{Nで} \\end{cases} \\text{さえ} $$",
+            "explanation": "Menunjukkan contoh ekstrem; jika hal minimal ini saja terpenuhi atau tidak terpenuhi, maka hal lainnya sudah jelas.",
+            "explanation_en": "Shows an extreme example; if even this minimum condition is met/not met, other things are obvious."
+          },
+          "examples": [
+            {
+              "jp": "ひらがなさえ書けないんですから、漢字なんて書けません。",
+              "en": "Bahkan hiragana saja tidak bisa ditulis, apalagi kanji.",
+              "explanation": ""
+            },
+            {
+              "jp": "そんなこと、子どもでさえ知っている。",
+              "en": "Hal seperti itu bahkan anak kecil pun tahu.",
+              "explanation": ""
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "name": "Soumatome N3 Grammar",
+      "week": 2,
+      "day": 2,
+      "header": {
+        "main_title": "がんばってごらん！",
+        "sub_title": "事故などによる渋滞",
+        "translation": "Kemacetan akibat kecelakaan dan lainnya"
+      },
+      "illustration_text": {
+        "child": "首都圏の道路状況についてお伝えします。現在、事故などによる渋滞はありません。",
+        "mother": ""
+      },
+      "grammar_sections": [
+        {
+          "pattern_title": "この問題に関して",
+          "description_box": {
+            "formula": "$$ \\text{Nに / [文]のに} \\begin{cases} \\text{関して} \\\\ \\text{関しては} \\\\ \\text{関しても} \\\\ \\text{関するN} \\end{cases} $$",
+            "explanation": "Menyatakan hal yang berkaitan atau berhubungan dengan topik tertentu. Umumnya digunakan dalam konteks formal.",
+            "explanation_en": "Expresses something related to a certain topic. Commonly used in formal contexts."
+          },
+          "examples": [
+            {
+              "jp": "この問題に関して、ご意見ありませんか。",
+              "en": "Apakah ada pendapat mengenai masalah ini?",
+              "explanation": ""
+            },
+            {
+              "jp": "農業に関する論文を読む。",
+              "en": "Membaca makalah yang berkaitan dengan pertanian.",
+              "explanation": ""
+            }
+          ]
+        },
+        {
+          "pattern_title": "日本文化について",
+          "description_box": {
+            "formula": "$$ \\text{Nに} \\begin{cases} \\text{ついて} \\\\ \\text{についてのN} \\\\ \\text{については} \\\\ \\text{についても} \\end{cases} $$",
+            "explanation": "Menyatakan topik atau objek yang sedang dibicarakan. Mirip dengan 「に関して」namun lebih umum digunakan.",
+            "explanation_en": "Expresses the topic being discussed. Similar to 'ni kanshite' but more commonly used."
+          },
+          "examples": [
+            {
+              "jp": "日本文化について勉強する。",
+              "en": "Belajar tentang kebudayaan Jepang.",
+              "explanation": ""
+            },
+            {
+              "jp": "「受験についての注意」を読む。",
+              "en": "Membaca 'Petunjuk Ujian'.",
+              "explanation": ""
+            }
+          ]
+        },
+        {
+          "pattern_title": "天気予報によれば",
+          "description_box": {
+            "formula": "$$ \\text{Nに} \\begin{cases} \\text{よれば} \\\\ \\text{よると} \\end{cases} $$",
+            "explanation": "Menyatakan sumber informasi atau dasar dari suatu pernyataan. Artinya 'menurut...'",
+            "explanation_en": "Expresses the source of information. Means 'according to...'."
+          },
+          "examples": [
+            {
+              "jp": "天気予報によれば、明日は晴れるらしい。",
+              "en": "Menurut prakiraan cuaca, besok sepertinya cerah.",
+              "explanation": ""
+            },
+            {
+              "jp": "さっきの地震はテレビの速報によると震度３だそうだ。",
+              "en": "Menurut berita kilat di TV, gempa tadi berkekuatan 3.",
+              "explanation": ""
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "name": "Soumatome N3 Grammar",
+      "week": 2,
+      "day": 3,
+      "header": {
+        "main_title": "がんばってごらん！",
+        "sub_title": "あなたのこと",
+        "translation": "Tentang kamu"
+      },
+      "illustration_text": {
+        "child": "毎日、あなたのことを思っているけれど、気持ちを伝えるのは、恥ずかしくてできない……。",
+        "mother": ""
+      },
+      "grammar_sections": [
+        {
+          "pattern_title": "大きさが違う",
+          "description_box": {
+            "formula": "$$ \\text{A} \\xrightarrow{} \\text{さ} \\quad (\\text{よい} \\to \\text{よさ}) / \\text{naさ} $$",
+            "explanation": "Membentuk kata benda dari kata sifat. Menunjukkan sifat, perasaan, atau tingkatan dari sesuatu.",
+            "explanation_en": "Forms a noun from an adjective. Indicates characteristics, feelings, or degree."
+          },
+          "examples": [
+            {
+              "jp": "大きさは違うが、君と同じかばんを持っているよ。",
+              "en": "Ukurannya berbeda, tapi aku punya tas yang sama denganmu.",
+              "explanation": ""
+            },
+            {
+              "jp": "子どもに命の大切さを教えなければならない。",
+              "en": "Kita harus mengajarkan kepada anak-anak betapa pentingnya kehidupan.",
+              "explanation": ""
+            }
+          ]
+        },
+        {
+          "pattern_title": "苦しみは続く",
+          "description_box": {
+            "formula": "$$ \\text{A} \\xrightarrow{} \\text{み} / \\text{na} \\xrightarrow{} \\text{み} $$",
+            "explanation": "Membentuk kata benda dari kata sifat. Menunjukkan kondisi, sifat, atau keadaan yang sedang dialami.",
+            "explanation_en": "Forms a noun from an adjective. Indicates conditions or the state of being in a particular situation."
+          },
+          "examples": [
+            {
+              "jp": "戦争が終わった今でも、この国の苦しみはまだ続いている。",
+              "en": "Bahkan setelah perang berakhir, penderitaan negara ini masih berlanjut.",
+              "explanation": ""
+            },
+            {
+              "jp": "田中さんの強みは、２ヵ国語が話せるということです。",
+              "en": "Kelebihan Tanaka-san adalah bisa berbicara dalam dua bahasa.",
+              "explanation": ""
+            }
+          ]
+        },
+        {
+          "pattern_title": "テストのこと",
+          "description_box": {
+            "formula": "$$ \\text{N/V/A/na/N普} \\begin{cases} \\text{こと} \\end{cases} $$",
+            "explanation": "Mengubah klausa atau kata menjadi nomina (kata benda). Digunakan untuk membicarakan 'hal tentang...'",
+            "explanation_en": "Nominalizes a clause or word. Used to talk about 'the matter of...'."
+          },
+          "examples": [
+            {
+              "jp": "来週のテストのことで、質問があります。",
+              "en": "Saya ada pertanyaan tentang ujian minggu depan.",
+              "explanation": ""
+            },
+            {
+              "jp": "田中さんが入院したことを知っていますか。",
+              "en": "Apakah kamu tahu bahwa Tanaka-san dirawat di rumah sakit?",
+              "explanation": ""
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "name": "Soumatome N3 Grammar",
+      "week": 2,
+      "day": 4,
+      "header": {
+        "main_title": "がんばってごらん！",
+        "sub_title": "省エネというのは…",
+        "translation": "Yang dimaksud dengan hemat energi adalah..."
+      },
+      "illustration_text": {
+        "child": "「省く」+「エネルギー」",
+        "mother": "「省エネ」というのは、エネルギーを省くということを短くした言い方です。"
+      },
+      "grammar_sections": [
+        {
+          "pattern_title": "木村さんという人",
+          "description_box": {
+            "formula": "$$ \\text{N} \\begin{cases} \\text{というN} \\\\ \\text{というもの} \\\\ \\text{ということ} \\end{cases} $$",
+            "explanation": "Digunakan untuk memperkenalkan atau menjelaskan nama atau identitas sesuatu. Artinya 'yang bernama/disebut...'",
+            "explanation_en": "Used to introduce or explain the name or identity of something. Means 'called/named...'."
+          },
+          "examples": [
+            {
+              "jp": "さっき、木村さんという人から電話がありましたよ。",
+              "en": "Tadi ada telepon dari seseorang bernama Kimura-san.",
+              "explanation": ""
+            },
+            {
+              "jp": "これは、日本の楽器で「尺八」というものです。",
+              "en": "Ini adalah alat musik Jepang yang disebut 'shakuhachi'.",
+              "explanation": ""
+            }
+          ]
+        },
+        {
+          "pattern_title": "「デジカメ」というのは…",
+          "description_box": {
+            "formula": "$$ \\text{N} \\begin{cases} \\text{というのは} \\\\ \\text{っていうのは} \\end{cases} $$",
+            "explanation": "Digunakan untuk menjelaskan arti atau makna dari suatu kata atau konsep.",
+            "explanation_en": "Used to explain the meaning of a word or concept."
+          },
+          "examples": [
+            {
+              "jp": "「デジカメ」というのは、デジタルカメラを短くした言い方です。",
+              "en": "'Dejikame' adalah singkatan dari kamera digital.",
+              "explanation": ""
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "name": "Soumatome N3 Grammar",
+      "week": 2,
+      "day": 5,
+      "header": {
+        "main_title": "がんばってごらん！",
+        "sub_title": "美人というより",
+        "translation": "Lebih dari sekadar cantik"
+      },
+      "illustration_text": {
+        "child": "女優といっても有名ではありません。美人というよりかわいい人です。",
+        "mother": ""
+      },
+      "grammar_sections": [
+        {
+          "pattern_title": "走るというより",
+          "description_box": {
+            "formula": "$$ \\text{N/na/V/A普} \\begin{cases} \\text{というより} \\\\ \\text{というか} \\end{cases} $$",
+            "explanation": "Digunakan untuk mengoreksi atau memperhalus ungkapan sebelumnya. Artinya 'lebih tepatnya...' atau 'atau lebih seperti...'",
+            "explanation_en": "Used to correct or refine a previous statement. Means 'rather than...' or 'more like...'."
+          },
+          "examples": [
+            {
+              "jp": "前の車は遅すぎて、走るというよりはっているようだ。",
+              "en": "Mobil di depan terlalu lambat, lebih seperti merayap daripada berlari.",
+              "explanation": ""
+            },
+            {
+              "jp": "今日は涼しいというより寒いくらいだった。",
+              "en": "Hari ini rasanya bukan sejuk, lebih seperti dingin.",
+              "explanation": ""
+            }
+          ]
+        },
+        {
+          "pattern_title": "京都というと",
+          "description_box": {
+            "formula": "$$ \\text{N/na/V/A普} \\begin{cases} \\text{いうと} \\\\ \\text{いえば} \\\\ \\text{いったら} \\end{cases} $$",
+            "explanation": "Digunakan untuk memulai topik atau mengasosiasikan sesuatu dengan hal lain yang langsung terpikirkan.",
+            "explanation_en": "Used to start a topic or associate something with what first comes to mind."
+          },
+          "examples": [
+            {
+              "jp": "京都というと、お寺をイメージします。",
+              "en": "Kalau bicara soal Kyoto, yang terbayang adalah kuil.",
+              "explanation": ""
+            },
+            {
+              "jp": "夏の果物といったら、やっぱりスイカだね。",
+              "en": "Kalau bicara buah musim panas, ya tetap saja semangka.",
+              "explanation": ""
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "name": "Soumatome N3 Grammar",
+      "week": 2,
+      "day": 6,
+      "header": {
+        "main_title": "がんばってごらん！",
+        "sub_title": "食べてごらん",
+        "translation": "Coba makan"
+      },
+      "illustration_text": {
+        "child": "これ、おいしいよ。食べてごらん。",
+        "mother": "医者に甘いものは食べないように言われてるんだ。"
+      },
+      "grammar_sections": [
+        {
+          "pattern_title": "聞いてごらん",
+          "description_box": {
+            "formula": "Vてごらん(なさい)",
+            "explanation": "Digunakan oleh atasan kepada bawahan untuk menyuruh mencoba melakukan sesuatu. Lebih lembut dari 'Vてみなさい'.",
+            "explanation_en": "Used to address subordinates, suggesting they try doing something."
+          },
+          "examples": [
+            {
+              "jp": "わからなかったら、先生に聞いてごらん。",
+              "en": "Kalau tidak mengerti, coba tanyakan pada gurumu.",
+              "explanation": ""
+            },
+            {
+              "jp": "もう一度やってごらんなさい。",
+              "en": "Coba lakukan sekali lagi.",
+              "explanation": ""
+            }
+          ]
+        },
+        {
+          "pattern_title": "来るように言う",
+          "description_box": {
+            "formula": "$$ \\begin{cases} \\text{Vるよう(に)} \\\\ \\text{Vないよう(に)} \\end{cases} \\begin{cases} \\text{言う} \\\\ \\text{頼む} \\end{cases} $$",
+            "explanation": "Menyampaikan perintah, permintaan, atau instruksi secara tidak langsung kepada orang ketiga.",
+            "explanation_en": "Relays a command, request, or instruction indirectly to a third party."
+          },
+          "examples": [
+            {
+              "jp": "田中さんに、私の部屋に来るよう(に)言ってください。",
+              "en": "Tolong sampaikan kepada Tanaka-san agar datang ke kamarku.",
+              "explanation": ""
+            },
+            {
+              "jp": "妻に、家ではたばこを吸わないよう(に)言われています。",
+              "en": "Istriku menyuruhku untuk tidak merokok di rumah.",
+              "explanation": ""
+            }
+          ]
+        },
+        {
+          "pattern_title": "飲むなと言われた",
+          "description_box": {
+            "formula": "$$ \\begin{cases} \\text{V[命令形]と} \\\\ \\text{Vるなと} \\end{cases} \\begin{cases} \\text{言われる} \\\\ \\text{注意される} \\\\ \\text{しかられる} \\\\ \\text{怒られる} \\end{cases} $$",
+            "explanation": "Menyampaikan isi perintah atau larangan yang diterima dari orang lain. Meski menggunakan bentuk perintah, keseluruhan kalimat tidak terdengar kasar.",
+            "explanation_en": "Relays the content of an order or prohibition received from someone else."
+          },
+          "examples": [
+            {
+              "jp": "医者に酒を飲むなと言われた。",
+              "en": "Dokter melarangku untuk minum alkohol.",
+              "explanation": ""
+            },
+            {
+              "jp": "先生に、もっと勉強しろと言われた。",
+              "en": "Guru menyuruhku untuk belajar lebih giat.",
+              "explanation": ""
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "name": "Soumatome N3 Grammar",
+      "week": 3,
+      "day": 1,
+      "header": {
+        "main_title": "もっとがんばってほしい！",
+        "sub_title": "いくら安くても",
+        "translation": "Seberapa pun murahnya"
+      },
+      "illustration_text": {
+        "child": "いくら安くても、買いたくない。",
+        "mother": "みんな、何も買わずに帰ってしまう。なぜだろう？"
+      },
+      "grammar_sections": [
+        {
+          "pattern_title": "調べてもわからなかった",
+          "description_box": {
+            "formula": "$$ \\begin{cases} \\text{Vても} \\\\ \\text{Aくても} \\\\ \\text{na/Nでも} \\end{cases} $$",
+            "explanation": "Menyatakan bahwa meskipun kondisi A terpenuhi, kondisi B tetap tidak berubah. Artinya 'meskipun' atau 'walau pun'.",
+            "explanation_en": "Expresses that even if condition A is met, condition B remains unchanged. Means 'even if' or 'even though'."
+          },
+          "examples": [
+            {
+              "jp": "調べてもわからなかったので、先生に聞いた。",
+              "en": "Meskipun sudah mencari tahu, tetap tidak mengerti, jadi aku bertanya kepada guru.",
+              "explanation": ""
+            },
+            {
+              "jp": "必要なので、高くても買います。",
+              "en": "Karena dibutuhkan, aku akan membelinya meski mahal.",
+              "explanation": ""
+            }
+          ]
+        },
+        {
+          "pattern_title": "どんなに練習しても",
+          "description_box": {
+            "formula": "$$ \\begin{cases} \\text{どんなに} \\\\ \\text{いくら} \\end{cases} \\begin{cases} \\text{Vても} \\\\ \\text{Aくても} \\\\ \\text{naでも} \\\\ \\text{Nでも} \\end{cases} $$",
+            "explanation": "Menyatakan bahwa tidak peduli seberapa banyak atau seberapa besar, hasilnya tetap sama.",
+            "explanation_en": "Expresses that no matter how much or how extreme, the result remains the same."
+          },
+          "examples": [
+            {
+              "jp": "ギターを習い始めたが、どんなに練習しても全然うまくならない。",
+              "en": "Aku mulai belajar gitar, tapi tidak peduli seberapa banyak berlatih, tetap tidak mahir.",
+              "explanation": ""
+            },
+            {
+              "jp": "私は、いくらお酒を飲んでも顔色が変わらない。",
+              "en": "Wajahku tidak berubah merah no matter how much aku minum.",
+              "explanation": ""
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "name": "Soumatome N3 Grammar",
+      "week": 3,
+      "day": 2,
+      "header": {
+        "main_title": "もっとがんばってほしい！",
+        "sub_title": "それにしては",
+        "translation": "Jika mempertimbangkan hal itu..."
+      },
+      "illustration_text": {
+        "child": "犬じゃない？",
+        "mother": "それにしては大きすぎる。……クマ？……クマだとしたら大変だ！"
+      },
+      "grammar_sections": [
+        {
+          "pattern_title": "日本代表として",
+          "description_box": {
+            "formula": "$$ \\text{Nと} \\begin{cases} \\text{して} \\\\ \\text{しては} \\\\ \\text{しても} \\\\ \\text{してのN} \\end{cases} $$",
+            "explanation": "Menyatakan posisi, peran, atau kapasitas seseorang/sesuatu. Artinya 'sebagai...' atau 'dalam kapasitas sebagai...'",
+            "explanation_en": "Expresses the position, role, or capacity of someone/something. Means 'as...' or 'in the capacity of...'."
+          },
+          "examples": [
+            {
+              "jp": "彼は外国人だが、日本代表として試合に出る。",
+              "en": "Dia orang asing, tapi tampil dalam pertandingan sebagai wakil Jepang.",
+              "explanation": ""
+            },
+            {
+              "jp": "彼女は女性としても女優としても最高だが、妻としてはどうだろう。",
+              "en": "Sebagai wanita dan sebagai aktris dia luar biasa, tapi bagaimana sebagai istri ya?",
+              "explanation": ""
+            }
+          ]
+        },
+        {
+          "pattern_title": "外国人にしては",
+          "description_box": {
+            "formula": "$$ \\text{V/A/na/N普に / naに / N普に} \\begin{cases} \\text{しては} \\\\ \\text{それにしては} \\end{cases} $$",
+            "explanation": "Menyatakan perasaan tidak terduga atau mengejutkan. Artinya 'untuk ukuran...', terasa di luar ekspektasi.",
+            "explanation_en": "Expresses an unexpected feeling. Means 'for a...' or 'considering that...', implying surprise."
+          },
+          "examples": [
+            {
+              "jp": "外国人にしては日本語が上手だ。",
+              "en": "Untuk ukuran orang asing, bahasa Jepangnya sangat bagus.",
+              "explanation": ""
+            },
+            {
+              "jp": "洗ったの？それにしてはきれいじゃないね。",
+              "en": "Sudah dicuci? Tapi untuk yang sudah dicuci, masih tidak bersih ya.",
+              "explanation": ""
+            }
+          ]
+        },
+        {
+          "pattern_title": "100円にしても",
+          "description_box": {
+            "formula": "$$ \\text{V/A/na/N普に / naに / N普に} \\begin{cases} \\text{しても} \\\\ \\text{それにしても} \\end{cases} $$",
+            "explanation": "Menyatakan bahwa meskipun mempertimbangkan suatu kondisi, hasilnya tetap sama atau mengejutkan.",
+            "explanation_en": "Expresses that even taking a condition into account, the result is still surprising or unchanged."
+          },
+          "examples": [
+            {
+              "jp": "これは、100円にしても、高いと思う。",
+              "en": "Untuk harga 100 yen pun, menurutku masih mahal.",
+              "explanation": ""
+            },
+            {
+              "jp": "遅れるとは聞いていたけど、それにしても田中さん、遅いね。",
+              "en": "Aku dengar dia akan terlambat, tapi tetap saja, Tanaka-san benar-benar terlambat ya.",
+              "explanation": ""
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "name": "Soumatome N3 Grammar",
+      "week": 3,
+      "day": 3,
+      "header": {
+        "main_title": "もっとがんばってほしい！",
+        "sub_title": "勉強するつもりでしたが…",
+        "translation": "Saya tadinya berniat belajar, tapi..."
+      },
+      "illustration_text": {
+        "child": "勉強するつもりでしたが……",
+        "mother": "テレビは消すべきだ。明日のテストはできないはずだ。"
+      },
+      "grammar_sections": [
+        {
+          "pattern_title": "行くつもりでした",
+          "description_box": {
+            "formula": "$$ \\begin{cases} \\text{Vる} \\\\ \\text{Vない} \\end{cases} \\text{つもりだった} $$",
+            "explanation": "Menyatakan niat atau rencana yang dimiliki di masa lalu tetapi tidak terlaksana.",
+            "explanation_en": "Expresses an intention or plan from the past that was not carried out."
+          },
+          "examples": [
+            {
+              "jp": "昨日は買い物に行くつもりでしたが、頭が痛かったのでずっと家にいました。",
+              "en": "Kemarin saya berniat pergi belanja, tapi kepala sakit jadi saya di rumah saja.",
+              "explanation": ""
+            },
+            {
+              "jp": "お菓子を食べないつもりでしたが、つい食べてしまいました。",
+              "en": "Saya berniat tidak makan kue, tapi tanpa sadar memakannya.",
+              "explanation": ""
+            }
+          ]
+        },
+        {
+          "pattern_title": "家にいないはずだ",
+          "description_box": {
+            "formula": "$$ \\text{V/A/na/N普} \\begin{cases} \\text{はずだ} \\\\ \\text{はずがない} \\end{cases} $$",
+            "explanation": "「はずだ」menyatakan keyakinan logis berdasarkan informasi yang ada. 「はずがない」adalah bentuk penyangkalan yang kuat.",
+            "explanation_en": "'hazuda' expresses logical certainty based on known information. 'hazugaanai' is a strong denial."
+          },
+          "examples": [
+            {
+              "jp": "田中さんは今、旅行中だから、家にいないはずだ。",
+              "en": "Tanaka-san sedang dalam perjalanan sekarang, jadi seharusnya tidak ada di rumah.",
+              "explanation": ""
+            },
+            {
+              "jp": "まじめな田中さんが、無断で休むはずがない。",
+              "en": "Tanaka-san yang serius pasti tidak akan absen tanpa izin.",
+              "explanation": ""
+            }
+          ]
+        },
+        {
+          "pattern_title": "守るべきだ",
+          "description_box": {
+            "formula": "$$ \\begin{cases} \\text{Vる} \\\\ \\text{naである} \\\\ \\text{Aくある} \\end{cases} \\begin{cases} \\text{べきだ} \\\\ \\text{べきではない} \\end{cases} $$",
+            "explanation": "Menyatakan sesuatu yang seharusnya atau wajib dilakukan berdasarkan norma atau logika.",
+            "explanation_en": "Expresses something that should or ought to be done based on norms or logic."
+          },
+          "examples": [
+            {
+              "jp": "約束は守るべきだ。",
+              "en": "Janji seharusnya ditepati.",
+              "explanation": ""
+            },
+            {
+              "jp": "おもちゃは、まず安全であるべきだ。",
+              "en": "Mainan pertama-tama harus aman.",
+              "explanation": ""
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "name": "Soumatome N3 Grammar",
+      "week": 3,
+      "day": 4,
+      "header": {
+        "main_title": "もっとがんばってほしい！",
+        "sub_title": "会うたびに",
+        "translation": "Setiap kali bertemu"
+      },
+      "illustration_text": {
+        "child": "出かけるの？ついでに、これ、お願い。",
+        "mother": "会うたびに用事を頼まれる。"
+      },
+      "grammar_sections": [
+        {
+          "pattern_title": "散歩のついでに",
+          "description_box": {
+            "formula": "$$ \\begin{cases} \\text{Nの} \\\\ \\text{Vる/Vた} \\end{cases} \\text{ついでに} $$",
+            "explanation": "Menyatakan memanfaatkan kesempatan dari suatu kegiatan untuk melakukan hal lain sekaligus.",
+            "explanation_en": "Expresses taking advantage of an opportunity from one activity to do something else at the same time."
+          },
+          "examples": [
+            {
+              "jp": "散歩のついでに、この手紙を出してきてくれませんか。",
+              "en": "Karena kebetulan sedang jalan-jalan, bisakah kamu kirimkan surat ini sekalian?",
+              "explanation": ""
+            },
+            {
+              "jp": "郵便局へ行ったついでに、はがきを買ってきた。",
+              "en": "Sekalian pergi ke kantor pos, aku beli kartu pos.",
+              "explanation": ""
+            }
+          ]
+        },
+        {
+          "pattern_title": "買い物のたびに",
+          "description_box": {
+            "formula": "$$ \\begin{cases} \\text{Nの} \\\\ \\text{Vる} \\\\ \\text{Vる。その} \\end{cases} \\begin{cases} \\text{たびに} \\\\ \\text{たび} \\end{cases} $$",
+            "explanation": "Menyatakan bahwa setiap kali suatu peristiwa terjadi, hal lain selalu mengikutinya.",
+            "explanation_en": "Expresses that every time a certain event occurs, something else always follows."
+          },
+          "examples": [
+            {
+              "jp": "買い物のたびに、袋をたくさんもらう。",
+              "en": "Setiap kali belanja, aku selalu mendapat banyak kantong.",
+              "explanation": ""
+            },
+            {
+              "jp": "この曲を聞くたびに、ふるさとを思い出す。",
+              "en": "Setiap kali mendengar lagu ini, aku teringat kampung halaman.",
+              "explanation": ""
+            }
+          ]
+        },
+        {
+          "pattern_title": "開けたとたん",
+          "description_box": {
+            "formula": "$$ \\text{Vた} \\begin{cases} \\text{とたん} \\\\ \\text{とたんに} \\end{cases} $$",
+            "explanation": "Menyatakan bahwa segera setelah suatu tindakan selesai, kejadian lain langsung terjadi secara tak terduga.",
+            "explanation_en": "Expresses that immediately after an action is completed, something else happens unexpectedly right away."
+          },
+          "examples": [
+            {
+              "jp": "窓を開けたとたん、強い風が入ってきた。",
+              "en": "Begitu jendela dibuka, angin kencang langsung masuk.",
+              "explanation": ""
+            },
+            {
+              "jp": "お酒を飲んだとたん、顔が赤くなった。",
+              "en": "Begitu minum alkohol, wajahnya langsung memerah.",
+              "explanation": ""
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "name": "Soumatome N3 Grammar",
+      "week": 3,
+      "day": 5,
+      "header": {
+        "main_title": "もっとがんばってほしい！",
+        "sub_title": "一人っきり",
+        "translation": "Sendirian saja"
+      },
+      "illustration_text": {
+        "child": "一人っきりのお正月。さみしいなあ…",
+        "mother": "二人っきりのお正月。楽しい！"
+      },
+      "grammar_sections": [
+        {
+          "pattern_title": "地図のとおり",
+          "description_box": {
+            "formula": "$$ \\begin{cases} \\text{Vる} \\\\ \\text{Vた} \\\\ \\text{Nの} \\end{cases} \\text{とおり / Nどおり} $$",
+            "explanation": "Menyatakan bahwa sesuatu dilakukan atau terjadi sesuai dengan acuan atau instruksi yang ada.",
+            "explanation_en": "Expresses that something is done or happens in accordance with a reference or instruction."
+          },
+          "examples": [
+            {
+              "jp": "友達がかいてくれた地図のとおりに来たが、道に迷った。",
+              "en": "Aku datang mengikuti peta yang digambar temanku, tapi tetap tersesat.",
+              "explanation": ""
+            },
+            {
+              "jp": "先生が言ったとおり、試験は難しかった。",
+              "en": "Seperti yang dikatakan guru, ujiannya memang sulit.",
+              "explanation": ""
+            }
+          ]
+        },
+        {
+          "pattern_title": "テレビをつけたまま",
+          "description_box": {
+            "formula": "$$ \\begin{cases} \\text{Vた/Vない} \\\\ \\text{A/na/N普} \\end{cases} \\text{まま} $$",
+            "explanation": "Menyatakan bahwa suatu keadaan dibiarkan tetap seperti apa adanya tanpa perubahan, sementara tindakan lain dilakukan.",
+            "explanation_en": "Expresses that a state is left unchanged while another action takes place."
+          },
+          "examples": [
+            {
+              "jp": "昨夜は、テレビをつけたまま寝てしまった。",
+              "en": "Semalam aku ketiduran dengan TV tetap menyala.",
+              "explanation": ""
+            },
+            {
+              "jp": "この野菜は、生のまま食べてもおいしいですよ。",
+              "en": "Sayuran ini enak dimakan dalam keadaan mentah apa adanya.",
+              "explanation": ""
+            }
+          ]
+        },
+        {
+          "pattern_title": "開けっぱなし",
+          "description_box": {
+            "formula": "Vっぱなし",
+            "explanation": "Menyatakan bahwa sesuatu dibiarkan dalam keadaan tertentu tanpa dibenahi. Sering mengandung makna negatif (ceroboh atau tidak bertanggung jawab).",
+            "explanation_en": "Expresses that something is left in a certain state without being fixed. Often has a negative connotation."
+          },
+          "examples": [
+            {
+              "jp": "窓を開けっぱなしで出てきた。",
+              "en": "Aku keluar dengan jendela tetap terbuka.",
+              "explanation": ""
+            },
+            {
+              "jp": "水を出しっぱなしにしないでください。",
+              "en": "Tolong jangan biarkan air mengalir terus begitu saja.",
+              "explanation": ""
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "name": "Soumatome N3 Grammar",
+      "week": 3,
+      "day": 6,
+      "header": {
+        "main_title": "もっとがんばってほしい！",
+        "sub_title": "教えてほしい",
+        "translation": "Ingin diajarkan"
+      },
+      "illustration_text": {
+        "child": "わかったふりをしていましたが、実はよくわからないので、教えてほしいんです。",
+        "mother": ""
+      },
+      "grammar_sections": [
+        {
+          "pattern_title": "怖がらないで",
+          "description_box": {
+            "formula": "$$ \\begin{cases} \\text{Aがる} \\\\ \\text{naがって} \\\\ \\text{Vたくがらないで} \\end{cases} $$",
+            "explanation": "「〜がる」menunjukkan bahwa orang ketiga memperlihatkan atau mengekspresikan perasaan tertentu. 「〜がらないで」berarti jangan tunjukkan perasaan itu.",
+            "explanation_en": "'~garu' shows that a third party is displaying a certain feeling. '~garanai de' means 'please don't show that feeling'."
+          },
+          "examples": [
+            {
+              "jp": "怖がらないでください。",
+              "en": "Jangan takut.",
+              "explanation": ""
+            },
+            {
+              "jp": "田中さんが、あなたに会いたがっていましたよ。",
+              "en": "Tanaka-san kelihatannya ingin bertemu denganmu.",
+              "explanation": ""
+            }
+          ]
+        },
+        {
+          "pattern_title": "見せてほしい",
+          "description_box": {
+            "formula": "$$ \\begin{cases} \\text{Vて} \\\\ \\text{Vないで} \\end{cases} \\begin{cases} \\text{ほしい} \\\\ \\text{もらいたい} \\end{cases} $$",
+            "explanation": "Menyatakan keinginan agar orang lain melakukan sesuatu untuk kita. Artinya 'ingin agar... melakukan...'",
+            "explanation_en": "Expresses the desire for someone else to do something for you. Means 'I want (someone) to...'."
+          },
+          "examples": [
+            {
+              "jp": "あの、教科書を見せてほしいんですが……。",
+              "en": "Permisi, bolehkah saya melihat buku teks Anda?",
+              "explanation": ""
+            },
+            {
+              "jp": "あなたに教えてもらいたいことがあります。",
+              "en": "Ada sesuatu yang ingin saya minta kamu ajarkan kepadaku.",
+              "explanation": ""
+            }
+          ]
+        }
+      ]
+    }
+
+  ]
+}
