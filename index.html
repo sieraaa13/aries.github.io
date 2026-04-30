@@ -389,8 +389,12 @@
 
     // ==========================================
     // 4. FULL SOUMATOME MATERIAL MODE
-    // ==========================================
-    async function showGrammarMaterial(path) {
+   // GANTI SELURUH FUNGSI showGrammarMaterial DENGAN KODE INI
+// TERMASUK RENSHUU (LATIHAN SOAL) DENGAN CHECKING JAWABAN
+
+let renshuuAnswers = {}; // Simpan jawaban user
+
+async function showGrammarMaterial(path) {
     try {
         const response = await fetch(`assets/${path}`);
         if (!response.ok) throw new Error(`Gagal fetch file (Status: ${response.status})`);
@@ -398,7 +402,7 @@
         const data = await response.json();
         const content = data.levels[0];
         if (!content) throw new Error("Data levels kosong atau tidak ditemukan.");
- 
+
         document.getElementById('file-screen').classList.add('hidden');
         document.getElementById('exam-screen').style.display = 'flex';
         document.getElementById('chat-icon').style.display = 'block';
@@ -406,7 +410,7 @@
         document.getElementById('progress-indicator').innerText = "Mode Belajar Materi";
         document.getElementById('submit-btn').style.display = 'none';
         document.getElementById('result-box').style.display = 'none';
- 
+
         let html = `
             <div style="text-align: left; background: #f9f9f9; padding: 20px; border-radius: 12px; margin-bottom: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
                 <h2 style="color: #2c3e50; margin-top: 0;">${content.header.main_title}</h2>
@@ -419,12 +423,16 @@
                 </div>
             </div>
         `;
- 
-        // RENDER GRAMMAR SECTIONS DENGAN TABLE FORMAT + MATHJAX
+
+        // RESET JAWABAN RENSHUU
+        renshuuAnswers = {};
+
+        // RENDER GRAMMAR SECTIONS DENGAN TABLE FORMAT + RENSHUU
         if (content.grammar_sections && content.grammar_sections.length > 0) {
-            content.grammar_sections.forEach(sec => {
+            content.grammar_sections.forEach((sec, secIndex) => {
+                const secId = `section-${secIndex}`;
                 html += `
-                <div style="text-align: left; border: 1px solid #e0e0e0; padding: 20px; border-radius: 10px; margin-bottom: 20px; background: white;">
+                <div style="text-align: left; border: 1px solid #e0e0e0; padding: 20px; border-radius: 10px; margin-bottom: 20px; background: white; position: relative;">
                     <h3 style="background: #3498db; color: white; display: inline-block; padding: 8px 16px; border-radius: 20px; font-size: 16px; margin: 0 0 15px 0;">
                         ${sec.pattern_title}
                     </h3>
@@ -442,7 +450,7 @@
                             </td>
                         </tr>
                     </table>
- 
+
                     <!-- PENJELASAN -->
                     <div style="background: #f8f9fa; padding: 12px; border-radius: 6px; margin: 15px 0; border-left: 3px solid #3498db;">
                         <p style="margin: 6px 0; font-size: 0.95em; color: #4a5568;">
@@ -452,7 +460,7 @@
                             <strong>English:</strong> ${sec.description_box.explanation_en || ''}
                         </p>
                     </div>
- 
+
                     <!-- CONTOH KALIMAT -->
                     <p style="margin: 12px 0 8px 0; font-weight: bold; font-size: 15px;">Contoh Kalimat:</p>
                     <ul style="list-style: none; padding: 0; margin: 0;">
@@ -468,28 +476,144 @@
                             </li>
                         `).join('')}
                     </ul>
+
+                    <!-- RENSHUU (LATIHAN SOAL) -->
+                    ${sec.renshuu && sec.renshuu.length > 0 ? `
+                        <div style="margin-top: 20px; padding: 16px; background: #f0f7ff; border: 2px solid #3498db; border-radius: 10px;">
+                            <p style="margin: 0 0 12px 0; font-weight: bold; font-size: 16px; color: #2c3e50;">
+                                📝 練習問題 (Renshuu - Latihan Soal)
+                            </p>
+                            ${sec.renshuu.map((soal, soalIndex) => `
+                                <div style="margin-bottom: 16px; padding: 12px; background: white; border-radius: 8px; border-left: 3px solid #27ae60;">
+                                    <p style="margin: 0 0 10px 0; font-size: 15px; color: #2c3e50;">
+                                        <strong>Soal ${soalIndex + 1}:</strong> ${soal.question}
+                                    </p>
+                                    <div style="margin-left: 12px;">
+                                        ${soal.options.map((opt, optIndex) => `
+                                            <label style="display: flex; align-items: center; margin-bottom: 8px; cursor: pointer; padding: 8px; border-radius: 6px; transition: background 0.2s;">
+                                                <input 
+                                                    type="radio" 
+                                                    name="renshuu-${secIndex}-${soalIndex}" 
+                                                    value="${optIndex}"
+                                                    onchange="renshuuAnswers['${secId}-${soalIndex}'] = ${optIndex}"
+                                                    style="margin-right: 8px; cursor: pointer;"
+                                                >
+                                                <span style="font-size: 14px; color: #4a5568;">${opt}</span>
+                                            </label>
+                                        `).join('')}
+                                    </div>
+                                    <div id="result-${secId}-${soalIndex}" style="margin-top: 8px; display: none; padding: 8px; border-radius: 6px; font-size: 13px;"></div>
+                                </div>
+                            `).join('')}
+                            
+                            <button onclick="checkRenshuuAnswers('${secId}', ${sec.renshuu.length}, ${JSON.stringify(sec.renshuu).replace(/"/g, '&quot;')})" 
+                                    style="background: #27ae60; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 12px; font-size: 14px; transition: 0.2s;"
+                                    onmouseover="this.style.background='#229954'"
+                                    onmouseout="this.style.background='#27ae60'">
+                                ✓ Cek Jawaban
+                            </button>
+                        </div>
+                    ` : ''}
                 </div>
                 `;
             });
         }
- 
+
         const area = document.getElementById('questions-area');
         area.innerHTML = html;
         
-        // ⭐ TRIGGER MATHJAX UNTUK RENDER FORMULA LATEX
-        // Ini penting! Tanpa ini formula tidak akan di-render
+        // TRIGGER MATHJAX UNTUK RENDER FORMULA LATEX
         if (window.MathJax && window.MathJax.typesetPromise) {
             window.MathJax.typesetPromise().catch(err => console.error('MathJax error:', err));
         }
         
         updateWidgetVisibility();
- 
+
     } catch (error) { 
         console.error("Error showGrammarMaterial:", error);
         alert("Gagal memuat materi: " + error.message); 
         document.getElementById('file-screen').classList.remove('hidden');
         document.getElementById('exam-screen').style.display = 'none';
     }
+}
+
+// ===== FUNCTION UNTUK CEK JAWABAN RENSHUU =====
+function checkRenshuuAnswers(secId, totalSoal, renshuuData) {
+    let allCorrect = true;
+    let correctCount = 0;
+
+    renshuuData.forEach((soal, index) => {
+        const userAnswer = renshuuAnswers[`${secId}-${index}`];
+        const correctAnswer = soal.correct;
+        const resultDiv = document.getElementById(`result-${secId}-${index}`);
+        
+        if (userAnswer === undefined) {
+            resultDiv.style.display = 'block';
+            resultDiv.style.background = '#fff3cd';
+            resultDiv.style.color = '#856404';
+            resultDiv.style.borderLeft = '3px solid #ffc107';
+            resultDiv.innerHTML = '⚠️ Belum dijawab';
+            allCorrect = false;
+        } else if (userAnswer === correctAnswer) {
+            resultDiv.style.display = 'block';
+            resultDiv.style.background = '#d4edda';
+            resultDiv.style.color = '#155724';
+            resultDiv.style.borderLeft = '3px solid #28a745';
+            resultDiv.innerHTML = '✓ Benar! ' + soal.explanation;
+            correctCount++;
+        } else {
+            resultDiv.style.display = 'block';
+            resultDiv.style.background = '#f8d7da';
+            resultDiv.style.color = '#721c24';
+            resultDiv.style.borderLeft = '3px solid #dc3545';
+            resultDiv.innerHTML = `✗ Salah. Jawaban yang benar adalah: <strong>${renshuuData[index].options[correctAnswer]}</strong>. ${soal.explanation}`;
+            allCorrect = false;
+        }
+    });
+
+    // TAMPILKAN RINGKASAN
+    const summaryDiv = document.createElement('div');
+    summaryDiv.style.cssText = `
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        background: white;
+        border: 2px solid #3498db;
+        border-radius: 10px;
+        padding: 16px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        z-index: 999;
+        font-size: 14px;
+        text-align: center;
+        min-width: 200px;
+    `;
+
+    if (allCorrect) {
+        summaryDiv.style.borderColor = '#27ae60';
+        summaryDiv.innerHTML = `
+            <p style="margin: 0 0 8px 0; color: #27ae60; font-weight: bold;">🎉 Sempurna!</p>
+            <p style="margin: 0; color: #2c3e50;">Semua jawaban benar! (${correctCount}/${totalSoal})</p>
+        `;
+    } else {
+        summaryDiv.style.borderColor = '#f39c12';
+        summaryDiv.innerHTML = `
+            <p style="margin: 0 0 8px 0; color: #f39c12; font-weight: bold;">📊 Hasil</p>
+            <p style="margin: 0; color: #2c3e50;">Benar: ${correctCount} / ${totalSoal}</p>
+        `;
+    }
+
+    // Hapus summary lama kalau ada
+    const oldSummary = document.getElementById('renshuu-summary');
+    if (oldSummary) oldSummary.remove();
+    summaryDiv.id = 'renshuu-summary';
+    document.body.appendChild(summaryDiv);
+
+    // Auto close setelah 5 detik
+    setTimeout(() => {
+        if (summaryDiv && summaryDiv.parentNode) {
+            summaryDiv.remove();
+        }
+    }, 5000);
 }
  
     // ==========================================
