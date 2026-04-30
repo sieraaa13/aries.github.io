@@ -55,9 +55,19 @@
           ]
         },
         {
+          "main_title": "早く帰らせてください",
+        "sub_title": "V(さ)せて",
+        "translation": "Causative request form"
+      },
+      "illustration_text": {
+        "child": "先生、早く帰ってもいいですか？",
+        "mother": "いいですよ。"
+      },
+      "grammar_sections": [
+        {
           "pattern_title": "早く帰らせてください",
           "description_box": {
-            "formula": "$$ \\text{V(さ)せて} \\begin{cases} \\text{ください} \\\\\\\\ \\text{もらえますか} \\\\\\\\ \\text{もらえませんか} \\end{cases} $$",
+            "formula": "$$ \\text{V(さ)せて} \\begin{cases} \\text{ください} \\\\ \\text{もらえますか} \\\\ \\text{もらえませんか} \\end{cases} $$",
             "explanation": "Menyatakan permohonan izin kepada orang lain.",
             "explanation_en": "Ekspresi yang digunakan ketika ingin meminta izin agar kita diperbolehkan melakukan sesuatu."
           },
@@ -71,6 +81,69 @@
               "jp": "手を洗わせてください。",
               "en": "Izinkan saya mencuci tangan.",
               "explanation": ""
+            }
+          ],
+          "renshuu": [
+            {
+              "question": "Ibu dengan sabar meminta, 'ちょっと ____ いきたいです。' (Izinkan saya sebentar pergi)",
+              "options": [
+                "いく",
+                "いかせて",
+                "いかせてください",
+                "いかせられて"
+              ],
+              "correct": 2,
+              "explanation": "Gunakan causative form + ください untuk meminta izin."
+            },
+            {
+              "question": "Pilih kalimat yang benar:",
+              "options": [
+                "子どもは外で遊べさせてください。",
+                "子どもを外で遊ばせてください。",
+                "子どもに外で遊ばせてください。",
+                "子どもは外で遊ばさせてください。"
+              ],
+              "correct": 1,
+              "explanation": "Objek (子ども) harus menggunakan を, dan verb harus causative form (遊ばせて)."
+            },
+            {
+              "question": "Arti yang paling tepat untuk 'もう一度説明させてもらえますか？'",
+              "options": [
+                "Dapatkah seseorang menjelaskan lagi padaku?",
+                "Bisakah saya menjelaskan lagi?",
+                "Apakah dijelaskan lagi padaku?",
+                "Apakah dia mau menjelaskan?"
+              ],
+              "correct": 1,
+              "explanation": "Ini adalah permintaan sopan untuk dibiarkan menjelaskan ulang."
+            }
+          ]
+        },
+        {
+          "pattern_title": "子どもを遊ばせる",
+          "description_box": {
+            "formula": "$$ \\text{V(さ)せる} $$",
+            "explanation": "Mengizinkan atau menyuruh seseorang melakukan sesuatu.",
+            "explanation_en": "To allow or make someone do something."
+          },
+          "examples": [
+            {
+              "jp": "子どもを外で遊ばせましょう。",
+              "en": "Ayo biarkan anak bermain di luar.",
+              "explanation": ""
+            }
+          ],
+          "renshuu": [
+            {
+              "question": "Lengkapi dengan bentuk yang benar: 『先生、質問を ____ ですか？』",
+              "options": [
+                "聞かせてください",
+                "聞いてください",
+                "聞かせてもいい",
+                "聞いてもらえます"
+              ],
+              "correct": 0,
+              "explanation": "Menggunakan causative + ください untuk meminta izin bertanya."
             }
           ]
         }
