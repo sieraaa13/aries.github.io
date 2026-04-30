@@ -1,0 +1,80 @@
+{
+  "levels": [
+    {
+      "name": "Soumatome N3 Grammar",
+      "week": 2,
+      "day": 3,
+      "header": {
+        "main_title": "がんばってごらん！",
+        "sub_title": "あなたのこと",
+        "translation": "Tentang kamu"
+      },
+      "illustration_text": {
+        "child": "毎日、あなたのことを思っているけれど、気持ちを伝えるのは、恥ずかしくてできない……。",
+        "mother": ""
+      },
+      "grammar_sections": [
+        {
+          "pattern_title": "大きさが違う",
+          "description_box": {
+            "formula": "$$ \\text{A} \\xrightarrow{} \\text{さ} \\quad (\\text{よい} \\to \\text{よさ}) / \\text{naさ} $$",
+            "explanation": "Membentuk kata benda dari kata sifat. Menunjukkan sifat, perasaan, atau tingkatan dari sesuatu.",
+            "explanation_en": "Forms a noun from an adjective. Indicates characteristics, feelings, or degree."
+          },
+          "examples": [
+            {
+              "jp": "大きさは違うが、君と同じかばんを持っているよ。",
+              "en": "Ukurannya berbeda, tapi aku punya tas yang sama denganmu.",
+              "explanation": ""
+            },
+            {
+              "jp": "子どもに命の大切さを教えなければならない。",
+              "en": "Kita harus mengajarkan kepada anak-anak betapa pentingnya kehidupan.",
+              "explanation": ""
+            }
+          ]
+        },
+        {
+          "pattern_title": "苦しみは続く",
+          "description_box": {
+            "formula": "$$ \\text{A} \\xrightarrow{} \\text{み} / \\text{na} \\xrightarrow{} \\text{み} $$",
+            "explanation": "Membentuk kata benda dari kata sifat. Menunjukkan kondisi, sifat, atau keadaan yang sedang dialami.",
+            "explanation_en": "Forms a noun from an adjective. Indicates conditions or the state of being in a particular situation."
+          },
+          "examples": [
+            {
+              "jp": "戦争が終わった今でも、この国の苦しみはまだ続いている。",
+              "en": "Bahkan setelah perang berakhir, penderitaan negara ini masih berlanjut.",
+              "explanation": ""
+            },
+            {
+              "jp": "田中さんの強みは、２ヵ国語が話せるということです。",
+              "en": "Kelebihan Tanaka-san adalah bisa berbicara dalam dua bahasa.",
+              "explanation": ""
+            }
+          ]
+        },
+        {
+          "pattern_title": "テストのこと",
+          "description_box": {
+            "formula": "$$ \\text{N/V/A/na/N普} \\begin{cases} \\text{こと} \\end{cases} $$",
+            "explanation": "Mengubah klausa atau kata menjadi nomina (kata benda). Digunakan untuk membicarakan 'hal tentang...'",
+            "explanation_en": "Nominalizes a clause or word. Used to talk about 'the matter of...'."
+          },
+          "examples": [
+            {
+              "jp": "来週のテストのことで、質問があります。",
+              "en": "Saya ada pertanyaan tentang ujian minggu depan.",
+              "explanation": ""
+            },
+            {
+              "jp": "田中さんが入院したことを知っていますか。",
+              "en": "Apakah kamu tahu bahwa Tanaka-san dirawat di rumah sakit?",
+              "explanation": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,80 @@
+{
+  "levels": [
+    {
+      "name": "Soumatome N3 Grammar",
+      "week": 3,
+      "day": 4,
+      "header": {
+        "main_title": "もっとがんばってほしい！",
+        "sub_title": "会うたびに",
+        "translation": "Setiap kali bertemu"
+      },
+      "illustration_text": {
+        "child": "出かけるの？ついでに、これ、お願い。",
+        "mother": "会うたびに用事を頼まれる。"
+      },
+      "grammar_sections": [
+        {
+          "pattern_title": "散歩のついでに",
+          "description_box": {
+            "formula": "$$ \\begin{cases} \\text{Nの} \\\\ \\text{Vる/Vた} \\end{cases} \\text{ついでに} $$",
+            "explanation": "Menyatakan memanfaatkan kesempatan dari suatu kegiatan untuk melakukan hal lain sekaligus.",
+            "explanation_en": "Expresses taking advantage of an opportunity from one activity to do something else at the same time."
+          },
+          "examples": [
+            {
+              "jp": "散歩のついでに、この手紙を出してきてくれませんか。",
+              "en": "Karena kebetulan sedang jalan-jalan, bisakah kamu kirimkan surat ini sekalian?",
+              "explanation": ""
+            },
+            {
+              "jp": "郵便局へ行ったついでに、はがきを買ってきた。",
+              "en": "Sekalian pergi ke kantor pos, aku beli kartu pos.",
+              "explanation": ""
+            }
+          ]
+        },
+        {
+          "pattern_title": "買い物のたびに",
+          "description_box": {
+            "formula": "$$ \\begin{cases} \\text{Nの} \\\\ \\text{Vる} \\\\ \\text{Vる。その} \\end{cases} \\begin{cases} \\text{たびに} \\\\ \\text{たび} \\end{cases} $$",
+            "explanation": "Menyatakan bahwa setiap kali suatu peristiwa terjadi, hal lain selalu mengikutinya.",
+            "explanation_en": "Expresses that every time a certain event occurs, something else always follows."
+          },
+          "examples": [
+            {
+              "jp": "買い物のたびに、袋をたくさんもらう。",
+              "en": "Setiap kali belanja, aku selalu mendapat banyak kantong.",
+              "explanation": ""
+            },
+            {
+              "jp": "この曲を聞くたびに、ふるさとを思い出す。",
+              "en": "Setiap kali mendengar lagu ini, aku teringat kampung halaman.",
+              "explanation": ""
+            }
+          ]
+        },
+        {
+          "pattern_title": "開けたとたん",
+          "description_box": {
+            "formula": "$$ \\text{Vた} \\begin{cases} \\text{とたん} \\\\ \\text{とたんに} \\end{cases} $$",
+            "explanation": "Menyatakan bahwa segera setelah suatu tindakan selesai, kejadian lain langsung terjadi secara tak terduga.",
+            "explanation_en": "Expresses that immediately after an action is completed, something else happens unexpectedly right away."
+          },
+          "examples": [
+            {
+              "jp": "窓を開けたとたん、強い風が入ってきた。",
+              "en": "Begitu jendela dibuka, angin kencang langsung masuk.",
+              "explanation": ""
+            },
+            {
+              "jp": "お酒を飲んだとたん、顔が赤くなった。",
+              "en": "Begitu minum alkohol, wajahnya langsung memerah.",
+              "explanation": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,80 @@
+{
+  "levels": [
+    {
+      "name": "Soumatome N3 Grammar",
+      "week": 2,
+      "day": 2,
+      "header": {
+        "main_title": "がんばってごらん！",
+        "sub_title": "事故などによる渋滞",
+        "translation": "Kemacetan akibat kecelakaan dan lainnya"
+      },
+      "illustration_text": {
+        "child": "首都圏の道路状況についてお伝えします。現在、事故などによる渋滞はありません。",
+        "mother": ""
+      },
+      "grammar_sections": [
+        {
+          "pattern_title": "この問題に関して",
+          "description_box": {
+            "formula": "$$ \\text{Nに / [文]のに} \\begin{cases} \\text{関して} \\\\ \\text{関しては} \\\\ \\text{関しても} \\\\ \\text{関するN} \\end{cases} $$",
+            "explanation": "Menyatakan hal yang berkaitan atau berhubungan dengan topik tertentu. Umumnya digunakan dalam konteks formal.",
+            "explanation_en": "Expresses something related to a certain topic. Commonly used in formal contexts."
+          },
+          "examples": [
+            {
+              "jp": "この問題に関して、ご意見ありませんか。",
+              "en": "Apakah ada pendapat mengenai masalah ini?",
+              "explanation": ""
+            },
+            {
+              "jp": "農業に関する論文を読む。",
+              "en": "Membaca makalah yang berkaitan dengan pertanian.",
+              "explanation": ""
+            }
+          ]
+        },
+        {
+          "pattern_title": "日本文化について",
+          "description_box": {
+            "formula": "$$ \\text{Nに} \\begin{cases} \\text{ついて} \\\\ \\text{についてのN} \\\\ \\text{については} \\\\ \\text{についても} \\end{cases} $$",
+            "explanation": "Menyatakan topik atau objek yang sedang dibicarakan. Mirip dengan 「に関して」namun lebih umum digunakan.",
+            "explanation_en": "Expresses the topic being discussed. Similar to 'ni kanshite' but more commonly used."
+          },
+          "examples": [
+            {
+              "jp": "日本文化について勉強する。",
+              "en": "Belajar tentang kebudayaan Jepang.",
+              "explanation": ""
+            },
+            {
+              "jp": "「受験についての注意」を読む。",
+              "en": "Membaca 'Petunjuk Ujian'.",
+              "explanation": ""
+            }
+          ]
+        },
+        {
+          "pattern_title": "天気予報によれば",
+          "description_box": {
+            "formula": "$$ \\text{Nに} \\begin{cases} \\text{よれば} \\\\ \\text{よると} \\end{cases} $$",
+            "explanation": "Menyatakan sumber informasi atau dasar dari suatu pernyataan. Artinya 'menurut...'",
+            "explanation_en": "Expresses the source of information. Means 'according to...'."
+          },
+          "examples": [
+            {
+              "jp": "天気予報によれば、明日は晴れるらしい。",
+              "en": "Menurut prakiraan cuaca, besok sepertinya cerah.",
+              "explanation": ""
+            },
+            {
+              "jp": "さっきの地震はテレビの速報によると震度３だそうだ。",
+              "en": "Menurut berita kilat di TV, gempa tadi berkekuatan 3.",
+              "explanation": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

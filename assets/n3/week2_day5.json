@@ -1,0 +1,60 @@
+{
+  "levels": [
+    {
+      "name": "Soumatome N3 Grammar",
+      "week": 2,
+      "day": 5,
+      "header": {
+        "main_title": "がんばってごらん！",
+        "sub_title": "美人というより",
+        "translation": "Lebih dari sekadar cantik"
+      },
+      "illustration_text": {
+        "child": "女優といっても有名ではありません。美人というよりかわいい人です。",
+        "mother": ""
+      },
+      "grammar_sections": [
+        {
+          "pattern_title": "走るというより",
+          "description_box": {
+            "formula": "$$ \\text{N/na/V/A普} \\begin{cases} \\text{というより} \\\\ \\text{というか} \\end{cases} $$",
+            "explanation": "Digunakan untuk mengoreksi atau memperhalus ungkapan sebelumnya. Artinya 'lebih tepatnya...' atau 'atau lebih seperti...'",
+            "explanation_en": "Used to correct or refine a previous statement. Means 'rather than...' or 'more like...'."
+          },
+          "examples": [
+            {
+              "jp": "前の車は遅すぎて、走るというよりはっているようだ。",
+              "en": "Mobil di depan terlalu lambat, lebih seperti merayap daripada berlari.",
+              "explanation": ""
+            },
+            {
+              "jp": "今日は涼しいというより寒いくらいだった。",
+              "en": "Hari ini rasanya bukan sejuk, lebih seperti dingin.",
+              "explanation": ""
+            }
+          ]
+        },
+        {
+          "pattern_title": "京都というと",
+          "description_box": {
+            "formula": "$$ \\text{N/na/V/A普} \\begin{cases} \\text{いうと} \\\\ \\text{いえば} \\\\ \\text{いったら} \\end{cases} $$",
+            "explanation": "Digunakan untuk memulai topik atau mengasosiasikan sesuatu dengan hal lain yang langsung terpikirkan.",
+            "explanation_en": "Used to start a topic or associate something with what first comes to mind."
+          },
+          "examples": [
+            {
+              "jp": "京都というと、お寺をイメージします。",
+              "en": "Kalau bicara soal Kyoto, yang terbayang adalah kuil.",
+              "explanation": ""
+            },
+            {
+              "jp": "夏の果物といったら、やっぱりスイカだね。",
+              "en": "Kalau bicara buah musim panas, ya tetap saja semangka.",
+              "explanation": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,80 @@
+{
+  "levels": [
+    {
+      "name": "Soumatome N3 Grammar",
+      "week": 3,
+      "day": 5,
+      "header": {
+        "main_title": "もっとがんばってほしい！",
+        "sub_title": "一人っきり",
+        "translation": "Sendirian saja"
+      },
+      "illustration_text": {
+        "child": "一人っきりのお正月。さみしいなあ…",
+        "mother": "二人っきりのお正月。楽しい！"
+      },
+      "grammar_sections": [
+        {
+          "pattern_title": "地図のとおり",
+          "description_box": {
+            "formula": "$$ \\begin{cases} \\text{Vる} \\\\ \\text{Vた} \\\\ \\text{Nの} \\end{cases} \\text{とおり / Nどおり} $$",
+            "explanation": "Menyatakan bahwa sesuatu dilakukan atau terjadi sesuai dengan acuan atau instruksi yang ada.",
+            "explanation_en": "Expresses that something is done or happens in accordance with a reference or instruction."
+          },
+          "examples": [
+            {
+              "jp": "友達がかいてくれた地図のとおりに来たが、道に迷った。",
+              "en": "Aku datang mengikuti peta yang digambar temanku, tapi tetap tersesat.",
+              "explanation": ""
+            },
+            {
+              "jp": "先生が言ったとおり、試験は難しかった。",
+              "en": "Seperti yang dikatakan guru, ujiannya memang sulit.",
+              "explanation": ""
+            }
+          ]
+        },
+        {
+          "pattern_title": "テレビをつけたまま",
+          "description_box": {
+            "formula": "$$ \\begin{cases} \\text{Vた/Vない} \\\\ \\text{A/na/N普} \\end{cases} \\text{まま} $$",
+            "explanation": "Menyatakan bahwa suatu keadaan dibiarkan tetap seperti apa adanya tanpa perubahan, sementara tindakan lain dilakukan.",
+            "explanation_en": "Expresses that a state is left unchanged while another action takes place."
+          },
+          "examples": [
+            {
+              "jp": "昨夜は、テレビをつけたまま寝てしまった。",
+              "en": "Semalam aku ketiduran dengan TV tetap menyala.",
+              "explanation": ""
+            },
+            {
+              "jp": "この野菜は、生のまま食べてもおいしいですよ。",
+              "en": "Sayuran ini enak dimakan dalam keadaan mentah apa adanya.",
+              "explanation": ""
+            }
+          ]
+        },
+        {
+          "pattern_title": "開けっぱなし",
+          "description_box": {
+            "formula": "Vっぱなし",
+            "explanation": "Menyatakan bahwa sesuatu dibiarkan dalam keadaan tertentu tanpa dibenahi. Sering mengandung makna negatif (ceroboh atau tidak bertanggung jawab).",
+            "explanation_en": "Expresses that something is left in a certain state without being fixed. Often has a negative connotation."
+          },
+          "examples": [
+            {
+              "jp": "窓を開けっぱなしで出てきた。",
+              "en": "Aku keluar dengan jendela tetap terbuka.",
+              "explanation": ""
+            },
+            {
+              "jp": "水を出しっぱなしにしないでください。",
+              "en": "Tolong jangan biarkan air mengalir terus begitu saja.",
+              "explanation": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

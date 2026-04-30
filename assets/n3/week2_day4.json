@@ -1,0 +1,55 @@
+{
+  "levels": [
+    {
+      "name": "Soumatome N3 Grammar",
+      "week": 2,
+      "day": 4,
+      "header": {
+        "main_title": "がんばってごらん！",
+        "sub_title": "省エネというのは…",
+        "translation": "Yang dimaksud dengan hemat energi adalah..."
+      },
+      "illustration_text": {
+        "child": "「省く」+「エネルギー」",
+        "mother": "「省エネ」というのは、エネルギーを省くということを短くした言い方です。"
+      },
+      "grammar_sections": [
+        {
+          "pattern_title": "木村さんという人",
+          "description_box": {
+            "formula": "$$ \\text{N} \\begin{cases} \\text{というN} \\\\ \\text{というもの} \\\\ \\text{ということ} \\end{cases} $$",
+            "explanation": "Digunakan untuk memperkenalkan atau menjelaskan nama atau identitas sesuatu. Artinya 'yang bernama/disebut...'",
+            "explanation_en": "Used to introduce or explain the name or identity of something. Means 'called/named...'."
+          },
+          "examples": [
+            {
+              "jp": "さっき、木村さんという人から電話がありましたよ。",
+              "en": "Tadi ada telepon dari seseorang bernama Kimura-san.",
+              "explanation": ""
+            },
+            {
+              "jp": "これは、日本の楽器で「尺八」というものです。",
+              "en": "Ini adalah alat musik Jepang yang disebut 'shakuhachi'.",
+              "explanation": ""
+            }
+          ]
+        },
+        {
+          "pattern_title": "「デジカメ」というのは…",
+          "description_box": {
+            "formula": "$$ \\text{N} \\begin{cases} \\text{というのは} \\\\ \\text{っていうのは} \\end{cases} $$",
+            "explanation": "Digunakan untuk menjelaskan arti atau makna dari suatu kata atau konsep.",
+            "explanation_en": "Used to explain the meaning of a word or concept."
+          },
+          "examples": [
+            {
+              "jp": "「デジカメ」というのは、デジタルカメラを短くした言い方です。",
+              "en": "'Dejikame' adalah singkatan dari kamera digital.",
+              "explanation": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

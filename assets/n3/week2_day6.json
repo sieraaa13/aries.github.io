@@ -1,0 +1,80 @@
+{
+  "levels": [
+    {
+      "name": "Soumatome N3 Grammar",
+      "week": 2,
+      "day": 6,
+      "header": {
+        "main_title": "がんばってごらん！",
+        "sub_title": "食べてごらん",
+        "translation": "Coba makan"
+      },
+      "illustration_text": {
+        "child": "これ、おいしいよ。食べてごらん。",
+        "mother": "医者に甘いものは食べないように言われてるんだ。"
+      },
+      "grammar_sections": [
+        {
+          "pattern_title": "聞いてごらん",
+          "description_box": {
+            "formula": "Vてごらん(なさい)",
+            "explanation": "Digunakan oleh atasan kepada bawahan untuk menyuruh mencoba melakukan sesuatu. Lebih lembut dari 'Vてみなさい'.",
+            "explanation_en": "Used to address subordinates, suggesting they try doing something."
+          },
+          "examples": [
+            {
+              "jp": "わからなかったら、先生に聞いてごらん。",
+              "en": "Kalau tidak mengerti, coba tanyakan pada gurumu.",
+              "explanation": ""
+            },
+            {
+              "jp": "もう一度やってごらんなさい。",
+              "en": "Coba lakukan sekali lagi.",
+              "explanation": ""
+            }
+          ]
+        },
+        {
+          "pattern_title": "来るように言う",
+          "description_box": {
+            "formula": "$$ \\begin{cases} \\text{Vるよう(に)} \\\\ \\text{Vないよう(に)} \\end{cases} \\begin{cases} \\text{言う} \\\\ \\text{頼む} \\end{cases} $$",
+            "explanation": "Menyampaikan perintah, permintaan, atau instruksi secara tidak langsung kepada orang ketiga.",
+            "explanation_en": "Relays a command, request, or instruction indirectly to a third party."
+          },
+          "examples": [
+            {
+              "jp": "田中さんに、私の部屋に来るよう(に)言ってください。",
+              "en": "Tolong sampaikan kepada Tanaka-san agar datang ke kamarku.",
+              "explanation": ""
+            },
+            {
+              "jp": "妻に、家ではたばこを吸わないよう(に)言われています。",
+              "en": "Istriku menyuruhku untuk tidak merokok di rumah.",
+              "explanation": ""
+            }
+          ]
+        },
+        {
+          "pattern_title": "飲むなと言われた",
+          "description_box": {
+            "formula": "$$ \\begin{cases} \\text{V[命令形]と} \\\\ \\text{Vるなと} \\end{cases} \\begin{cases} \\text{言われる} \\\\ \\text{注意される} \\\\ \\text{しかられる} \\\\ \\text{怒られる} \\end{cases} $$",
+            "explanation": "Menyampaikan isi perintah atau larangan yang diterima dari orang lain. Meski menggunakan bentuk perintah, keseluruhan kalimat tidak terdengar kasar.",
+            "explanation_en": "Relays the content of an order or prohibition received from someone else."
+          },
+          "examples": [
+            {
+              "jp": "医者に酒を飲むなと言われた。",
+              "en": "Dokter melarangku untuk minum alkohol.",
+              "explanation": ""
+            },
+            {
+              "jp": "先生に、もっと勉強しろと言われた。",
+              "en": "Guru menyuruhku untuk belajar lebih giat.",
+              "explanation": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

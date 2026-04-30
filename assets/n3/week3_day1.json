@@ -1,0 +1,60 @@
+{
+  "levels": [
+    {
+      "name": "Soumatome N3 Grammar",
+      "week": 3,
+      "day": 1,
+      "header": {
+        "main_title": "もっとがんばってほしい！",
+        "sub_title": "いくら安くても",
+        "translation": "Seberapa pun murahnya"
+      },
+      "illustration_text": {
+        "child": "いくら安くても、買いたくない。",
+        "mother": "みんな、何も買わずに帰ってしまう。なぜだろう？"
+      },
+      "grammar_sections": [
+        {
+          "pattern_title": "調べてもわからなかった",
+          "description_box": {
+            "formula": "$$ \\begin{cases} \\text{Vても} \\\\ \\text{Aくても} \\\\ \\text{na/Nでも} \\end{cases} $$",
+            "explanation": "Menyatakan bahwa meskipun kondisi A terpenuhi, kondisi B tetap tidak berubah. Artinya 'meskipun' atau 'walau pun'.",
+            "explanation_en": "Expresses that even if condition A is met, condition B remains unchanged. Means 'even if' or 'even though'."
+          },
+          "examples": [
+            {
+              "jp": "調べてもわからなかったので、先生に聞いた。",
+              "en": "Meskipun sudah mencari tahu, tetap tidak mengerti, jadi aku bertanya kepada guru.",
+              "explanation": ""
+            },
+            {
+              "jp": "必要なので、高くても買います。",
+              "en": "Karena dibutuhkan, aku akan membelinya meski mahal.",
+              "explanation": ""
+            }
+          ]
+        },
+        {
+          "pattern_title": "どんなに練習しても",
+          "description_box": {
+            "formula": "$$ \\begin{cases} \\text{どんなに} \\\\ \\text{いくら} \\end{cases} \\begin{cases} \\text{Vても} \\\\ \\text{Aくても} \\\\ \\text{naでも} \\\\ \\text{Nでも} \\end{cases} $$",
+            "explanation": "Menyatakan bahwa tidak peduli seberapa banyak atau seberapa besar, hasilnya tetap sama.",
+            "explanation_en": "Expresses that no matter how much or how extreme, the result remains the same."
+          },
+          "examples": [
+            {
+              "jp": "ギターを習い始めたが、どんなに練習しても全然うまくならない。",
+              "en": "Aku mulai belajar gitar, tapi tidak peduli seberapa banyak berlatih, tetap tidak mahir.",
+              "explanation": ""
+            },
+            {
+              "jp": "私は、いくらお酒を飲んでも顔色が変わらない。",
+              "en": "Wajahku tidak berubah merah no matter how much aku minum.",
+              "explanation": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

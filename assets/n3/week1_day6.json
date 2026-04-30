@@ -1,0 +1,80 @@
+{
+  "levels": [
+    {
+      "name": "Soumatome N3 Grammar",
+      "week": 1,
+      "day": 6,
+      "header": {
+        "main_title": "がんばらなくちゃ！",
+        "sub_title": "話を聞こうとしない",
+        "translation": "Tidak mau mendengarkan pembicaraan"
+      },
+      "illustration_text": {
+        "child": "留学しようと思っているが、父は私の話を聞こうとしない。",
+        "mother": ""
+      },
+      "grammar_sections": [
+        {
+          "pattern_title": "やめようと思う",
+          "description_box": {
+            "formula": "Vようと思う",
+            "explanation": "Menyatakan niat atau rencana yang dimiliki oleh pembicara.",
+            "explanation_en": "To show one's will or plan."
+          },
+          "examples": [
+            {
+              "jp": "会社をやめようと思っている。",
+              "en": "Aku sedang berpikir untuk berhenti dari perusahaan.",
+              "explanation": ""
+            },
+            {
+              "jp": "来年、国に帰ろうと思っています。",
+              "en": "Saya berencana untuk pulang ke negara asal tahun depan.",
+              "explanation": ""
+            }
+          ]
+        },
+        {
+          "pattern_title": "電車に乗ろうとしたときに",
+          "description_box": {
+            "formula": "Vようとする",
+            "explanation": "Menunjukkan momen tepat saat seseorang akan memulai suatu tindakan.",
+            "explanation_en": "Indicates the moment just before starting an action."
+          },
+          "examples": [
+            {
+              "jp": "電車に乗ろうとしたときに、ドアが閉まって乗れなかった。",
+              "en": "Tepat saat akan naik kereta, pintunya tertutup dan aku tidak bisa masuk.",
+              "explanation": ""
+            },
+            {
+              "jp": "ポチは、ぼくが出かけようとすると、ほえる。",
+              "en": "Pochi menggonggong setiap kali aku akan pergi keluar.",
+              "explanation": ""
+            }
+          ]
+        },
+        {
+          "pattern_title": "食べようとしない",
+          "description_box": {
+            "formula": "Vようとしない",
+            "explanation": "Menunjukkan tidak adanya niat atau kemauan untuk melakukan tindakan tersebut.",
+            "explanation_en": "To indicate that there is no intention to do an action."
+          },
+          "examples": [
+            {
+              "jp": "「ポチ、どうしたんだろう。ご飯を食べようとしないんだよ。」",
+              "en": "\"Ada apa dengan Pochi? Dia tidak mau makan sama sekali.\"",
+              "explanation": ""
+            },
+            {
+              "jp": "彼は、自分のことは何も言おうとしない。",
+              "en": "Dia tidak mau mengatakan apa pun tentang dirinya sendiri.",
+              "explanation": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

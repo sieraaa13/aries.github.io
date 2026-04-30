@@ -1,0 +1,60 @@
+{
+  "levels": [
+    {
+      "name": "Soumatome N3 Grammar",
+      "week": 3,
+      "day": 6,
+      "header": {
+        "main_title": "もっとがんばってほしい！",
+        "sub_title": "教えてほしい",
+        "translation": "Ingin diajarkan"
+      },
+      "illustration_text": {
+        "child": "わかったふりをしていましたが、実はよくわからないので、教えてほしいんです。",
+        "mother": ""
+      },
+      "grammar_sections": [
+        {
+          "pattern_title": "怖がらないで",
+          "description_box": {
+            "formula": "$$ \\begin{cases} \\text{Aがる} \\\\ \\text{naがって} \\\\ \\text{Vたくがらないで} \\end{cases} $$",
+            "explanation": "「〜がる」menunjukkan bahwa orang ketiga memperlihatkan atau mengekspresikan perasaan tertentu. 「〜がらないで」berarti jangan tunjukkan perasaan itu.",
+            "explanation_en": "'~garu' shows that a third party is displaying a certain feeling. '~garanai de' means 'please don't show that feeling'."
+          },
+          "examples": [
+            {
+              "jp": "怖がらないでください。",
+              "en": "Jangan takut.",
+              "explanation": ""
+            },
+            {
+              "jp": "田中さんが、あなたに会いたがっていましたよ。",
+              "en": "Tanaka-san kelihatannya ingin bertemu denganmu.",
+              "explanation": ""
+            }
+          ]
+        },
+        {
+          "pattern_title": "見せてほしい",
+          "description_box": {
+            "formula": "$$ \\begin{cases} \\text{Vて} \\\\ \\text{Vないで} \\end{cases} \\begin{cases} \\text{ほしい} \\\\ \\text{もらいたい} \\end{cases} $$",
+            "explanation": "Menyatakan keinginan agar orang lain melakukan sesuatu untuk kita. Artinya 'ingin agar... melakukan...'",
+            "explanation_en": "Expresses the desire for someone else to do something for you. Means 'I want (someone) to...'."
+          },
+          "examples": [
+            {
+              "jp": "あの、教科書を見せてほしいんですが……。",
+              "en": "Permisi, bolehkah saya melihat buku teks Anda?",
+              "explanation": ""
+            },
+            {
+              "jp": "あなたに教えてもらいたいことがあります。",
+              "en": "Ada sesuatu yang ingin saya minta kamu ajarkan kepadaku.",
+              "explanation": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

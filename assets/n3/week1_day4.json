@@ -1,0 +1,75 @@
+{
+  "levels": [
+    {
+      "name": "Soumatome N3 Grammar",
+      "week": 1,
+      "day": 4,
+      "header": {
+        "main_title": "がんばらなくちゃ！",
+        "sub_title": "できるようになった！",
+        "translation": "Sudah bisa melakukannya!"
+      },
+      "illustration_text": {
+        "child": "うまくできるようになった！",
+        "mother": "手を切らないように気を付けて！"
+      },
+      "grammar_sections": [
+        {
+          "pattern_title": "忘れ物をしないようにしましょう",
+          "description_box": {
+            "formula": "$$ \\begin{cases} \\text{Vる} \\\\ \\text{Vない} \\end{cases} \\text{ようにする} $$",
+            "explanation": "Menunjukkan kebiasaan, tekad, atau usaha yang dilakukan secara sadar.",
+            "explanation_en": "To show habits and intention (effort)."
+          },
+          "examples": [
+            {
+              "jp": "忘れ物をしないようにしましょう。",
+              "en": "Mari kita berusaha agar tidak ada barang yang tertinggal.",
+              "explanation": ""
+            },
+            {
+              "jp": "毎食後、歯をみがくようにしています。",
+              "en": "Saya selalu berusaha menyikat gigi setelah setiap makan.",
+              "explanation": ""
+            }
+          ]
+        },
+        {
+          "pattern_title": "聞こえるように話す",
+          "description_box": {
+            "formula": "$$ \\begin{cases} \\text{Vる} \\\\ \\text{Vない} \\\\ \\text{Vれる} \\end{cases} \\text{ように} $$",
+            "explanation": "Bermakna 'dengan tujuan agar kondisi tersebut tercapai'. Menyatakan tujuan dari suatu tindakan.",
+            "explanation_en": "To mean 'to aim for'. Used to express the purpose of an action."
+          },
+          "examples": [
+            {
+              "jp": "みんなに聞こえるようにもっと大きな声で話してください。",
+              "en": "Tolong bicaralah dengan suara lebih keras agar semua orang bisa mendengar.",
+              "explanation": ""
+            },
+            {
+              "jp": "忘れないように、手帳に書いておこう。",
+              "en": "Agar tidak lupa, ayo catat di buku agenda.",
+              "explanation": ""
+            }
+          ]
+        },
+        {
+          "pattern_title": "使えるようになった",
+          "description_box": {
+            "formula": "Vるようになる",
+            "explanation": "Menunjukkan perubahan keadaan atau kemampuan yang terjadi secara bertahap.",
+            "explanation_en": "Indicates a gradual change in state or ability."
+          },
+          "examples": [
+            {
+              "jp": "「このDVDプレーヤー、こわれているんだよね。」「いや、直してもらったから、使えるようになったよ。」",
+              "en": "\"DVD player ini rusak ya?\" \"Tidak, sudah diperbaiki, sekarang bisa dipakai.\"",
+              "explanation": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
