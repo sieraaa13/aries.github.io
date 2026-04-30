@@ -7,10 +7,105 @@
         {
           "week_number": "1",
           "days": [
-            { 
-              "label": "Day 1: がんばらなくちゃ！", 
-              "path": "n3/soumatome.json",
-              "type": "grammar" 
+            {
+              "label": "1日目: ぼくにもやらせて",
+              "path": "n3/week1_day1.json",
+              "type": "grammar"
+            },
+            {
+              "label": "2日目: そこに置いといて",
+              "path": "n3/week1_day2.json",
+              "type": "grammar"
+            },
+            {
+              "label": "3日目: 女らしい",
+              "path": "n3/week1_day3.json",
+              "type": "grammar"
+            },
+            {
+              "label": "4日目: できるようになった！",
+              "path": "n3/week1_day4.json",
+              "type": "grammar"
+            },
+            {
+              "label": "5日目: 言ったように",
+              "path": "n3/week1_day5.json",
+              "type": "grammar"
+            },
+            {
+              "label": "6日目: 話を聞こうとしない",
+              "path": "n3/week1_day6.json",
+              "type": "grammar"
+            }
+          ]
+        },
+        {
+          "week_number": "2",
+          "days": [
+            {
+              "label": "1日目: うそばっかり！",
+              "path": "n3/week2_day1.json",
+              "type": "grammar"
+            },
+            {
+              "label": "2日目: 事故などによる渋滞",
+              "path": "n3/week2_day2.json",
+              "type": "grammar"
+            },
+            {
+              "label": "3日目: あなたのこと",
+              "path": "n3/week2_day3.json",
+              "type": "grammar"
+            },
+            {
+              "label": "4日目: 省エネというのは…",
+              "path": "n3/week2_day4.json",
+              "type": "grammar"
+            },
+            {
+              "label": "5日目: 美人というより",
+              "path": "n3/week2_day5.json",
+              "type": "grammar"
+            },
+            {
+              "label": "6日目: 食べてごらん",
+              "path": "n3/week2_day6.json",
+              "type": "grammar"
+            }
+          ]
+        },
+        {
+          "week_number": "3",
+          "days": [
+            {
+              "label": "1日目: いくら安くても",
+              "path": "n3/week3_day1.json",
+              "type": "grammar"
+            },
+            {
+              "label": "2日目: それにしては",
+              "path": "n3/week3_day2.json",
+              "type": "grammar"
+            },
+            {
+              "label": "3日目: 勉強するつもりでしたが…",
+              "path": "n3/week3_day3.json",
+              "type": "grammar"
+            },
+            {
+              "label": "4日目: 会うたびに",
+              "path": "n3/week3_day4.json",
+              "type": "grammar"
+            },
+            {
+              "label": "5日目: 一人っきり",
+              "path": "n3/week3_day5.json",
+              "type": "grammar"
+            },
+            {
+              "label": "6日目: 教えてほしい",
+              "path": "n3/week3_day6.json",
+              "type": "grammar"
             }
           ]
         }
