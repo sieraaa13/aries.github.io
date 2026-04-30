@@ -16,6 +16,7 @@
       "grammar_sections": [
         {
           "pattern_title": "書かれている",
+          "pattern_meaning": "書かれる = ditulis (oleh seseorang) | れる／られる = bentuk pasif",
           "description_box": {
             "formula": "Vれる〈受身形〉",
             "explanation": "Ketika menyebutkan fakta tanpa menunjukkan subjek, bentuk pasif sering digunakan.",
@@ -29,16 +30,17 @@
             },
             {
               "jp": "入学式は、このホールで行われます。",
-              "en": "Upacara penerimaan mahasiswa baru akan diadakan di aula ini.",
+              "en": "Upacara penerimaan akan diadakan di aula ini.",
               "explanation": ""
             }
           ]
         },
         {
           "pattern_title": "赤ちゃんに泣かれた",
+          "pattern_meaning": "泣かれた = dibikin nangis (oleh bayi) | (Nに)Vれる = bentuk pasif dari sudut pandang korban",
           "description_box": {
             "formula": "(Nに)Vれる",
-            "explanation": "Menunjukkan kondisi sulit atau tidak menyenangkan yang dialami akibat tindakan orang lain.",
+            "explanation": "Menunjukkan kondisi sulit atau tidak menyenangkan yang dialami akibat tindakan orang/sesuatu lain.",
             "explanation_en": "Showing a difficult situation as a result of something."
           },
           "examples": [
@@ -56,9 +58,10 @@
         },
         {
           "pattern_title": "早く帰らせてください",
+          "pattern_meaning": "帰らせて = biarkan saya pulang | させる = menyuruh/mengizinkan melakukan | ください = tolong",
           "description_box": {
             "formula": "$$ \\text{V(さ)せて} \\begin{cases} \\text{ください} \\\\ \\text{もらえますか} \\\\ \\text{もらえませんか} \\end{cases} $$",
-            "explanation": "Ekspresi yang digunakan untuk meminta izin kepada orang lain agar kita diperbolehkan melakukan sesuatu.",
+            "explanation": "Ekspresi untuk meminta izin kepada orang lain agar kita diperbolehkan melakukan sesuatu.",
             "explanation_en": "Expression used when asking for permission from the other person."
           },
           "examples": [
