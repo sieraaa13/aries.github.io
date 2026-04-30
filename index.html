@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>siera JLPT Learning System</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
     <style>
         :root { --primary: #2c3e50; --accent: #3498db; --bg: #f0f2f5; --success: #27ae60; --error: #e74c3c; }
         body { font-family: 'Segoe UI', sans-serif; margin: 0; background: var(--bg); display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
@@ -390,67 +391,107 @@
     // 4. FULL SOUMATOME MATERIAL MODE
     // ==========================================
     async function showGrammarMaterial(path) {
-        try {
-            const response = await fetch(`assets/${path}`);
-            const data = await response.json();
-            const content = data.levels[0]; 
-
-            document.getElementById('file-screen').classList.add('hidden');
-            document.getElementById('exam-screen').style.display = 'flex';
-            document.getElementById('chat-icon').style.display = 'block';
-            document.getElementById('exam-title-display').innerText = content.header.main_title;
-            document.getElementById('progress-indicator').innerText = "Mode Belajar Materi";
-
-            let html = `
-                <div style="text-align: left; background: #f9f9f9; padding: 20px; border-radius: 12px; margin-bottom: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
-                    <h2 style="color: #2c3e50; margin-top: 0;">${content.header.main_title}</h2>
-                    <p style="font-size: 1.1em; color: #3498db; font-weight: bold;">
-                        ${content.header.sub_title} <span style="color: #7f8c8d; font-weight: normal;">(${content.header.translation})</span>
-                    </p>
-                    <div style="background: #fffbe6; padding: 15px; border-left: 5px solid #f1c40f; border-radius: 4px;">
-                        <p><strong>👦 (Child):</strong> ${content.illustration_text.child}</p>
-                        <p><strong>👩 (Mother):</strong> ${content.illustration_text.mother}</p>
-                    </div>
+    try {
+        const response = await fetch(`assets/${path}`);
+        if (!response.ok) throw new Error(`Gagal fetch file (Status: ${response.status})`);
+        
+        const data = await response.json();
+        const content = data.levels[0];
+        if (!content) throw new Error("Data levels kosong atau tidak ditemukan.");
+ 
+        document.getElementById('file-screen').classList.add('hidden');
+        document.getElementById('exam-screen').style.display = 'flex';
+        document.getElementById('chat-icon').style.display = 'block';
+        document.getElementById('exam-title-display').innerText = content.header.main_title;
+        document.getElementById('progress-indicator').innerText = "Mode Belajar Materi";
+        document.getElementById('submit-btn').style.display = 'none';
+        document.getElementById('result-box').style.display = 'none';
+ 
+        let html = `
+            <div style="text-align: left; background: #f9f9f9; padding: 20px; border-radius: 12px; margin-bottom: 25px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                <h2 style="color: #2c3e50; margin-top: 0;">${content.header.main_title}</h2>
+                <p style="font-size: 1.1em; color: #3498db; font-weight: bold;">
+                    ${content.header.sub_title} <span style="color: #7f8c8d; font-weight: normal;">(${content.header.translation})</span>
+                </p>
+                <div style="background: #fffbe6; padding: 15px; border-left: 5px solid #f1c40f; border-radius: 4px;">
+                    <p style="margin: 8px 0;"><strong>👦 (Child):</strong> ${content.illustration_text.child}</p>
+                    <p style="margin: 8px 0;"><strong>👩 (Mother):</strong> ${content.illustration_text.mother}</p>
                 </div>
-            `;
-
-            content.grammar_sections.forEach(sec => {
-    html += `
-        <div style="text-align: left; border: 1px solid #e0e0e0; padding: 20px; border-radius: 10px; margin-bottom: 20px; background: white;">
-            <h3 style="background: #3498db; color: white; display: inline-block; padding: 5px 15px; border-radius: 20px; font-size: 16px; margin-top:0;">
-                ${sec.pattern_title}
-            </h3>
-            <div style="background: #f8f9fa; padding: 12px; border-radius: 6px; margin: 15px 0; border: 1px dashed #cbd5e0;">
-                <p style="margin: 5px 0;"><strong>Formula:</strong> <code>${sec.description_box.formula}</code></p>
-                <p style="margin: 5px 0; font-size: 0.95em; color: #4a5568;">${sec.description_box.explanation_en}</p>
             </div>
-            <p><b>Contoh Kalimat:</b></p>
-            <ul style="list-style: none; padding: 0;">
-                ${sec.examples.map(ex => `
-                    <li style="margin-bottom: 12px; padding: 10px; background: #fdfdfd; border-radius: 6px; border-left: 3px solid #3498db; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
-                        <div style="font-size: 1.1em; margin-bottom: 4px;">${ex.jp}</div>
-                        <div style="font-size: 0.9em; color: #718096; font-style: italic;">${ex.en}</div>
-                        
-                        ${ex.explanation ? `
-                            <div style="margin-top: 8px; font-size: 0.85em; color: #27ae60; background: #ebfef2; padding: 5px 10px; border-radius: 4px; border-left: 2px solid #2ecc71;">
-                                <strong>💡 Penjelasan:</strong> ${ex.explanation}
-                            </div>
-                        ` : ''}
-                    </li>
-                `).join('')}
-            </ul>
-        </div>
-    `;
-});
-
-            const area = document.getElementById('questions-area');
-            area.innerHTML = html;
-            document.getElementById('submit-btn').style.display = 'none';
-            document.getElementById('result-box').style.display = 'none';
-            updateWidgetVisibility();
-        } catch (error) { alert("Gagal memuat materi."); }
+        `;
+ 
+        // RENDER GRAMMAR SECTIONS DENGAN TABLE FORMAT + MATHJAX
+        if (content.grammar_sections && content.grammar_sections.length > 0) {
+            content.grammar_sections.forEach(sec => {
+                html += `
+                <div style="text-align: left; border: 1px solid #e0e0e0; padding: 20px; border-radius: 10px; margin-bottom: 20px; background: white;">
+                    <h3 style="background: #3498db; color: white; display: inline-block; padding: 8px 16px; border-radius: 20px; font-size: 16px; margin: 0 0 15px 0;">
+                        ${sec.pattern_title}
+                    </h3>
+                    
+                    <!-- TABLE FORMAT UNTUK FORMULA -->
+                    <table style="width: 100%; border-collapse: collapse; margin: 15px 0; border: 1px solid #ddd;">
+                        <tr>
+                            <td style="padding: 12px; background: #f0f4f8; border: 1px solid #ddd; font-weight: bold; width: 22%; vertical-align: top;">
+                                Formula
+                            </td>
+                            <td style="padding: 12px; border: 1px solid #ddd; vertical-align: top;">
+                                <div style="font-size: 1em; line-height: 1.6; overflow-x: auto;">
+                                    ${sec.description_box.formula}
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+ 
+                    <!-- PENJELASAN -->
+                    <div style="background: #f8f9fa; padding: 12px; border-radius: 6px; margin: 15px 0; border-left: 3px solid #3498db;">
+                        <p style="margin: 6px 0; font-size: 0.95em; color: #4a5568;">
+                            <strong>Indonesia:</strong> ${sec.description_box.explanation || ''}
+                        </p>
+                        <p style="margin: 6px 0; font-size: 0.95em; color: #4a5568;">
+                            <strong>English:</strong> ${sec.description_box.explanation_en || ''}
+                        </p>
+                    </div>
+ 
+                    <!-- CONTOH KALIMAT -->
+                    <p style="margin: 12px 0 8px 0; font-weight: bold; font-size: 15px;">Contoh Kalimat:</p>
+                    <ul style="list-style: none; padding: 0; margin: 0;">
+                        ${sec.examples.map(ex => `
+                            <li style="margin-bottom: 12px; padding: 12px; background: #fdfdfd; border-radius: 6px; border-left: 3px solid #3498db; box-shadow: 0 1px 3px rgba(0,0,0,0.05);">
+                                <div style="font-size: 1.05em; margin-bottom: 6px; font-weight: 500;">${ex.jp}</div>
+                                <div style="font-size: 0.9em; color: #718096; margin-bottom: 4px;">🇮🇩 ${ex.en}</div>
+                                ${ex.explanation ? `
+                                    <div style="margin-top: 8px; font-size: 0.85em; color: #27ae60; background: #ebfef2; padding: 8px 10px; border-radius: 4px; border-left: 2px solid #2ecc71;">
+                                        <strong>💡 Penjelasan:</strong> ${ex.explanation}
+                                    </div>
+                                ` : ''}
+                            </li>
+                        `).join('')}
+                    </ul>
+                </div>
+                `;
+            });
+        }
+ 
+        const area = document.getElementById('questions-area');
+        area.innerHTML = html;
+        
+        // ⭐ TRIGGER MATHJAX UNTUK RENDER FORMULA LATEX
+        // Ini penting! Tanpa ini formula tidak akan di-render
+        if (window.MathJax && window.MathJax.typesetPromise) {
+            window.MathJax.typesetPromise().catch(err => console.error('MathJax error:', err));
+        }
+        
+        updateWidgetVisibility();
+ 
+    } catch (error) { 
+        console.error("Error showGrammarMaterial:", error);
+        alert("Gagal memuat materi: " + error.message); 
+        document.getElementById('file-screen').classList.remove('hidden');
+        document.getElementById('exam-screen').style.display = 'none';
     }
-
+}
+ 
     // ==========================================
     // 5. FULL EXAM ENGINE (QUIZ)
     // ==========================================
