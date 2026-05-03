@@ -38,17 +38,17 @@
     --shadow-lg: 0 8px 20px rgba(255, 20, 147, 0.15);
     --shadow-xl: 0 12px 30px rgba(255, 20, 147, 0.2);
 }
- 
+
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
- 
+
 html {
     scroll-behavior: smooth;
 }
- 
+
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
     font-size: 16px;
@@ -62,7 +62,7 @@ body {
     height: 100vh;
     overflow: hidden;
 }
- 
+
 /* ===================================================================
    TYPOGRAPHY
    =================================================================== */
@@ -72,7 +72,7 @@ h1, h2, h3, h4, h5, h6 {
     margin-bottom: 0.5rem;
     color: var(--text-primary);
 }
- 
+
 h1 {
     font-size: 2.5rem;
     letter-spacing: -0.5px;
@@ -81,25 +81,25 @@ h1 {
     -webkit-text-fill-color: transparent;
     background-clip: text;
 }
- 
+
 h2 {
     font-size: 1.875rem;
     letter-spacing: -0.3px;
 }
- 
+
 h3 {
     font-size: 1.5rem;
 }
- 
+
 p {
     color: var(--text-secondary);
     margin-bottom: 1rem;
 }
- 
+
 .text-primary { color: var(--text-primary); }
 .text-secondary { color: var(--text-secondary); }
 .text-light { color: var(--text-light); }
- 
+
 /* ===================================================================
    NAVBAR (Colorful & Modern)
    =================================================================== */
@@ -110,7 +110,7 @@ p {
     top: 0;
     z-index: 100;
 }
- 
+
 .navbar-container {
     max-width: 1400px;
     margin: 0 auto;
@@ -119,7 +119,7 @@ p {
     justify-content: space-between;
     align-items: center;
 }
- 
+
 .navbar-brand {
     display: flex;
     align-items: center;
@@ -128,21 +128,21 @@ p {
     cursor: pointer;
     transition: all 0.3s ease;
 }
- 
+
 .navbar-brand:hover {
     transform: translateY(-2px);
 }
- 
+
 .brand-icon {
     font-size: 2.5rem;
     animation: bounce 2s infinite;
 }
- 
+
 @keyframes bounce {
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-8px); }
 }
- 
+
 .brand-name {
     font-size: 1.75rem;
     font-weight: 800;
@@ -151,19 +151,19 @@ p {
     letter-spacing: 1px;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
 }
- 
+
 .navbar-right {
     display: flex;
     align-items: center;
     gap: 20px;
 }
- 
+
 .login-area {
     display: flex;
     gap: 8px;
     align-items: center;
 }
- 
+
 .username-input {
     padding: 12px 20px;
     border: 2px solid rgba(255, 255, 255, 0.3);
@@ -176,17 +176,17 @@ p {
     backdrop-filter: blur(10px);
     min-width: 200px;
 }
- 
+
 .username-input::placeholder {
     color: var(--text-light);
 }
- 
+
 .username-input:focus {
     border-color: white;
     background: white;
     box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
 }
- 
+
 /* ===================================================================
    BUTTONS (Cute & Interactive)
    =================================================================== */
@@ -208,7 +208,7 @@ p {
     overflow: hidden;
     box-shadow: var(--shadow-md);
 }
- 
+
 .btn::before {
     content: '';
     position: absolute;
@@ -221,70 +221,70 @@ p {
     transform: translate(-50%, -50%);
     transition: width 0.6s, height 0.6s;
 }
- 
+
 .btn:active::before {
     width: 300px;
     height: 300px;
 }
- 
+
 .btn-primary {
     background: linear-gradient(135deg, var(--primary), var(--primary-light));
     color: white;
 }
- 
+
 .btn-primary:hover {
     transform: translateY(-3px);
     box-shadow: var(--shadow-xl);
 }
- 
+
 .btn-secondary {
     background: var(--bg);
     color: var(--primary);
     border: 2px solid var(--primary);
 }
- 
+
 .btn-secondary:hover {
     background: var(--primary-lighter);
     transform: translateY(-2px);
 }
- 
+
 .btn-success {
     background: var(--success);
     color: white;
 }
- 
+
 .btn-success:hover {
     transform: translateY(-3px);
     box-shadow: var(--shadow-xl);
 }
- 
+
 .btn-danger {
     background: var(--error);
     color: white;
 }
- 
+
 .btn-danger:hover {
     transform: translateY(-3px);
 }
- 
+
 .btn-sm {
     padding: 8px 18px;
     font-size: 0.875rem;
     border-radius: 20px;
 }
- 
+
 .btn-lg {
     padding: 14px 40px;
     font-size: 1.1rem;
     border-radius: 30px;
 }
- 
+
 .btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
     transform: none !important;
 }
- 
+
 /* ===================================================================
    SCREENS
    =================================================================== */
@@ -296,7 +296,7 @@ p {
     flex: 1;
     position: relative;
 }
- 
+
 #folder-screen::before {
     content: '✨';
     position: fixed;
@@ -306,23 +306,23 @@ p {
     opacity: 0.1;
     animation: float 6s ease-in-out infinite;
 }
- 
+
 @keyframes float {
     0%, 100% { transform: translateY(0px) rotate(0deg); }
     50% { transform: translateY(-20px) rotate(10deg); }
 }
- 
+
 #folder-screen h1 {
     font-size: 2.5rem;
     margin-bottom: 0.5rem;
 }
- 
+
 #folder-screen > p {
     font-size: 1.1rem;
     color: var(--text-secondary);
     margin-bottom: 2rem;
 }
- 
+
 /* ===================================================================
    FOLDER GRID (Cute Cards)
    =================================================================== */
@@ -335,7 +335,7 @@ p {
     margin-left: auto;
     margin-right: auto;
 }
- 
+
 .folder-card {
     background: linear-gradient(135deg, var(--bg), var(--primary-lighter));
     border: 2px solid var(--border);
@@ -353,7 +353,7 @@ p {
     overflow: hidden;
     box-shadow: var(--shadow-md);
 }
- 
+
 .folder-card::before {
     content: '';
     position: absolute;
@@ -366,28 +366,28 @@ p {
     opacity: 0;
     transition: opacity 0.3s ease;
 }
- 
+
 .folder-card:hover {
     border-color: var(--primary);
     transform: translateY(-8px) scale(1.02);
     box-shadow: var(--shadow-xl);
     background: linear-gradient(135deg, var(--primary-lighter), var(--bg));
 }
- 
+
 .folder-card:hover::before {
     opacity: 1;
 }
- 
+
 .folder-icon {
     font-size: 3rem;
     transition: all 0.3s ease;
     z-index: 1;
 }
- 
+
 .folder-card:hover .folder-icon {
     transform: scale(1.2) rotate(10deg);
 }
- 
+
 .folder-name {
     font-weight: 700;
     color: var(--text-primary);
@@ -395,13 +395,13 @@ p {
     z-index: 1;
     text-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
- 
+
 .folder-count {
     font-size: 0.875rem;
     color: var(--text-secondary);
     z-index: 1;
 }
- 
+
 /* ===================================================================
    FILE SCREEN
    =================================================================== */
@@ -414,7 +414,7 @@ p {
     box-shadow: var(--shadow-lg);
     overflow: hidden;
 }
- 
+
 .year-divider {
     background: linear-gradient(90deg, var(--primary-lighter), var(--bg-secondary));
     padding: 12px 20px;
@@ -423,7 +423,7 @@ p {
     color: var(--text-primary);
     border-bottom: 2px solid var(--border);
 }
- 
+
 .file-item {
     padding: 15px 20px;
     border-bottom: 1px solid var(--border);
@@ -435,22 +435,22 @@ p {
     align-items: center;
     gap: 10px;
 }
- 
+
 .file-item::before {
     content: '📚';
     font-size: 1.25rem;
 }
- 
+
 .file-item:hover {
     background: var(--primary-lighter);
     padding-left: 25px;
     transform: translateX(5px);
 }
- 
+
 .file-item:last-child {
     border-bottom: none;
 }
- 
+
 /* ===================================================================
    EXAM SCREEN
    =================================================================== */
@@ -460,7 +460,7 @@ p {
     height: 100vh;
     background: linear-gradient(135deg, var(--bg-secondary) 0%, #FFF0F7 100%);
 }
- 
+
 #exam-content {
     flex: 1;
     padding: 2rem 1rem;
@@ -469,7 +469,7 @@ p {
     margin: 0 auto;
     width: 100%;
 }
- 
+
 .exam-header {
     display: flex;
     justify-content: space-between;
@@ -478,7 +478,7 @@ p {
     padding-bottom: 1rem;
     border-bottom: 2px solid var(--border);
 }
- 
+
 .exam-back-btn {
     padding: 8px 16px;
     cursor: pointer;
@@ -490,18 +490,18 @@ p {
     transition: all 0.3s ease;
     border-radius: 20px;
 }
- 
+
 .exam-back-btn:hover {
     background: var(--primary-lighter);
     transform: translateX(-3px);
 }
- 
+
 #progress-indicator {
     font-weight: 700;
     color: var(--primary);
     font-size: 1.125rem;
 }
- 
+
 /* Progress Bar */
 .progress-bar {
     width: 100%;
@@ -511,7 +511,7 @@ p {
     overflow: hidden;
     margin: 1rem 0 2rem;
 }
- 
+
 .progress-fill {
     height: 100%;
     background: linear-gradient(90deg, var(--primary), var(--accent-1));
@@ -519,7 +519,7 @@ p {
     transition: width 0.4s ease;
     box-shadow: var(--shadow-md);
 }
- 
+
 .search-container {
     background: transparent;
     padding: 1.5rem 0;
@@ -527,7 +527,7 @@ p {
     display: flex;
     justify-content: center;
 }
- 
+
 #search-input {
     width: 100%;
     max-width: 500px;
@@ -539,12 +539,12 @@ p {
     background: white;
     color: var(--text-primary);
 }
- 
+
 #search-input:focus {
     border-color: var(--primary);
     box-shadow: 0 0 0 3px var(--primary-lighter);
 }
- 
+
 /* ===================================================================
    QUESTION CARD
    =================================================================== */
@@ -557,13 +557,13 @@ p {
     box-shadow: var(--shadow-md);
     transition: all 0.3s ease;
 }
- 
+
 .question-card:hover {
     box-shadow: var(--shadow-lg);
     border-color: var(--primary);
     transform: translateY(-2px);
 }
- 
+
 .question-number {
     display: inline-block;
     background: linear-gradient(135deg, var(--primary), var(--accent-1));
@@ -575,7 +575,7 @@ p {
     margin-bottom: 1rem;
     box-shadow: var(--shadow-md);
 }
- 
+
 .question-text {
     font-size: 1.125rem;
     font-weight: 700;
@@ -583,7 +583,7 @@ p {
     margin-bottom: 1.5rem;
     line-height: 1.6;
 }
- 
+
 .reading-block {
     background: linear-gradient(135deg, var(--primary-lighter), #FFF5F9);
     border-left: 4px solid var(--primary);
@@ -597,18 +597,18 @@ p {
     transition: all 0.3s ease;
     box-shadow: var(--shadow-sm);
 }
- 
+
 .reading-block:hover {
     box-shadow: var(--shadow-md);
     transform: translateX(4px);
 }
- 
+
 .options-list {
     display: flex;
     flex-direction: column;
     gap: 12px;
 }
- 
+
 .option-item {
     padding: 1rem;
     border: 2px solid var(--border);
@@ -621,7 +621,7 @@ p {
     position: relative;
     overflow: hidden;
 }
- 
+
 .option-item::before {
     content: '';
     position: absolute;
@@ -633,47 +633,47 @@ p {
     transition: left 0.3s ease;
     z-index: -1;
 }
- 
+
 .option-item:hover {
     border-color: var(--primary);
     transform: translateX(4px);
 }
- 
+
 .option-item:hover::before {
     left: 0;
 }
- 
+
 .option-item.selected {
     border-color: var(--primary);
     background: var(--primary-lighter);
     box-shadow: var(--shadow-md);
     font-weight: 700;
 }
- 
+
 .option-item.correct {
     background: linear-gradient(135deg, #E8F8F5, #CCEFE1) !important;
     border-color: var(--success) !important;
     color: #0B5345;
     font-weight: 700;
 }
- 
+
 .option-item.correct::after {
     content: ' ✓';
     color: var(--success);
 }
- 
+
 .option-item.wrong {
     background: linear-gradient(135deg, #FEF2F2, #FCE4E4) !important;
     border-color: var(--error) !important;
     color: #742A2A;
     font-weight: 700;
 }
- 
+
 .option-item.wrong::after {
     content: ' ✗';
     color: var(--error);
 }
- 
+
 /* ===================================================================
    SUBMIT BUTTON & RESULT
    =================================================================== */
@@ -690,12 +690,12 @@ p {
     transition: all 0.3s ease;
     box-shadow: var(--shadow-lg);
 }
- 
+
 .btn-finish:hover {
     transform: translateY(-4px);
     box-shadow: var(--shadow-xl);
 }
- 
+
 #result-box {
     display: none;
     margin: 30px auto;
@@ -707,7 +707,7 @@ p {
     box-shadow: var(--shadow-xl);
     animation: slideUp 0.5s ease;
 }
- 
+
 @keyframes slideUp {
     from {
         opacity: 0;
@@ -718,13 +718,13 @@ p {
         transform: translateY(0);
     }
 }
- 
+
 #result-box h2 {
     color: var(--success);
     text-align: center;
     font-size: 2rem;
 }
- 
+
 .result-score {
     font-size: 3rem;
     font-weight: 900;
@@ -732,20 +732,20 @@ p {
     text-align: center;
     margin: 1rem 0;
 }
- 
+
 .result-stars {
     font-size: 2rem;
     text-align: center;
     margin: 1rem 0;
 }
- 
+
 .result-stats {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     gap: 1rem;
     margin: 2rem 0;
 }
- 
+
 .stat-item {
     background: linear-gradient(135deg, var(--primary-lighter), white);
     padding: 1.5rem;
@@ -755,30 +755,30 @@ p {
     box-shadow: var(--shadow-md);
     transition: all 0.3s ease;
 }
- 
+
 .stat-item:hover {
     transform: translateY(-4px);
     box-shadow: var(--shadow-lg);
 }
- 
+
 .stat-value {
     font-size: 2rem;
     font-weight: 900;
     color: var(--primary);
 }
- 
+
 .stat-label {
     font-size: 0.875rem;
     color: var(--text-secondary);
     margin-top: 0.5rem;
     font-weight: 600;
 }
- 
+
 .chart-container {
     max-width: 450px;
     margin: 2rem auto;
 }
- 
+
 /* ===================================================================
    CHAT SYSTEM (Cute Mascot)
    =================================================================== */
@@ -799,18 +799,18 @@ p {
     transition: all 0.3s ease;
     animation: bounce 2s infinite;
 }
- 
+
 #chat-icon:hover {
     transform: scale(1.15);
     box-shadow: 0 0 25px rgba(255, 20, 147, 0.5);
 }
- 
+
 #chat-icon img {
     width: 100%;
     height: 100%;
     object-fit: cover;
 }
- 
+
 #chat-sidebar {
     position: fixed;
     bottom: -35vh;
@@ -825,11 +825,11 @@ p {
     z-index: 1001;
     border-radius: 24px 24px 0 0;
 }
- 
+
 #chat-sidebar.active {
     bottom: 0;
 }
- 
+
 .chat-header {
     background: linear-gradient(135deg, var(--primary), var(--accent-1));
     color: white;
@@ -841,7 +841,7 @@ p {
     border-radius: 24px 24px 0 0;
     box-shadow: var(--shadow-md);
 }
- 
+
 .close-chat-btn {
     width: 45px;
     height: 45px;
@@ -856,19 +856,19 @@ p {
     border: 2px solid rgba(255, 255, 255, 0.4);
     padding: 0;
 }
- 
+
 .close-chat-btn:hover {
     background: rgba(255, 255, 255, 0.35);
     transform: scale(1.08);
 }
- 
+
 .close-chat-btn img {
     width: 100%;
     height: 100%;
     object-fit: cover;
     border-radius: 8px;
 }
- 
+
 #siera-msg {
     padding: 1rem;
     overflow-y: auto;
@@ -879,13 +879,13 @@ p {
     flex-direction: column;
     gap: 0.75rem;
 }
- 
+
 .chat-message {
     display: flex;
     gap: 8px;
     animation: slideUp 0.3s ease;
 }
- 
+
 .message-avatar {
     width: 32px;
     height: 32px;
@@ -896,7 +896,7 @@ p {
     font-size: 1.2rem;
     flex-shrink: 0;
 }
- 
+
 .message-bubble {
     padding: 12px 16px;
     border-radius: 16px;
@@ -905,19 +905,19 @@ p {
     line-height: 1.5;
     box-shadow: var(--shadow-sm);
 }
- 
+
 .message-user .message-bubble {
     background: linear-gradient(135deg, var(--primary), var(--accent-1));
     color: white;
     margin-left: auto;
 }
- 
+
 .message-ai .message-bubble {
     background: var(--primary-lighter);
     color: var(--text-primary);
     border: 1px solid var(--border);
 }
- 
+
 .chat-input-area {
     display: flex;
     padding: 1rem;
@@ -925,7 +925,7 @@ p {
     gap: 8px;
     background: white;
 }
- 
+
 #user-input {
     flex: 1;
     padding: 12px 16px;
@@ -937,12 +937,12 @@ p {
     background: white;
     color: var(--text-primary);
 }
- 
+
 #user-input:focus {
     border-color: var(--primary);
     box-shadow: 0 0 0 3px var(--primary-lighter);
 }
- 
+
 #send-btn {
     background: linear-gradient(135deg, var(--primary), var(--accent-1));
     color: white;
@@ -955,12 +955,12 @@ p {
     flex-shrink: 0;
     box-shadow: var(--shadow-md);
 }
- 
+
 #send-btn:hover {
     transform: translateY(-2px);
     box-shadow: var(--shadow-lg);
 }
- 
+
 /* ===================================================================
    USER INFO WIDGET
    =================================================================== */
@@ -970,11 +970,11 @@ p {
     right: 20px;
     z-index: 2000;
 }
- 
+
 #user-info-widget.hidden {
     display: none !important;
 }
- 
+
 #user-info-widget > div {
     display: flex;
     flex-direction: column;
@@ -985,32 +985,32 @@ p {
     box-shadow: var(--shadow-lg);
     border: 2px solid var(--border);
 }
- 
+
 .user-info-item {
     display: flex;
     align-items: center;
     gap: 12px;
 }
- 
+
 #display-id-user {
     color: var(--primary);
     font-size: 1rem;
     font-weight: 700;
 }
- 
+
 /* ===================================================================
    UTILITIES
    =================================================================== */
 .hidden {
     display: none !important;
 }
- 
+
 .container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 2rem;
 }
- 
+
 /* ===================================================================
    RESPONSIVE DESIGN
    =================================================================== */
@@ -1020,108 +1020,108 @@ p {
         gap: 1rem;
         padding: 1rem;
     }
- 
+
     .navbar-brand {
         width: 100%;
         justify-content: center;
     }
- 
+
     .navbar-right {
         width: 100%;
     }
- 
+
     .login-area {
         width: 100%;
         flex-direction: column;
     }
- 
+
     .username-input {
         width: 100%;
         min-width: unset;
     }
- 
+
     h1 {
         font-size: 2rem;
     }
- 
+
     h2 {
         font-size: 1.5rem;
     }
- 
+
     .folder-grid {
         grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
         gap: 15px;
         padding: 0 1rem;
     }
- 
+
     .question-card {
         padding: 1.5rem;
     }
- 
+
     #exam-content {
         padding: 1rem 0.5rem;
     }
- 
+
     .result-stats {
         grid-template-columns: repeat(3, 1fr);
     }
- 
+
     #chat-sidebar {
         height: 40vh;
     }
 }
- 
+
 @media (max-width: 480px) {
     body {
         font-size: 15px;
     }
- 
+
     .navbar-brand h2 {
         font-size: 1.25rem;
     }
- 
+
     .brand-icon {
         font-size: 2rem;
     }
- 
+
     h1 {
         font-size: 1.5rem;
     }
- 
+
     .folder-grid {
         grid-template-columns: repeat(2, 1fr);
         gap: 12px;
     }
- 
+
     .folder-card {
         min-height: 130px;
         padding: 1.5rem 1rem;
     }
- 
+
     .question-card {
         padding: 1rem;
     }
- 
+
     .option-item {
         padding: 0.75rem;
     }
- 
+
     #result-box {
         padding: 1.5rem;
     }
- 
+
     .result-score {
         font-size: 2.5rem;
     }
- 
+
     .result-stats {
         grid-template-columns: 1fr;
     }
- 
+
     #chat-sidebar {
         height: 45vh;
     }
- 
+
     #chat-icon {
         width: 60px;
         height: 60px;
