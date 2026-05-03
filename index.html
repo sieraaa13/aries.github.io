@@ -10,55 +10,35 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.2.2/es5/tex-mml-chtml.min.js"></script>
     <style>
         :root {
-    /* Primary Colors - Profesional Blue */
-    --primary: #0F4C93;           /* Deep Blue */
-    --primary-light: #1565C0;     /* Medium Blue */
-    --primary-lighter: #E3F2FD;   /* Very Light Blue */
+    /* Color Palette - Vibrant & Friendly */
+    --primary: #FF1493;          /* Hot Pink */
+    --primary-light: #FF69B4;    /* Light Pink */
+    --primary-lighter: #FFE4F0;  /* Very Light Pink */
     
-    /* Secondary Colors - Warm Accent */
-    --accent: #F57C00;            /* Orange */
-    --accent-light: #FFE0B2;      /* Light Orange */
+    --accent-1: #4169E1;         /* Royal Blue */
+    --accent-2: #FFD700;         /* Gold */
+    --accent-3: #32CD32;         /* Lime Green */
     
-    /* Neutral Colors */
-    --bg: #FFFFFF;                /* Pure White */
-    --bg-secondary: #F5F7FA;      /* Light Gray Background */
-    --border: #E0E3E8;            /* Soft Gray Border */
+    --bg: #FFFFFF;               /* White */
+    --bg-secondary: #FFF5F9;     /* Pink-tinted White */
+    --border: #FFD4E5;           /* Light Pink Border */
     
-    /* Text Colors */
-    --text-primary: #1A202C;      /* Dark Text */
-    --text-secondary: #718096;    /* Medium Gray Text */
-    --text-light: #A0AEC0;        /* Light Gray Text */
+    --text-primary: #2D1B4E;     /* Dark Purple */
+    --text-secondary: #8B6BA8;   /* Medium Purple */
+    --text-light: #C9B5D3;       /* Light Purple */
     
     /* Status Colors */
-    --success: #10B981;           /* Green */
-    --success-light: #ECFDF5;     /* Light Green */
-    --error: #EF4444;             /* Red */
-    --error-light: #FEF2F2;       /* Light Red */
-    --warning: #F59E0B;           /* Amber */
-    --warning-light: #FFFBEB;     /* Light Amber */
-    --info: #3B82F6;              /* Blue */
-    --info-light: #EFF6FF;        /* Light Blue */
-    
-    /* Cute Colors (untuk karakter) */
-    --cute-pink: #FFB6D9;         /* Soft Pink */
-    --cute-mint: #A8E6CF;         /* Mint Green */
-    --cute-peach: #FFD3B6;        /* Peach */
+    --success: #32CD32;          /* Green */
+    --error: #FF6B6B;            /* Red */
+    --warning: #FFB347;          /* Orange */
     
     /* Shadows */
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-    --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
-    --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
-    --shadow-xl: 0 20px 25px rgba(0, 0, 0, 0.12);
-    
-    /* Transitions */
-    --transition-fast: 0.15s ease;
-    --transition-base: 0.2s ease;
-    --transition-slow: 0.3s ease;
+    --shadow-sm: 0 2px 8px rgba(255, 20, 147, 0.08);
+    --shadow-md: 0 4px 12px rgba(255, 20, 147, 0.12);
+    --shadow-lg: 0 8px 20px rgba(255, 20, 147, 0.15);
+    --shadow-xl: 0 12px 30px rgba(255, 20, 147, 0.2);
 }
  
-/* ===================================================================
-   2. GLOBAL STYLES
-   =================================================================== */
 * {
     margin: 0;
     padding: 0;
@@ -70,11 +50,11 @@ html {
 }
  
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
     font-size: 16px;
     line-height: 1.5;
     color: var(--text-primary);
-    background: var(--bg-secondary);
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, #FFF0F7 100%);
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     display: flex;
@@ -84,7 +64,7 @@ body {
 }
  
 /* ===================================================================
-   3. TYPOGRAPHY
+   TYPOGRAPHY
    =================================================================== */
 h1, h2, h3, h4, h5, h6 {
     font-weight: 700;
@@ -96,6 +76,10 @@ h1, h2, h3, h4, h5, h6 {
 h1 {
     font-size: 2.5rem;
     letter-spacing: -0.5px;
+    background: linear-gradient(135deg, var(--primary), var(--accent-1));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
  
 h2 {
@@ -107,61 +91,24 @@ h3 {
     font-size: 1.5rem;
 }
  
-h4 {
-    font-size: 1.25rem;
-}
- 
-h5 {
-    font-size: 1.125rem;
-}
- 
-h6 {
-    font-size: 1rem;
-}
- 
 p {
     color: var(--text-secondary);
     margin-bottom: 1rem;
 }
  
-.text-primary {
-    color: var(--text-primary);
-}
- 
-.text-secondary {
-    color: var(--text-secondary);
-}
- 
-.text-light {
-    color: var(--text-light);
-}
- 
-.text-sm {
-    font-size: 0.875rem;
-}
- 
-.text-lg {
-    font-size: 1.125rem;
-}
- 
-.text-bold {
-    font-weight: 700;
-}
- 
-.text-semibold {
-    font-weight: 600;
-}
+.text-primary { color: var(--text-primary); }
+.text-secondary { color: var(--text-secondary); }
+.text-light { color: var(--text-light); }
  
 /* ===================================================================
-   4. NAVBAR / HEADER (Professional Look)
+   NAVBAR (Colorful & Modern)
    =================================================================== */
 .navbar {
-    background: var(--bg);
-    border-bottom: 1px solid var(--border);
+    background: linear-gradient(135deg, var(--primary) 0%, var(--accent-1) 100%);
+    box-shadow: var(--shadow-lg);
     position: sticky;
     top: 0;
     z-index: 100;
-    box-shadow: var(--shadow-sm);
 }
  
 .navbar-container {
@@ -177,10 +124,9 @@ p {
     display: flex;
     align-items: center;
     gap: 12px;
-    text-decoration: none;
-    color: var(--primary);
+    color: white;
     cursor: pointer;
-    transition: var(--transition-base);
+    transition: all 0.3s ease;
 }
  
 .navbar-brand:hover {
@@ -188,18 +134,22 @@ p {
 }
  
 .brand-icon {
-    font-size: 2rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    font-size: 2.5rem;
+    animation: bounce 2s infinite;
+}
+ 
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
 }
  
 .brand-name {
-    font-size: 1.5rem;
-    font-weight: 700;
+    font-size: 1.75rem;
+    font-weight: 800;
     margin: 0;
-    color: var(--primary);
-    letter-spacing: 0.5px;
+    color: white;
+    letter-spacing: 1px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
 }
  
 .navbar-right {
@@ -208,85 +158,22 @@ p {
     gap: 20px;
 }
  
-.user-status {
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    padding: 0 15px;
-    border-left: 1px solid var(--border);
-}
- 
-.user-status.hidden {
-    display: none !important;
-}
- 
 .login-area {
     display: flex;
     gap: 8px;
     align-items: center;
 }
  
-/* ===================================================================
-   5. FORM ELEMENTS
-   =================================================================== */
-.form-group {
-    margin-bottom: 1.5rem;
-    display: flex;
-    flex-direction: column;
-}
- 
-.form-label {
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-    color: var(--text-primary);
-    font-size: 0.95rem;
-}
- 
-.form-input,
-.form-textarea,
-.form-select {
-    padding: 12px 16px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    font-size: 1rem;
-    font-family: inherit;
-    transition: all var(--transition-base);
-    background: var(--bg);
-    color: var(--text-primary);
-}
- 
-.form-input::placeholder,
-.form-textarea::placeholder {
-    color: var(--text-light);
-}
- 
-.form-input:focus,
-.form-textarea:focus,
-.form-select:focus {
-    outline: none;
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px var(--primary-lighter);
-    background: var(--bg);
-}
- 
-.form-input:disabled,
-.form-textarea:disabled,
-.form-select:disabled {
-    background: var(--bg-secondary);
-    cursor: not-allowed;
-    opacity: 0.6;
-}
- 
-/* Specific form inputs */
 .username-input {
-    padding: 10px 16px;
-    border: 1px solid var(--border);
-    border-radius: 8px;
+    padding: 12px 20px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 25px;
     font-size: 0.95rem;
     outline: none;
-    transition: all var(--transition-base);
-    background: var(--bg-secondary);
+    transition: all 0.3s ease;
+    background: rgba(255, 255, 255, 0.95);
     color: var(--text-primary);
+    backdrop-filter: blur(10px);
     min-width: 200px;
 }
  
@@ -295,37 +182,22 @@ p {
 }
  
 .username-input:focus {
-    border-color: var(--primary);
-    background: var(--bg);
-    box-shadow: 0 0 0 3px var(--primary-lighter);
-}
- 
-#search-input {
-    width: 100%;
-    max-width: 400px;
-    padding: 10px 16px;
-    border-radius: 20px;
-    border: 1px solid var(--border);
-    font-size: 0.95rem;
-    transition: all var(--transition-base);
-}
- 
-#search-input:focus {
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px var(--primary-lighter);
+    border-color: white;
+    background: white;
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
 }
  
 /* ===================================================================
-   6. BUTTON SYSTEM (Professional + Cute)
+   BUTTONS (Cute & Interactive)
    =================================================================== */
 .btn {
     padding: 10px 24px;
     border: none;
-    border-radius: 8px;
-    font-weight: 600;
+    border-radius: 25px;
+    font-weight: 700;
     font-size: 0.95rem;
     cursor: pointer;
-    transition: all var(--transition-base);
+    transition: all 0.3s ease;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -334,6 +206,7 @@ p {
     font-family: inherit;
     position: relative;
     overflow: hidden;
+    box-shadow: var(--shadow-md);
 }
  
 .btn::before {
@@ -354,27 +227,18 @@ p {
     height: 300px;
 }
  
-/* Primary Button */
 .btn-primary {
     background: linear-gradient(135deg, var(--primary), var(--primary-light));
     color: white;
-    box-shadow: var(--shadow-md);
 }
  
 .btn-primary:hover {
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-lg);
-    background: linear-gradient(135deg, var(--primary-light), var(--primary));
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-xl);
 }
  
-.btn-primary:active {
-    transform: translateY(0);
-    box-shadow: var(--shadow-md);
-}
- 
-/* Secondary Button */
 .btn-secondary {
-    background: var(--bg-secondary);
+    background: var(--bg);
     color: var(--primary);
     border: 2px solid var(--primary);
 }
@@ -384,62 +248,37 @@ p {
     transform: translateY(-2px);
 }
  
-.btn-secondary:active {
-    transform: translateY(0);
-}
- 
-/* Danger Button */
-.btn-danger {
-    background: var(--error);
-    color: white;
-    box-shadow: var(--shadow-md);
-}
- 
-.btn-danger:hover {
-    background: #DC2626;
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-lg);
-}
- 
-.btn-danger:active {
-    transform: translateY(0);
-}
- 
-/* Success Button */
 .btn-success {
     background: var(--success);
     color: white;
-    box-shadow: var(--shadow-md);
 }
  
 .btn-success:hover {
-    background: #059669;
-    transform: translateY(-2px);
-    box-shadow: var(--shadow-lg);
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-xl);
 }
  
-.btn-success:active {
-    transform: translateY(0);
+.btn-danger {
+    background: var(--error);
+    color: white;
 }
  
-/* Size Variations */
+.btn-danger:hover {
+    transform: translateY(-3px);
+}
+ 
 .btn-sm {
-    padding: 8px 16px;
+    padding: 8px 18px;
     font-size: 0.875rem;
+    border-radius: 20px;
 }
  
 .btn-lg {
-    padding: 12px 32px;
-    font-size: 1rem;
-    border-radius: 12px;
+    padding: 14px 40px;
+    font-size: 1.1rem;
+    border-radius: 30px;
 }
  
-/* Full Width Button */
-.btn-block {
-    width: 100%;
-}
- 
-/* Disabled State */
 .btn:disabled {
     opacity: 0.5;
     cursor: not-allowed;
@@ -447,89 +286,49 @@ p {
 }
  
 /* ===================================================================
-   7. CARD SYSTEM
-   =================================================================== */
-.card {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 1.5rem;
-    transition: all var(--transition-base);
-    box-shadow: var(--shadow-sm);
-}
- 
-.card:hover {
-    border-color: var(--primary);
-    box-shadow: var(--shadow-lg);
-    transform: translateY(-4px);
-}
- 
-.card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-    padding-bottom: 1rem;
-    border-bottom: 1px solid var(--border);
-}
- 
-.card-title {
-    font-size: 1.125rem;
-    font-weight: 600;
-    color: var(--text-primary);
-    margin: 0;
-}
- 
-.card-subtitle {
-    font-size: 0.875rem;
-    color: var(--text-secondary);
-    margin: 0;
-}
- 
-.card-content {
-    color: var(--text-secondary);
-    line-height: 1.6;
-}
- 
-.card-footer {
-    margin-top: 1rem;
-    padding-top: 1rem;
-    border-top: 1px solid var(--border);
-    display: flex;
-    justify-content: flex-end;
-    gap: 10px;
-}
- 
-/* Card Variations */
-.card-primary {
-    border-color: var(--primary);
-    background: linear-gradient(135deg, var(--bg), var(--primary-lighter));
-}
- 
-.card-success {
-    border-color: var(--success);
-    background: linear-gradient(135deg, var(--bg), var(--success-light));
-}
- 
-.card-error {
-    border-color: var(--error);
-    background: linear-gradient(135deg, var(--bg), var(--error-light));
-}
- 
-/* ===================================================================
-   8. FOLDER & FILE SCREENS
+   SCREENS
    =================================================================== */
 #folder-screen,
 #file-screen {
-    padding: 2rem;
+    padding: 3rem 2rem;
     text-align: center;
     overflow-y: auto;
     flex: 1;
+    position: relative;
 }
  
+#folder-screen::before {
+    content: '✨';
+    position: fixed;
+    top: 100px;
+    right: 50px;
+    font-size: 4rem;
+    opacity: 0.1;
+    animation: float 6s ease-in-out infinite;
+}
+ 
+@keyframes float {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(10deg); }
+}
+ 
+#folder-screen h1 {
+    font-size: 2.5rem;
+    margin-bottom: 0.5rem;
+}
+ 
+#folder-screen > p {
+    font-size: 1.1rem;
+    color: var(--text-secondary);
+    margin-bottom: 2rem;
+}
+ 
+/* ===================================================================
+   FOLDER GRID (Cute Cards)
+   =================================================================== */
 .folder-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
     gap: 20px;
     margin-top: 2rem;
     max-width: 1000px;
@@ -538,41 +337,41 @@ p {
 }
  
 .folder-card {
-    background: var(--bg);
+    background: linear-gradient(135deg, var(--bg), var(--primary-lighter));
     border: 2px solid var(--border);
-    border-radius: 12px;
+    border-radius: 20px;
     padding: 2rem;
     cursor: pointer;
-    transition: all var(--transition-base);
-    text-align: center;
+    transition: all 0.3s ease;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 150px;
+    min-height: 160px;
     gap: 12px;
     position: relative;
     overflow: hidden;
+    box-shadow: var(--shadow-md);
 }
  
 .folder-card::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(135deg, var(--primary-lighter), transparent);
+    top: -50%;
+    right: -50%;
+    width: 200px;
+    height: 200px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.4), transparent);
     opacity: 0;
-    transition: opacity var(--transition-base);
-    pointer-events: none;
+    transition: opacity 0.3s ease;
 }
  
 .folder-card:hover {
     border-color: var(--primary);
-    background: var(--primary-lighter);
-    transform: translateY(-4px);
-    box-shadow: var(--shadow-lg);
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: var(--shadow-xl);
+    background: linear-gradient(135deg, var(--primary-lighter), var(--bg));
 }
  
 .folder-card:hover::before {
@@ -580,19 +379,21 @@ p {
 }
  
 .folder-icon {
-    font-size: 2.5rem;
-    transition: transform var(--transition-base);
+    font-size: 3rem;
+    transition: all 0.3s ease;
+    z-index: 1;
 }
  
 .folder-card:hover .folder-icon {
-    transform: scale(1.1);
+    transform: scale(1.2) rotate(10deg);
 }
  
 .folder-name {
-    font-weight: 600;
+    font-weight: 700;
     color: var(--text-primary);
     font-size: 1.125rem;
     z-index: 1;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
  
 .folder-count {
@@ -601,23 +402,26 @@ p {
     z-index: 1;
 }
  
+/* ===================================================================
+   FILE SCREEN
+   =================================================================== */
 .file-list {
     max-width: 600px;
     margin: 20px auto;
-    background: var(--bg);
-    border-radius: 12px;
+    background: white;
+    border-radius: 20px;
     text-align: left;
-    box-shadow: var(--shadow-md);
+    box-shadow: var(--shadow-lg);
     overflow: hidden;
 }
  
 .year-divider {
-    background: var(--bg-secondary);
+    background: linear-gradient(90deg, var(--primary-lighter), var(--bg-secondary));
     padding: 12px 20px;
     font-weight: 700;
     font-size: 0.95rem;
     color: var(--text-primary);
-    border-bottom: 1px solid var(--border);
+    border-bottom: 2px solid var(--border);
 }
  
 .file-item {
@@ -626,14 +430,14 @@ p {
     cursor: pointer;
     color: var(--primary);
     font-weight: 600;
-    transition: all var(--transition-base);
+    transition: all 0.3s ease;
     display: flex;
     align-items: center;
     gap: 10px;
 }
  
 .file-item::before {
-    content: '📄';
+    content: '📚';
     font-size: 1.25rem;
 }
  
@@ -648,27 +452,22 @@ p {
 }
  
 /* ===================================================================
-   9. EXAM SCREEN
+   EXAM SCREEN
    =================================================================== */
 #exam-screen {
     display: none;
     flex-direction: column;
     height: 100vh;
+    background: linear-gradient(135deg, var(--bg-secondary) 0%, #FFF0F7 100%);
 }
  
 #exam-content {
     flex: 1;
     padding: 2rem 1rem;
     overflow-y: auto;
-    padding-bottom: 50px;
     max-width: 900px;
     margin: 0 auto;
     width: 100%;
-}
- 
-body.chat-open #exam-content {
-    height: 67vh;
-    flex: none;
 }
  
 .exam-header {
@@ -684,16 +483,17 @@ body.chat-open #exam-content {
     padding: 8px 16px;
     cursor: pointer;
     color: var(--primary);
-    font-weight: 600;
+    font-weight: 700;
     background: none;
     border: none;
     font-size: 1rem;
-    transition: var(--transition-base);
+    transition: all 0.3s ease;
+    border-radius: 20px;
 }
  
 .exam-back-btn:hover {
-    color: var(--primary-light);
-    transform: translateX(-2px);
+    background: var(--primary-lighter);
+    transform: translateX(-3px);
 }
  
 #progress-indicator {
@@ -702,8 +502,26 @@ body.chat-open #exam-content {
     font-size: 1.125rem;
 }
  
+/* Progress Bar */
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background: var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 1rem 0 2rem;
+}
+ 
+.progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), var(--accent-1));
+    border-radius: 4px;
+    transition: width 0.4s ease;
+    box-shadow: var(--shadow-md);
+}
+ 
 .search-container {
-    background: var(--bg-secondary);
+    background: transparent;
     padding: 1.5rem 0;
     margin-bottom: 2rem;
     display: flex;
@@ -717,7 +535,9 @@ body.chat-open #exam-content {
     border-radius: 25px;
     border: 2px solid var(--border);
     font-size: 0.95rem;
-    transition: all var(--transition-base);
+    transition: all 0.3s ease;
+    background: white;
+    color: var(--text-primary);
 }
  
 #search-input:focus {
@@ -725,25 +545,28 @@ body.chat-open #exam-content {
     box-shadow: 0 0 0 3px var(--primary-lighter);
 }
  
-/* Question Card */
+/* ===================================================================
+   QUESTION CARD
+   =================================================================== */
 .question-card {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 12px;
+    background: white;
+    border: 2px solid var(--border);
+    border-radius: 16px;
     padding: 2rem;
     margin-bottom: 2rem;
-    box-shadow: var(--shadow-sm);
-    transition: all var(--transition-base);
+    box-shadow: var(--shadow-md);
+    transition: all 0.3s ease;
 }
  
 .question-card:hover {
-    box-shadow: var(--shadow-md);
+    box-shadow: var(--shadow-lg);
     border-color: var(--primary);
+    transform: translateY(-2px);
 }
  
 .question-number {
     display: inline-block;
-    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    background: linear-gradient(135deg, var(--primary), var(--accent-1));
     color: white;
     padding: 6px 14px;
     border-radius: 20px;
@@ -762,7 +585,7 @@ body.chat-open #exam-content {
 }
  
 .reading-block {
-    background: var(--bg-secondary);
+    background: linear-gradient(135deg, var(--primary-lighter), #FFF5F9);
     border-left: 4px solid var(--primary);
     padding: 1.5rem;
     margin-bottom: 1.5rem;
@@ -771,7 +594,8 @@ body.chat-open #exam-content {
     line-height: 1.8;
     color: var(--text-primary);
     font-family: 'Georgia', serif;
-    transition: all var(--transition-base);
+    transition: all 0.3s ease;
+    box-shadow: var(--shadow-sm);
 }
  
 .reading-block:hover {
@@ -788,10 +612,10 @@ body.chat-open #exam-content {
 .option-item {
     padding: 1rem;
     border: 2px solid var(--border);
-    border-radius: 8px;
+    border-radius: 12px;
     cursor: pointer;
-    transition: all var(--transition-base);
-    background: var(--bg);
+    transition: all 0.3s ease;
+    background: white;
     color: var(--text-primary);
     font-weight: 500;
     position: relative;
@@ -806,7 +630,7 @@ body.chat-open #exam-content {
     width: 100%;
     height: 100%;
     background: var(--primary-lighter);
-    transition: left var(--transition-base);
+    transition: left 0.3s ease;
     z-index: -1;
 }
  
@@ -823,12 +647,13 @@ body.chat-open #exam-content {
     border-color: var(--primary);
     background: var(--primary-lighter);
     box-shadow: var(--shadow-md);
+    font-weight: 700;
 }
  
 .option-item.correct {
-    background: var(--success-light) !important;
+    background: linear-gradient(135deg, #E8F8F5, #CCEFE1) !important;
     border-color: var(--success) !important;
-    color: #065F46;
+    color: #0B5345;
     font-weight: 700;
 }
  
@@ -838,9 +663,9 @@ body.chat-open #exam-content {
 }
  
 .option-item.wrong {
-    background: var(--error-light) !important;
+    background: linear-gradient(135deg, #FEF2F2, #FCE4E4) !important;
     border-color: var(--error) !important;
-    color: #7F1D1D;
+    color: #742A2A;
     font-weight: 700;
 }
  
@@ -850,95 +675,37 @@ body.chat-open #exam-content {
 }
  
 /* ===================================================================
-   10. EXAM BUTTONS
+   SUBMIT BUTTON & RESULT
    =================================================================== */
 .btn-finish {
     background: linear-gradient(135deg, var(--success), #059669);
     color: white;
     padding: 15px 40px;
     border: none;
-    border-radius: 12px;
+    border-radius: 25px;
     font-size: 1rem;
     font-weight: 700;
     cursor: pointer;
     margin: 20px 0;
-    transition: all var(--transition-base);
+    transition: all 0.3s ease;
     box-shadow: var(--shadow-lg);
 }
  
 .btn-finish:hover {
-    transform: translateY(-3px);
+    transform: translateY(-4px);
     box-shadow: var(--shadow-xl);
-    background: linear-gradient(135deg, #059669, #047857);
 }
  
-.btn-finish:active {
-    transform: translateY(-1px);
-}
- 
-/* ===================================================================
-   11. RESULT BOX
-   =================================================================== */
 #result-box {
     display: none;
     margin: 30px auto;
-    padding: 2rem;
-    background: var(--bg);
-    border-radius: 12px;
+    padding: 2.5rem;
+    background: linear-gradient(135deg, white, var(--primary-lighter));
+    border-radius: 20px;
     border: 2px solid var(--success);
     max-width: 800px;
-    box-shadow: var(--shadow-lg);
+    box-shadow: var(--shadow-xl);
     animation: slideUp 0.5s ease;
-}
- 
-#result-box h2 {
-    color: var(--success);
-    margin-bottom: 1.5rem;
-    font-size: 1.75rem;
-}
- 
-.result-score {
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: var(--primary);
-    margin-bottom: 1rem;
-}
- 
-.result-stars {
-    font-size: 1.5rem;
-    margin-bottom: 1.5rem;
-}
- 
-.result-stats {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: 1rem;
-    margin: 1.5rem 0;
-}
- 
-.stat-item {
-    background: var(--bg-secondary);
-    padding: 1rem;
-    border-radius: 8px;
-    text-align: center;
-    border-left: 4px solid var(--primary);
-}
- 
-.stat-value {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--primary);
-}
- 
-.stat-label {
-    font-size: 0.875rem;
-    color: var(--text-secondary);
-    margin-top: 0.5rem;
-}
- 
-.chart-container {
-    max-width: 450px;
-    margin: 2rem auto;
 }
  
 @keyframes slideUp {
@@ -952,40 +719,68 @@ body.chat-open #exam-content {
     }
 }
  
-/* ===================================================================
-   12. PROGRESS BAR
-   =================================================================== */
-.progress-bar {
-    width: 100%;
-    height: 8px;
-    background: var(--border);
-    border-radius: 4px;
-    overflow: hidden;
+#result-box h2 {
+    color: var(--success);
+    text-align: center;
+    font-size: 2rem;
+}
+ 
+.result-score {
+    font-size: 3rem;
+    font-weight: 900;
+    color: var(--primary);
+    text-align: center;
     margin: 1rem 0;
 }
  
-.progress-fill {
-    height: 100%;
-    background: linear-gradient(90deg, var(--primary), var(--accent));
-    border-radius: 4px;
-    transition: width 0.4s ease;
-    display: flex;
-    align-items: center;
-    justify-content: flex-end;
-    box-shadow: var(--shadow-md);
+.result-stars {
+    font-size: 2rem;
+    text-align: center;
+    margin: 1rem 0;
 }
  
-.progress-text {
+.result-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1rem;
+    margin: 2rem 0;
+}
+ 
+.stat-item {
+    background: linear-gradient(135deg, var(--primary-lighter), white);
+    padding: 1.5rem;
+    border-radius: 12px;
+    text-align: center;
+    border-left: 4px solid var(--primary);
+    box-shadow: var(--shadow-md);
+    transition: all 0.3s ease;
+}
+ 
+.stat-item:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--shadow-lg);
+}
+ 
+.stat-value {
+    font-size: 2rem;
+    font-weight: 900;
+    color: var(--primary);
+}
+ 
+.stat-label {
     font-size: 0.875rem;
     color: var(--text-secondary);
-    font-weight: 700;
     margin-top: 0.5rem;
-    display: flex;
-    justify-content: space-between;
+    font-weight: 600;
+}
+ 
+.chart-container {
+    max-width: 450px;
+    margin: 2rem auto;
 }
  
 /* ===================================================================
-   13. CHAT SYSTEM (dengan Cute Mascot)
+   CHAT SYSTEM (Cute Mascot)
    =================================================================== */
 #chat-icon {
     position: fixed;
@@ -993,30 +788,21 @@ body.chat-open #exam-content {
     right: 20px;
     width: 70px;
     height: 70px;
-    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    background: linear-gradient(135deg, var(--primary), var(--accent-1));
     cursor: pointer;
     display: none;
     z-index: 1000;
     border-radius: 50%;
-    border: 3px solid var(--bg);
+    border: 3px solid white;
     overflow: hidden;
     box-shadow: var(--shadow-xl);
-    transition: all var(--transition-base);
+    transition: all 0.3s ease;
     animation: bounce 2s infinite;
 }
  
 #chat-icon:hover {
-    transform: scale(1.1);
-    box-shadow: 0 0 20px rgba(15, 76, 147, 0.4);
-}
- 
-@keyframes bounce {
-    0%, 100% {
-        transform: translateY(0);
-    }
-    50% {
-        transform: translateY(-10px);
-    }
+    transform: scale(1.15);
+    box-shadow: 0 0 25px rgba(255, 20, 147, 0.5);
 }
  
 #chat-icon img {
@@ -1031,13 +817,13 @@ body.chat-open #exam-content {
     left: 0;
     width: 100%;
     height: 33vh;
-    background: var(--bg);
-    box-shadow: 0 -5px 15px rgba(0, 0, 0, 0.1);
+    background: white;
+    box-shadow: 0 -8px 20px rgba(255, 20, 147, 0.15);
     display: flex;
     flex-direction: column;
-    transition: bottom var(--transition-slow) ease;
+    transition: bottom 0.4s ease;
     z-index: 1001;
-    border-radius: 20px 20px 0 0;
+    border-radius: 24px 24px 0 0;
 }
  
 #chat-sidebar.active {
@@ -1045,54 +831,49 @@ body.chat-open #exam-content {
 }
  
 .chat-header {
-    background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    background: linear-gradient(135deg, var(--primary), var(--accent-1));
     color: white;
-    padding: 1rem 1.5rem;
+    padding: 1.5rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
     font-weight: 700;
-    border-radius: 20px 20px 0 0;
+    border-radius: 24px 24px 0 0;
     box-shadow: var(--shadow-md);
 }
  
 .close-chat-btn {
-    width: 40px;
-    height: 40px;
+    width: 45px;
+    height: 45px;
     cursor: pointer;
     overflow: hidden;
-    border-radius: 8px;
-    transition: all var(--transition-base);
+    border-radius: 10px;
+    transition: all 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: rgba(255, 255, 255, 0.2);
-    border: 2px solid rgba(255, 255, 255, 0.3);
+    background: rgba(255, 255, 255, 0.25);
+    border: 2px solid rgba(255, 255, 255, 0.4);
     padding: 0;
 }
  
 .close-chat-btn:hover {
-    background: rgba(255, 255, 255, 0.3);
-    transform: scale(1.05);
-    border-color: rgba(255, 255, 255, 0.5);
-}
- 
-.close-chat-btn:active {
-    transform: scale(0.95);
+    background: rgba(255, 255, 255, 0.35);
+    transform: scale(1.08);
 }
  
 .close-chat-btn img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    border-radius: 6px;
+    border-radius: 8px;
 }
  
 #siera-msg {
     padding: 1rem;
     overflow-y: auto;
     flex: 1;
-    background: var(--bg-secondary);
+    background: linear-gradient(135deg, #FFF5F9, white);
     font-size: 0.95rem;
     display: flex;
     flex-direction: column;
@@ -1117,43 +898,44 @@ body.chat-open #exam-content {
 }
  
 .message-bubble {
-    padding: 10px 14px;
-    border-radius: 12px;
+    padding: 12px 16px;
+    border-radius: 16px;
     max-width: 70%;
     word-wrap: break-word;
     line-height: 1.5;
+    box-shadow: var(--shadow-sm);
 }
  
 .message-user .message-bubble {
-    background: var(--primary);
+    background: linear-gradient(135deg, var(--primary), var(--accent-1));
     color: white;
-    border-bottom-right-radius: 4px;
     margin-left: auto;
 }
  
 .message-ai .message-bubble {
-    background: var(--bg);
+    background: var(--primary-lighter);
     color: var(--text-primary);
     border: 1px solid var(--border);
-    border-bottom-left-radius: 4px;
 }
  
 .chat-input-area {
     display: flex;
     padding: 1rem;
-    border-top: 1px solid var(--border);
+    border-top: 2px solid var(--border);
     gap: 8px;
-    background: var(--bg);
+    background: white;
 }
  
 #user-input {
     flex: 1;
-    padding: 10px 16px;
-    border: 1px solid var(--border);
-    border-radius: 20px;
+    padding: 12px 16px;
+    border: 2px solid var(--border);
+    border-radius: 25px;
     outline: none;
     font-size: 0.95rem;
-    transition: all var(--transition-base);
+    transition: all 0.3s ease;
+    background: white;
+    color: var(--text-primary);
 }
  
 #user-input:focus {
@@ -1162,29 +944,25 @@ body.chat-open #exam-content {
 }
  
 #send-btn {
-    background: var(--primary);
+    background: linear-gradient(135deg, var(--primary), var(--accent-1));
     color: white;
     border: none;
-    padding: 10px 20px;
-    border-radius: 20px;
+    padding: 12px 24px;
+    border-radius: 25px;
     cursor: pointer;
     font-weight: 700;
-    transition: all var(--transition-base);
+    transition: all 0.3s ease;
     flex-shrink: 0;
-}
- 
-#send-btn:hover {
-    background: var(--primary-light);
-    transform: translateY(-2px);
     box-shadow: var(--shadow-md);
 }
  
-#send-btn:active {
-    transform: translateY(0);
+#send-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
 }
  
 /* ===================================================================
-   14. USER INFO WIDGET
+   USER INFO WIDGET
    =================================================================== */
 #user-info-widget {
     position: fixed;
@@ -1200,12 +978,12 @@ body.chat-open #exam-content {
 #user-info-widget > div {
     display: flex;
     flex-direction: column;
-    gap: 8px;
-    background: var(--bg);
-    padding: 12px 15px;
-    border-radius: 12px;
+    gap: 10px;
+    background: white;
+    padding: 15px;
+    border-radius: 16px;
     box-shadow: var(--shadow-lg);
-    border: 1px solid var(--border);
+    border: 2px solid var(--border);
 }
  
 .user-info-item {
@@ -1214,34 +992,17 @@ body.chat-open #exam-content {
     gap: 12px;
 }
  
-.user-info-text {
-    text-align: left;
-}
- 
-.user-info-label {
-    display: block;
-    font-size: 0.75rem;
-    color: var(--text-secondary);
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
- 
 #display-id-user {
     color: var(--primary);
     font-size: 1rem;
-    display: block;
+    font-weight: 700;
 }
  
 /* ===================================================================
-   15. UTILITY CLASSES
+   UTILITIES
    =================================================================== */
 .hidden {
     display: none !important;
-}
- 
-.visible {
-    display: block !important;
 }
  
 .container {
@@ -1250,62 +1011,14 @@ body.chat-open #exam-content {
     padding: 0 2rem;
 }
  
-.container-lg {
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 0 2rem;
-}
- 
-.mt-1 { margin-top: 0.25rem; }
-.mt-2 { margin-top: 0.5rem; }
-.mt-3 { margin-top: 1rem; }
-.mt-4 { margin-top: 1.5rem; }
-.mt-5 { margin-top: 2rem; }
- 
-.mb-1 { margin-bottom: 0.25rem; }
-.mb-2 { margin-bottom: 0.5rem; }
-.mb-3 { margin-bottom: 1rem; }
-.mb-4 { margin-bottom: 1.5rem; }
-.mb-5 { margin-bottom: 2rem; }
- 
-.px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
-.px-3 { padding-left: 1rem; padding-right: 1rem; }
-.px-4 { padding-left: 1.5rem; padding-right: 1.5rem; }
- 
-.py-2 { padding-top: 0.5rem; padding-bottom: 0.5rem; }
-.py-3 { padding-top: 1rem; padding-bottom: 1rem; }
-.py-4 { padding-top: 1.5rem; padding-bottom: 1.5rem; }
- 
-.text-center { text-align: center; }
-.text-left { text-align: left; }
-.text-right { text-align: right; }
- 
-.flex { display: flex; }
-.flex-center { display: flex; align-items: center; justify-content: center; }
-.flex-between { display: flex; justify-content: space-between; align-items: center; }
-.flex-column { display: flex; flex-direction: column; }
- 
-.gap-1 { gap: 0.25rem; }
-.gap-2 { gap: 0.5rem; }
-.gap-3 { gap: 1rem; }
-.gap-4 { gap: 1.5rem; }
- 
-.rounded { border-radius: 8px; }
-.rounded-lg { border-radius: 12px; }
-.rounded-full { border-radius: 9999px; }
- 
-.shadow { box-shadow: var(--shadow-sm); }
-.shadow-md { box-shadow: var(--shadow-md); }
-.shadow-lg { box-shadow: var(--shadow-lg); }
- 
 /* ===================================================================
-   16. RESPONSIVE DESIGN (Mobile First)
+   RESPONSIVE DESIGN
    =================================================================== */
 @media (max-width: 768px) {
     .navbar-container {
-        padding: 0.75rem 1rem;
         flex-direction: column;
         gap: 1rem;
+        padding: 1rem;
     }
  
     .navbar-brand {
@@ -1315,7 +1028,6 @@ body.chat-open #exam-content {
  
     .navbar-right {
         width: 100%;
-        flex-direction: column;
     }
  
     .login-area {
@@ -1323,89 +1035,39 @@ body.chat-open #exam-content {
         flex-direction: column;
     }
  
-    .username-input,
-    .btn {
+    .username-input {
         width: 100%;
         min-width: unset;
     }
  
-    .user-status {
-        border-left: none;
-        border-top: 1px solid var(--border);
-        padding-top: 1rem;
-    }
- 
     h1 {
-        font-size: 1.75rem;
+        font-size: 2rem;
     }
  
     h2 {
-        font-size: 1.375rem;
+        font-size: 1.5rem;
     }
  
     .folder-grid {
-        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
         gap: 15px;
         padding: 0 1rem;
     }
  
-    .folder-card {
-        min-height: 120px;
-        padding: 1.5rem;
-    }
- 
-    .folder-icon {
-        font-size: 2rem;
-    }
- 
     .question-card {
         padding: 1.5rem;
-        margin-bottom: 1.5rem;
-    }
- 
-    .question-text {
-        font-size: 1rem;
-    }
- 
-    .reading-block {
-        padding: 1rem;
-        font-size: 0.95rem;
-    }
- 
-    .options-list {
-        gap: 10px;
-    }
- 
-    .option-item {
-        padding: 0.75rem;
     }
  
     #exam-content {
         padding: 1rem 0.5rem;
     }
  
-    #search-input {
-        max-width: 100%;
-    }
- 
-    .chart-container {
-        max-width: 100%;
+    .result-stats {
+        grid-template-columns: repeat(3, 1fr);
     }
  
     #chat-sidebar {
         height: 40vh;
-    }
- 
-    #chat-icon {
-        width: 60px;
-        height: 60px;
-        bottom: 15px;
-        right: 15px;
-    }
- 
-    #user-info-widget {
-        top: 10px;
-        right: 10px;
     }
 }
  
@@ -1414,206 +1076,55 @@ body.chat-open #exam-content {
         font-size: 15px;
     }
  
-    .navbar-container {
-        padding: 0.5rem;
-    }
- 
     .navbar-brand h2 {
-        font-size: 1.125rem;
+        font-size: 1.25rem;
     }
  
     .brand-icon {
-        font-size: 1.5rem;
+        font-size: 2rem;
     }
  
     h1 {
         font-size: 1.5rem;
     }
  
-    h2 {
-        font-size: 1.125rem;
-    }
- 
     .folder-grid {
         grid-template-columns: repeat(2, 1fr);
-        gap: 10px;
-        padding: 0 0.5rem;
+        gap: 12px;
     }
  
     .folder-card {
-        padding: 1rem;
-        min-height: 100px;
-    }
- 
-    .folder-icon {
-        font-size: 1.75rem;
-    }
- 
-    .folder-name {
-        font-size: 0.95rem;
-    }
- 
-    .folder-count {
-        font-size: 0.75rem;
-    }
- 
-    .btn {
-        padding: 10px 16px;
-        font-size: 0.875rem;
+        min-height: 130px;
+        padding: 1.5rem 1rem;
     }
  
     .question-card {
         padding: 1rem;
     }
  
-    .question-number {
-        font-size: 0.75rem;
-        padding: 4px 10px;
-    }
- 
-    .question-text {
-        font-size: 0.95rem;
-    }
- 
-    .reading-block {
-        padding: 0.75rem;
-        font-size: 0.9rem;
-    }
- 
     .option-item {
-        padding: 0.75rem 0.5rem;
+        padding: 0.75rem;
     }
  
-    .file-item {
-        padding: 12px 15px;
+    #result-box {
+        padding: 1.5rem;
     }
  
-    .exam-header {
-        flex-direction: column;
-        gap: 1rem;
+    .result-score {
+        font-size: 2.5rem;
+    }
+ 
+    .result-stats {
+        grid-template-columns: 1fr;
     }
  
     #chat-sidebar {
         height: 45vh;
     }
  
-    .chat-message {
-        gap: 6px;
-    }
- 
-    .message-bubble {
-        max-width: 85%;
-        font-size: 0.9rem;
-    }
- 
-    #user-info-widget > div {
-        padding: 10px 12px;
-    }
-}
- 
-/* ===================================================================
-   17. ANIMATIONS
-   =================================================================== */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
-}
- 
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
- 
-@keyframes slideUp {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
- 
-@keyframes slideRight {
-    from {
-        opacity: 0;
-        transform: translateX(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
- 
-@keyframes pulse {
-    0%, 100% {
-        opacity: 1;
-    }
-    50% {
-        opacity: 0.5;
-    }
-}
- 
-@keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-    20%, 40%, 60%, 80% { transform: translateX(5px); }
-}
- 
-.animate-fadeIn {
-    animation: fadeIn 0.3s ease;
-}
- 
-.animate-slideDown {
-    animation: slideDown 0.3s ease;
-}
- 
-.animate-slideUp {
-    animation: slideUp 0.3s ease;
-}
- 
-.animate-slideRight {
-    animation: slideRight 0.3s ease;
-}
- 
-.animate-pulse {
-    animation: pulse 2s infinite;
-}
- 
-.animate-shake {
-    animation: shake 0.5s ease;
-}
- 
-/* ===================================================================
-   18. PRINT STYLES
-   =================================================================== */
-@media print {
-    .navbar,
-    #chat-icon,
-    #chat-sidebar,
-    .btn {
-        display: none;
-    }
- 
-    body {
-        background: white;
-    }
- 
-    .card {
-        box-shadow: none;
-        border: 1px solid #ccc;
-        page-break-inside: avoid;
+    #chat-icon {
+        width: 60px;
+        height: 60px;
     }
 }
     </style>
