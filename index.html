@@ -1424,6 +1424,447 @@ h4 { font-size: 1.25rem; }
         }
     }
 
+let currentUser = localStorage.getItem('jlpt-user');
+let isChatOpen = false;
+ 
+// ===== INITIALIZATION =====
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🎌 JLPT Master Loaded!');
+    
+    // Show chat icon if user logged in
+    if (currentUser) {
+        showChatIcon();
+        showWelcomeMessage();
+    }
+    
+    // Smooth scroll for nav links
+    setupSmoothScroll();
+    
+    // Active nav link on scroll
+    setupScrollSpy();
+    
+    // Animate elements on scroll
+    setupScrollAnimations();
+});
+ 
+// ===== LOGIN MODAL =====
+function openLoginModal() {
+    const modal = document.getElementById('loginModal');
+    modal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+    
+    // Focus on input
+    setTimeout(() => {
+        document.getElementById('modal-username').focus();
+    }, 100);
+}
+ 
+function closeLoginModal() {
+    const modal = document.getElementById('loginModal');
+    modal.classList.add('hidden');
+    document.body.style.overflow = '';
+}
+ 
+// Close modal on Escape key
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        closeLoginModal();
+        closeChat();
+    }
+});
+ 
+// ===== LOGIN FUNCTION =====
+function loginUser() {
+    const usernameInput = document.getElementById('modal-username');
+    const username = usernameInput.value.trim();
+    
+    if (!username) {
+        showAlert('❌ Silakan masukkan nama Anda!', 'error');
+        usernameInput.focus();
+        return;
+    }
+    
+    if (username.length < 2) {
+        showAlert('⚠️ Nama minimal 2 karakter', 'warning');
+        return;
+    }
+    
+    // Save user
+    localStorage.setItem('jlpt-user', username);
+    currentUser = username;
+    
+    // Close modal
+    closeLoginModal();
+    
+    // Show success
+    showAlert(`🎉 Selamat datang, ${username}!`, 'success');
+    
+    // Show chat icon
+    showChatIcon();
+    setTimeout(() => {
+        showWelcomeMessage();
+    }, 1000);
+}
+ 
+function logoutUser() {
+    if (confirm('Apakah Anda yakin ingin keluar?')) {
+        localStorage.removeItem('jlpt-user');
+        currentUser = null;
+        location.reload();
+    }
+}
+ 
+// ===== ALERT/TOAST SYSTEM =====
+function showAlert(message, type = 'info') {
+    // Remove existing alerts
+    const existingAlerts = document.querySelectorAll('.alert-toast');
+    existingAlerts.forEach(a => a.remove());
+    
+    const colors = {
+        success: { bg: '#10B981', text: '#fff' },
+        error: { bg: '#EF4444', text: '#fff' },
+        warning: { bg: '#F59E0B', text: '#fff' },
+        info: { bg: '#3B82F6', text: '#fff' }
+    };
+    
+    const color = colors[type] || colors.info;
+    
+    const alert = document.createElement('div');
+    alert.className = 'alert-toast';
+    alert.style.cssText = `
+        position: fixed;
+        top: 90px;
+        right: 20px;
+        background: ${color.bg};
+        color: ${color.text};
+        padding: 1rem 1.5rem;
+        border-radius: 12px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        z-index: 10000;
+        font-weight: 600;
+        max-width: 350px;
+        animation: slideInRight 0.3s ease;
+    `;
+    alert.textContent = message;
+    
+    document.body.appendChild(alert);
+    
+    setTimeout(() => {
+        alert.style.animation = 'slideOutRight 0.3s ease';
+        setTimeout(() => alert.remove(), 300);
+    }, 3000);
+}
+ 
+// Add CSS for animations
+const styleSheet = document.createElement('style');
+styleSheet.textContent = `
+    @keyframes slideInRight {
+        from { transform: translateX(100%); opacity: 0; }
+        to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes slideOutRight {
+        from { transform: translateX(0); opacity: 1; }
+        to { transform: translateX(100%); opacity: 0; }
+    }
+`;
+document.head.appendChild(styleSheet);
+ 
+// ===== LEARNING PATHS =====
+function startLevel(level) {
+    if (!currentUser) {
+        showAlert('🔐 Silakan login terlebih dahulu!', 'warning');
+        openLoginModal();
+        return;
+    }
+    
+    // For now, show alert. Bisa di-redirect ke halaman exam
+    showAlert(`🚀 Memulai pembelajaran ${level}...`, 'success');
+    
+    // TODO: Redirect ke halaman exam/quiz
+    // window.location.href = `exam.html?level=${level}`;
+    
+    // Add to chat
+    if (isChatOpen) {
+        addChatMessage(`Saya akan membantu kamu dengan level ${level}! Mau mulai dari mana? 🎯`, 'ai');
+    }
+}
+ 
+function scrollToPaths() {
+    document.getElementById('paths').scrollIntoView({ behavior: 'smooth' });
+}
+ 
+function scrollToAbout() {
+    document.getElementById('about').scrollIntoView({ behavior: 'smooth' });
+}
+ 
+// ===== CHAT SYSTEM =====
+function showChatIcon() {
+    const chatIcon = document.getElementById('chat-icon');
+    chatIcon.classList.remove('hidden');
+}
+ 
+function openChat() {
+    const sidebar = document.getElementById('chat-sidebar');
+    sidebar.classList.add('active');
+    isChatOpen = true;
+    
+    // Focus input
+    setTimeout(() => {
+        document.getElementById('chat-input').focus();
+    }, 300);
+}
+ 
+function closeChat() {
+    const sidebar = document.getElementById('chat-sidebar');
+    sidebar.classList.remove('active');
+    isChatOpen = false;
+}
+ 
+function showWelcomeMessage() {
+    const messages = document.getElementById('chat-messages');
+    if (messages.children.length === 0) {
+        addChatMessage(`Hai ${currentUser}! 👋 Aku Siera, asisten AI mu untuk belajar bahasa Jepang. Ada yang bisa aku bantu? 🐰`, 'ai');
+    }
+}
+ 
+function sendMessage() {
+    const input = document.getElementById('chat-input');
+    const message = input.value.trim();
+    
+    if (!message) return;
+    
+    // Add user message
+    addChatMessage(message, 'user');
+    input.value = '';
+    
+    // Simulate AI response
+    setTimeout(() => {
+        const responses = generateAIResponse(message);
+        addChatMessage(responses, 'ai');
+    }, 800);
+}
+ 
+function addChatMessage(text, type) {
+    const messagesContainer = document.getElementById('chat-messages');
+    
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `chat-message ${type}`;
+    
+    const bubble = document.createElement('div');
+    bubble.className = 'message-bubble';
+    bubble.textContent = text;
+    
+    messageDiv.appendChild(bubble);
+    messagesContainer.appendChild(messageDiv);
+    
+    // Scroll to bottom
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
+ 
+function generateAIResponse(userMessage) {
+    const message = userMessage.toLowerCase();
+    
+    // Simple keyword-based responses
+    if (message.includes('halo') || message.includes('hai') || message.includes('hi')) {
+        return 'Halo! 👋 Senang berkenalan denganmu. Mau belajar apa hari ini?';
+    }
+    
+    if (message.includes('n5')) {
+        return 'JLPT N5 itu level pemula! 🌱 Kamu akan belajar Hiragana, Katakana, dan kanji dasar. Mau mulai dari mana?';
+    }
+    
+    if (message.includes('n4')) {
+        return 'JLPT N4 setingkat lebih tinggi dari N5 📚. Kosakatanya sekitar 1500 kata. Siap untuk tantangan?';
+    }
+    
+    if (message.includes('n3')) {
+        return 'JLPT N3 level menengah! 🎯 Sudah mulai bisa baca koran sederhana. Yuk mulai!';
+    }
+    
+    if (message.includes('n2') || message.includes('n1')) {
+        return 'Wow, level tinggi! 🔥 Butuh dedikasi serius. Aku akan support kamu sepenuhnya!';
+    }
+    
+    if (message.includes('kanji')) {
+        return 'Kanji itu seru! 🈁 Tips: belajar dari radikal & cerita di balik karakternya. Mau kanji apa dulu?';
+    }
+    
+    if (message.includes('hiragana') || message.includes('katakana')) {
+        return 'Hiragana dan Katakana adalah dasar yang penting! 📝 Latihan menulis 15 menit sehari pasti jago.';
+    }
+    
+    if (message.includes('grammar') || message.includes('tata bahasa')) {
+        return 'Tata bahasa Jepang unik dengan partikel は、が、を、に、で 📖. Mau bahas yang mana?';
+    }
+    
+    if (message.includes('kosakata') || message.includes('vocab')) {
+        return 'Untuk kosakata, gunakan flashcard dan baca manga/anime favoritmu! 📚✨';
+    }
+    
+    if (message.includes('tips') || message.includes('saran')) {
+        return 'Tips belajar bahasa Jepang:\n1. Konsisten 30 menit/hari\n2. Tonton anime dengan subtitle\n3. Speaking practice tiap hari\n4. Jangan takut salah! 💪';
+    }
+    
+    if (message.includes('terima kasih') || message.includes('makasih')) {
+        return 'Sama-sama! 😊 Semangat terus belajarnya ya! どういたしまして!';
+    }
+    
+    if (message.includes('?')) {
+        return 'Pertanyaan bagus! 🤔 Mari kita pecah masalahnya bersama. Bisa lebih spesifik?';
+    }
+    
+    // Default responses
+    const defaults = [
+        'Menarik! Bisa cerita lebih banyak? 🤔',
+        'Saya mengerti. Ada yang ingin ditanyakan tentang JLPT? 📚',
+        'Bagus! Semangat terus belajarnya ya! 💪',
+        'がんばって! (Ganbatte!) Semangat ya! ✨',
+        'Aku di sini untuk membantu. Apa yang ingin kamu pelajari? 🎯'
+    ];
+    return defaults[Math.floor(Math.random() * defaults.length)];
+}
+ 
+// ===== NAVIGATION =====
+function setupSmoothScroll() {
+    const navLinks = document.querySelectorAll('a[href^="#"]');
+    
+    navLinks.forEach(link => {
+        link.addEventListener('click', function(e) {
+            const href = this.getAttribute('href');
+            
+            if (href === '#') return;
+            
+            e.preventDefault();
+            const target = document.querySelector(href);
+            
+            if (target) {
+                const navHeight = document.querySelector('.navbar').offsetHeight;
+                const targetPosition = target.offsetTop - navHeight - 20;
+                
+                window.scrollTo({
+                    top: targetPosition,
+                    behavior: 'smooth'
+                });
+            }
+        });
+    });
+}
+ 
+function setupScrollSpy() {
+    const sections = document.querySelectorAll('section[id]');
+    const navLinks = document.querySelectorAll('.nav-link');
+    
+    window.addEventListener('scroll', function() {
+        let current = '';
+        const scrollY = window.pageYOffset;
+        const navHeight = document.querySelector('.navbar').offsetHeight;
+        
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop - navHeight - 100;
+            const sectionHeight = section.offsetHeight;
+            
+            if (scrollY >= sectionTop && scrollY < sectionTop + sectionHeight) {
+                current = section.getAttribute('id');
+            }
+        });
+        
+        navLinks.forEach(link => {
+            link.classList.remove('active');
+            const href = link.getAttribute('href').substring(1);
+            if (href === current) {
+                link.classList.add('active');
+            }
+        });
+    });
+}
+ 
+// ===== SCROLL ANIMATIONS =====
+function setupScrollAnimations() {
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+    });
+    
+    // Observe path cards
+    const pathCards = document.querySelectorAll('.path-card');
+    pathCards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(30px)';
+        card.style.transition = `opacity 0.6s ease ${index * 0.1}s, transform 0.6s ease ${index * 0.1}s`;
+        observer.observe(card);
+    });
+    
+    // Observe cultural cards
+    const culturalCards = document.querySelectorAll('.cultural-card');
+    culturalCards.forEach((card, index) => {
+        card.style.opacity = '0';
+        card.style.transform = 'translateY(30px)';
+        card.style.transition = `opacity 0.6s ease ${index * 0.08}s, transform 0.6s ease ${index * 0.08}s`;
+        observer.observe(card);
+    });
+    
+    // Observe feature items
+    const featureItems = document.querySelectorAll('.feature-item');
+    featureItems.forEach((item, index) => {
+        item.style.opacity = '0';
+        item.style.transform = 'translateY(30px)';
+        item.style.transition = `opacity 0.6s ease ${index * 0.1}s, transform 0.6s ease ${index * 0.1}s`;
+        observer.observe(item);
+    });
+}
+ 
+// ===== MOBILE MENU =====
+function toggleMobileMenu() {
+    const nav = document.querySelector('.navbar-nav');
+    const mobileBtn = document.querySelector('.mobile-menu-btn');
+    
+    if (nav.style.display === 'flex') {
+        nav.style.display = 'none';
+        mobileBtn.textContent = '☰';
+    } else {
+        nav.style.cssText = `
+            display: flex !important;
+            flex-direction: column;
+            position: fixed;
+            top: 70px;
+            left: 0;
+            right: 0;
+            background: white;
+            padding: 1rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            gap: 0.5rem;
+            z-index: 99;
+        `;
+        mobileBtn.textContent = '✕';
+    }
+}
+ 
+// Close mobile menu when clicking nav link
+document.querySelectorAll('.nav-link').forEach(link => {
+    link.addEventListener('click', () => {
+        if (window.innerWidth <= 968) {
+            const nav = document.querySelector('.navbar-nav');
+            const mobileBtn = document.querySelector('.mobile-menu-btn');
+            nav.style.display = 'none';
+            mobileBtn.textContent = '☰';
+        }
+    });
+});
+ 
+console.log('✅ JLPT Master Initialized Successfully!');
+ 
+
+
+
+
+      
     // ==========================================
     // 3. NAVIGATION & MANIFEST LOADER
     // ==========================================
